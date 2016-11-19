@@ -23,7 +23,7 @@ bool isLessThan(int x, int y) { return x < y; }
 
 class Foo {
 public:
-	Foo(int a) : value(a) {};
+	Foo(int a=0) : value(a) {};
 	int getValue() const { return value; };
 	int fooTimesTwo() const { return value*2; };
 	Foo fooTimesFoo(const Foo &other) const { return Foo(value*other.value); };

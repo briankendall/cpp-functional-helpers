@@ -502,7 +502,7 @@ auto sum(const T &list)
 	-> typename std::decay<decltype(*list.begin())>::type
 {
 	using U = typename std::decay<decltype(*list.begin())>::type;
-	U memo = 0;
+	U memo = U();
 	return reduce(list, [] (const U &a, const U &b) { return a+b; }, memo);
 }
 

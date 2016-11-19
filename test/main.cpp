@@ -8,7 +8,7 @@
 using namespace std;
 
 #define TEST(expr, val) \
-	if ((expr) != (val)) { \
+	if (!((expr) == (val))) { \
 		qDebug() << "Failure! line" << __LINE__ << #expr; \
 	} else { \
 		passedTests += 1; \
@@ -19,13 +19,18 @@ int timesTwo(int x) { return x*2; }
 int timesX(int x, int y) { return x*y; }
 bool isEven(int x) { return (x%2) == 0; }
 bool isMultiple(int x, int y) { return (x%y) == 0; }
+bool isLessThan(int x, int y) { return x < y; }
 
 class Foo {
 public:
 	Foo(int a) : value(a) {};
+	int getValue() const { return value; };
 	int fooTimesTwo() const { return value*2; };
 	bool isEven() const { return ::isEven(value); };
+	bool isLessThan(const Foo &other) const { return value < other.value; }
 	bool operator==(const Foo &other) const { return value == other.value; }
+	bool operator<(const Foo &other) const { return isLessThan(other); }
+	bool operator>(const Foo &other) const { return value > other.value; }
 	int value;
 };
 
@@ -137,12 +142,62 @@ void testAnyOf()
 	TEST(QLinkedListAnyOf(QLinkedListNumbers, [] (int x) { return (x%2) == 0; }), true);
 }
 
+void testExtremum()
+{
+	TEST(extremum(listNumbers, [] (int x, int y) { return x < y; }), 1);
+	TEST(extremum(listNumbers, &isLessThan), 1);
+	TEST(extremum(listFoos, &Foo::isLessThan), fooA);
+	TEST(extremum(listFooPtrs, &Foo::isLessThan), &fooA);
+	
+	TEST(extremum(vectorNumbers, [] (int x, int y) { return x < y; }), 1);
+	TEST(extremum(setNumbers, [] (int x, int y) { return x < y; }), 1);
+	TEST(extremum(QListNumbers, [] (int x, int y) { return x < y; }), 1);
+	TEST(extremum(QVectorNumbers, [] (int x, int y) { return x < y; }), 1);
+	TEST(extremum(QSetNumbers, [] (int x, int y) { return x < y; }), 1);
+	TEST(extremum(QLinkedListNumbers, [] (int x, int y) { return x < y; }), 1);
+}
+
+void testMin()
+{
+	TEST(min(listNumbers), 1);
+	TEST(min(listFoos), fooA);
+	TEST(min(vectorNumbers), 1);
+	TEST(min(setNumbers), 1);
+	TEST(min(QListNumbers), 1);
+	TEST(min(QVectorNumbers), 1);
+	TEST(min(QSetNumbers), 1);
+	TEST(min(QLinkedListNumbers), 1);
+	
+	TEST(min(listFoos, [] (const Foo &a) { return a.value; }), fooA);
+	TEST(min(listFoos, &Foo::getValue), fooA);
+	TEST(min(listFooPtrs, &Foo::getValue), &fooA);
+}
+
+void testMax()
+{
+	TEST(max(listNumbers), 5);
+	TEST(max(listFoos), fooE);
+	TEST(max(vectorNumbers), 5);
+	TEST(max(setNumbers), 5);
+	TEST(max(QListNumbers), 5);
+	TEST(max(QVectorNumbers), 5);
+	TEST(max(QSetNumbers), 5);
+	TEST(max(QLinkedListNumbers), 5);
+	
+	TEST(max(listFoos, [] (const Foo &a) { return a.value; }), fooE);
+	TEST(max(listFoos, &Foo::getValue), fooE);
+	TEST(max(listFooPtrs, &Foo::getValue), &fooE);
+}
+
 int main()
 {
 	testMap();
 	testFilter();
 	testAllOf();
 	testAnyOf();
+	testExtremum();
+	testMin();
+	testMax();
 	
 	qDebug() << "Finished!" << passedTests << "/" << totalTests << "passed";
 	return 0;

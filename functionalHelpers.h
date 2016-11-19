@@ -229,4 +229,176 @@ __FH_general_anyOf(listAnyOf, std::list, __FH_standard_ranged_for)
 __FH_general_anyOf(vectorAnyOf, std::vector, __FH_standard_ranged_for)
 __FH_general_anyOf(setAnyOf, std::set, __FH_standard_ranged_for)
 
+// extremum
+
+template <class T, class F>
+auto extremum(const T &list, F &&comp)
+	-> typename std::decay<decltype(*list.begin())>::type
+{
+	using U = typename std::decay<decltype(*list.begin())>::type;
+	using V = decltype(list.cbegin());
+	const U *extremumValue = nullptr;
+	
+	for(V it = list.cbegin(); it != list.cend(); ++it) {
+		if (!extremumValue || comp(*it, *extremumValue)) {
+			extremumValue = &(*it);
+		}
+	}
+
+    return *extremumValue;
+}
+
+template <template<class, class> class T, class U, class V>
+auto extremum(const T<U, V> &list, bool (U::*func)(const U &) const)
+	-> typename std::decay<decltype(*list.begin())>::type
+{
+	return extremum(list, [=](U const &a, U const &b){ return (a.*func)(b); });
+}
+
+template <template<class, class> class T, class U, class V>
+auto extremum(const T<U *, V> &list, bool (U::*func)(const U &) const)
+	-> typename std::decay<decltype(*list.begin())>::type
+{
+	return extremum(list, [=](U const *a, U const *b){ return (a->*func)(*b); });
+}
+
+template <template<class> class T, class U>
+auto extremum(const T<U> &list, bool (U::*func)(const U &) const)
+	-> typename std::decay<decltype(*list.begin())>::type
+{
+	return extremum(list, [=](U const &a, U const &b){ return (a.*func)(b); });
+}
+
+template <template<class> class T, class U>
+auto extremum(const T<U *> &list, bool (U::*func)(const U &) const)
+	-> typename std::decay<decltype(*list.begin())>::type
+{
+	return extremum(list, [=](U const *a, U const *b){ return (a->*func)(*b); });
+}
+
+// min(container)
+
+template <class T>
+auto min(const T &list)
+	-> typename std::decay<decltype(*list.begin())>::type
+{
+	using U = typename std::decay<decltype(*list.begin())>::type;
+	return extremum(list, [] (const U &a, const U &b) {return a < b; });
+}
+
+// min(container, func)
+
+template <class T, class F>
+auto min(const T &list, F &&func)
+	-> typename std::decay<decltype(*list.begin())>::type
+{
+	using U = typename std::decay<decltype(*list.begin())>::type;
+	using V = decltype(list.cbegin());
+	using W = typename std::decay<decltype(func(*list.begin()))>::type;
+	const U *extremumValue = nullptr;
+	W extremumComparator;
+	
+	for(V it = list.cbegin(); it != list.cend(); ++it) {
+		W currentComparator = func(*it);
+		
+		if (!extremumValue || currentComparator < extremumComparator) {
+			extremumValue = &(*it);
+			extremumComparator = currentComparator;
+		}
+	}
+
+    return *extremumValue;
+}
+
+template <template<class, class> class T, class U, class V, class W>
+auto min(const T<U, V> &list, W (U::*func)() const)
+	-> typename std::decay<decltype(*list.begin())>::type
+{
+	return min(list, [=](U const &a){ return (a.*func)(); });
+}
+
+template <template<class, class> class T, class U, class V, class W>
+auto min(const T<U *, V> &list, W (U::*func)() const)
+	-> typename std::decay<decltype(*list.begin())>::type
+{
+	return min(list, [=](U const *a){ return (a->*func)(); });
+}
+
+template <template<class> class T, class U, class W>
+auto min(const T<U> &list, W (U::*func)() const)
+	-> typename std::decay<decltype(*list.begin())>::type
+{
+	return min(list, [=](U const &a){ return (a.*func)(); });
+}
+
+template <template<class> class T, class U, class W>
+auto min(const T<U *> &list, W (U::*func)() const)
+	-> typename std::decay<decltype(*list.begin())>::type
+{
+	return min(list, [=](U const *a){ return (a->*func)(); });
+}
+
+// max(container)
+
+template <class T>
+auto max(const T &list)
+	-> typename std::decay<decltype(*list.begin())>::type
+{
+	using U = typename std::decay<decltype(*list.begin())>::type;
+	return extremum(list, [] (const U &a, const U &b) {return a > b; });
+}
+
+// max(container, func)
+
+template <class T, class F>
+auto max(const T &list, F &&func)
+	-> typename std::decay<decltype(*list.begin())>::type
+{
+	using U = typename std::decay<decltype(*list.begin())>::type;
+	using V = decltype(list.cbegin());
+	using W = typename std::decay<decltype(func(*list.begin()))>::type;
+	const U *extremumValue = nullptr;
+	W extremumComparator;
+	
+	for(V it = list.cbegin(); it != list.cend(); ++it) {
+		W currentComparator = func(*it);
+		
+		if (!extremumValue || currentComparator > extremumComparator) {
+			extremumValue = &(*it);
+			extremumComparator = currentComparator;
+		}
+	}
+
+    return *extremumValue;
+}
+
+template <template<class, class> class T, class U, class V, class W>
+auto max(const T<U, V> &list, W (U::*func)() const)
+	-> typename std::decay<decltype(*list.begin())>::type
+{
+	return max(list, [=](U const &a){ return (a.*func)(); });
+}
+
+template <template<class, class> class T, class U, class V, class W>
+auto max(const T<U *, V> &list, W (U::*func)() const)
+	-> typename std::decay<decltype(*list.begin())>::type
+{
+	return max(list, [=](U const *a){ return (a->*func)(); });
+}
+
+template <template<class> class T, class U, class W>
+auto max(const T<U> &list, W (U::*func)() const)
+	-> typename std::decay<decltype(*list.begin())>::type
+{
+	return max(list, [=](U const &a){ return (a.*func)(); });
+}
+
+template <template<class> class T, class U, class W>
+auto max(const T<U *> &list, W (U::*func)() const)
+	-> typename std::decay<decltype(*list.begin())>::type
+{
+	return max(list, [=](U const *a){ return (a->*func)(); });
+}
+
+
 #endif // __FUNCTIONAL_HELPERS_H__

@@ -49,5 +49,4 @@ __FH_general_anyOf(QVectorAnyOf, QVector, Q_FOREACH)
 __FH_general_anyOf(QSetAnyOf, QSet, Q_FOREACH)
 __FH_general_anyOf(QLinkedListAnyOf, QLinkedList, Q_FOREACH)
 
-
 #endif // __QT_FUNCTIONAL_HELPERS_H__

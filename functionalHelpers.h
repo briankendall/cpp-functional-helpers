@@ -92,6 +92,67 @@ __FH_general_map(listMap, std::list, __FH_standard_ranged_for)
 __FH_general_map(vectorMap, std::vector, __FH_standard_ranged_for)
 __FH_general_map(setMap, std::set, __FH_standard_ranged_for)
 
+// compr
+
+#define __FH_general_compr(NAME, RET_TYPE, LOOP) \
+template <class T, class F1, class F2> \
+auto NAME(const T &list, F1 &&func, F2 &&predicate) \
+    -> RET_TYPE<typename std::decay<decltype(func(*list.begin()))>::type> \
+{ \
+    using U = typename std::decay<decltype(func(*list.begin()))>::type; \
+    RET_TYPE<U> result; \
+ \
+	LOOP(auto const &item, list) { \
+		if (predicate(item)) { \
+			_FunctionalHelpersUtils::addItem(result, func(item)); \
+		} \
+	} \
+ \
+    return result; \
+} \
+ \
+template <template<class, class> class T, class U, class V, class W> \
+RET_TYPE<W> NAME(const T<U, V> &list, W (U::*func)() const, bool (U::*predicate)() const) \
+{ \
+	return NAME(list, [=] (U const &a){ return (a.*func)(); }, [=] (U const &a) { return (a.*predicate)(); }); \
+} \
+ \
+template <template<class, class> class T, class U, class V, class W, class F> \
+RET_TYPE<W> NAME(const T<U, V> &list, W (U::*func)() const, F &&predicate) \
+{ \
+	return NAME(list, [=] (U const &a){ return (a.*func)(); }, predicate); \
+} \
+ \
+template <template<class, class> class T, class U, class V, class F> \
+auto NAME(const T<U, V> &list, F &&func, bool (U::*predicate)() const) \
+	-> RET_TYPE<typename std::decay<decltype(func(*list.begin()))>::type> \
+{ \
+	return NAME(list, func, [=] (U const &a) { return (a.*predicate)(); }); \
+} \
+ \
+template <template<class, class> class T, class U, class V, class W> \
+RET_TYPE<W> NAME(const T<U *, V> &list, W (U::*func)() const, bool (U::*predicate)() const) \
+{ \
+	return NAME(list, [=] (U const *a){ return (a->*func)(); }, [=] (U const *a) { return (a->*predicate)(); }); \
+} \
+ \
+template <template<class, class> class T, class U, class V, class W, class F> \
+RET_TYPE<W> NAME(const T<U *, V> &list, W (U::*func)() const, F &&predicate) \
+{ \
+	return NAME(list, [=] (U const *a){ return (a->*func)(); }, predicate); \
+} \
+ \
+template <template<class, class> class T, class U, class V, class F> \
+auto NAME(const T<U *, V> &list, F &&func, bool (U::*predicate)() const) \
+	-> RET_TYPE<typename std::decay<decltype(func(*list.begin()))>::type> \
+{ \
+	return NAME(list, func, [=] (U const *a) { return (a->*predicate)(); }); \
+}
+
+__FH_general_compr(listCompr, std::list, __FH_standard_ranged_for)
+__FH_general_compr(vectorCompr, std::vector, __FH_standard_ranged_for)
+__FH_general_compr(setCompr, std::set, __FH_standard_ranged_for)
+
 // filter
 
 #define __FH_general_filter(NAME, RET_TYPE, LOOP) \

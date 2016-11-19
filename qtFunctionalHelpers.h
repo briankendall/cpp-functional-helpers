@@ -28,6 +28,13 @@ __FH_general_map(QVectorMap, QVector, Q_FOREACH)
 __FH_general_map(QSetMap, QSet, Q_FOREACH)
 __FH_general_map(QLinkedListMap, QLinkedList, Q_FOREACH)
 
+// compr
+
+__FH_general_compr(QListCompr, QList, Q_FOREACH)
+__FH_general_compr(QVectorCompr, QVector, Q_FOREACH)
+__FH_general_compr(QSetCompr, QSet, Q_FOREACH)
+__FH_general_compr(QLinkedListCompr, QLinkedList, Q_FOREACH)
+
 // filter
 
 __FH_general_filter(QListFilter, QList, Q_FOREACH)

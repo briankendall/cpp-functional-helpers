@@ -84,6 +84,38 @@ void testMap()
 	TEST(QLinkedListMap(QLinkedListNumbers, [] (int x) { return x*2; }), QLinkedListExpected);
 }
 
+void testCompr()
+{
+	const std::list<int> listExpected = {4,8};
+	const std::vector<int> vectorExpected = {4,8};
+	const std::set<int> setExpected = {4,8};
+	const QList<int> QListExpected = {4,8};
+	const QVector<int> QVectorExpected = {4,8};
+	const QSet<int> QSetExpected = {4,8};
+	const QLinkedList<int> QLinkedListExpected = {4,8};
+	
+	TEST(listCompr(listNumbers, [] (int x) { return x*2; }, [] (int x) { return (x%2) == 0;}), listExpected);
+	TEST(listCompr(listNumbers, &timesTwo, &isEven), listExpected);
+	TEST(listCompr(listNumbers, std::bind(timesX, 2, std::placeholders::_1),
+	               std::bind(isMultiple, std::placeholders::_1, 2)),
+	     listExpected);
+	
+	TEST(listCompr(listFoos, &Foo::fooTimesTwo, &Foo::isEven), listExpected);
+	TEST(listCompr(listFoos, &Foo::fooTimesTwo, [] (const Foo &a) { return (a.value%2) == 0; }), listExpected);
+	TEST(listCompr(listFoos, [] (const Foo &a) { return a.fooTimesTwo(); }, &Foo::isEven), listExpected);
+	TEST(listCompr(listFooPtrs, &Foo::fooTimesTwo, &Foo::isEven), listExpected);
+	TEST(listCompr(listFooPtrs, &Foo::fooTimesTwo, [] (const Foo *a) { return (a->value%2) == 0; }), listExpected);
+	TEST(listCompr(listFooPtrs, [] (const Foo *a) { return a->fooTimesTwo(); }, &Foo::isEven), listExpected);
+	
+	TEST(vectorCompr(vectorNumbers, [] (int x) { return x*2; }, [] (int x) { return (x%2) == 0;}), vectorExpected);
+	TEST(setCompr(setNumbers, [] (int x) { return x*2; }, [] (int x) { return (x%2) == 0;}), setExpected);
+	TEST(QListCompr(QListNumbers, [] (int x) { return x*2; }, [] (int x) { return (x%2) == 0;}), QListExpected);
+	TEST(QVectorCompr(QVectorNumbers, [] (int x) { return x*2; }, [] (int x) { return (x%2) == 0;}), QVectorExpected);
+	TEST(QSetCompr(QSetNumbers, [] (int x) { return x*2; }, [] (int x) { return (x%2) == 0;}), QSetExpected);
+	TEST(QLinkedListCompr(QLinkedListNumbers, [] (int x) { return x*2; }, [] (int x) { return (x%2) == 0;}),
+	     QLinkedListExpected);
+}
+
 void testFilter()
 {
 	const std::list<int> listExpected = {2,4};
@@ -235,6 +267,7 @@ int main()
 	testMax();
 	testReduce();
 	testSum();
+	testCompr();
 	
 	qDebug() << "Finished!" << passedTests << "/" << totalTests << "passed";
 	return 0;

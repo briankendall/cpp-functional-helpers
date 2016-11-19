@@ -28,4 +28,11 @@ __FH_general_map(QVectorMap, QVector, Q_FOREACH)
 __FH_general_map(QSetMap, QSet, Q_FOREACH)
 __FH_general_map(QLinkedListMap, QLinkedList, Q_FOREACH)
 
+// filter
+
+__FH_general_filter(QListFilter, QList, Q_FOREACH)
+__FH_general_filter(QVectorFilter, QVector, Q_FOREACH)
+__FH_general_filter(QSetFilter, QSet, Q_FOREACH)
+__FH_general_filter(QLinkedListFilter, QLinkedList, Q_FOREACH)
+
 #endif // __QT_FUNCTIONAL_HELPERS_H__

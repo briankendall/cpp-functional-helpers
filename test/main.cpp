@@ -17,11 +17,15 @@ using namespace std;
 
 int timesTwo(int x) { return x*2; }
 int timesX(int x, int y) { return x*y; }
+bool isEven(int x) { return (x%2) == 0; }
+bool isMultiple(int x, int y) { return (x%y) == 0; }
 
 class Foo {
 public:
 	Foo(int a) : value(a) {};
 	int fooTimesTwo() const { return value*2; };
+	bool isEven() const { return ::isEven(value); };
+	bool operator==(const Foo &other) const { return value == other.value; }
 	int value;
 };
 
@@ -59,7 +63,6 @@ void testMap()
 	TEST(listMap(listNumbers, [] (int x) { return x*2; }), listExpected);
 	TEST(listMap(listNumbers, &timesTwo), listExpected);
 	TEST(listMap(listNumbers, std::bind(timesX, 2, std::placeholders::_1)), listExpected);
-	TEST(listMap(listNumbers, [] (int x) { return x*2; }), listExpected);
 	TEST(listMap(listFoos, &Foo::fooTimesTwo), listExpected);
 	TEST(listMap(listFooPtrs, &Foo::fooTimesTwo), listExpected);
 	
@@ -71,9 +74,34 @@ void testMap()
 	TEST(QLinkedListMap(QLinkedListNumbers, [] (int x) { return x*2; }), QLinkedListExpected);
 }
 
+void testFilter()
+{
+	const std::list<int> listExpected = {2,4};
+	const std::vector<int> vectorExpected = {2,4};
+	const std::set<int> setExpected = {2,4};
+	const QList<int> QListExpected = {2,4};
+	const QVector<int> QVectorExpected = {2,4};
+	const QSet<int> QSetExpected = {2,4};
+	const QLinkedList<int> QLinkedListExpected = {2,4};
+	
+	TEST(listFilter(listNumbers, [] (int x) { return (x%2) == 0; }), listExpected);
+	TEST(listFilter(listNumbers, &isEven), listExpected);
+	TEST(listFilter(listNumbers, std::bind(isMultiple, std::placeholders::_1, 2)), listExpected);
+	TEST(listFilter(listFoos, &Foo::isEven), list<Foo>({fooB, fooD}));
+	TEST(listFilter(listFooPtrs, &Foo::isEven), list<Foo *>({&fooB, &fooD}));
+	
+	TEST(vectorFilter(vectorNumbers, [] (int x) { return (x%2) == 0; }), vectorExpected);
+	TEST(setFilter(setNumbers, [] (int x) { return (x%2) == 0; }), setExpected);
+	TEST(QListFilter(QListNumbers, [] (int x) { return (x%2) == 0; }), QListExpected);
+	TEST(QVectorFilter(QVectorNumbers, [] (int x) { return (x%2) == 0; }), QVectorExpected);
+	TEST(QSetFilter(QSetNumbers, [] (int x) { return (x%2) == 0; }), QSetExpected);
+	TEST(QLinkedListFilter(QLinkedListNumbers, [] (int x) { return (x%2) == 0; }), QLinkedListExpected);
+}
+
 int main()
 {
 	testMap();
+	testFilter();
 	
 	qDebug() << "Finished!" << passedTests << "/" << totalTests << "passed";
 	return 0;

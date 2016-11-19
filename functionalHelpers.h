@@ -92,4 +92,55 @@ __FH_general_map(listMap, std::list, __FH_standard_ranged_for)
 __FH_general_map(vectorMap, std::vector, __FH_standard_ranged_for)
 __FH_general_map(setMap, std::set, __FH_standard_ranged_for)
 
+// filter
+
+#define __FH_general_filter(NAME, RET_TYPE, LOOP) \
+template <class T, class F> \
+auto NAME(const T &list, F&& func) \
+    -> RET_TYPE<typename std::decay<decltype(*list.begin())>::type> \
+{ \
+    using U = typename std::decay<decltype(*list.begin())>::type; \
+    RET_TYPE<U> result; \
+ \
+	LOOP(auto const &item, list) { \
+		if (func(item)) { \
+			_FunctionalHelpersUtils::addItem(result, item); \
+		} \
+	} \
+ \
+    return result; \
+} \
+ \
+template <template<class, class> class T, class U, class V> \
+auto NAME(const T<U, V> &list, bool (U::*func)() const) \
+	-> RET_TYPE<typename std::decay<decltype(*list.begin())>::type> \
+{ \
+	return NAME(list, [=](U const &t){ return (t.*func)(); }); \
+} \
+ \
+template <template<class, class> class T, class U, class V> \
+auto NAME(const T<U *, V> &list, bool (U::*func)() const) \
+	-> RET_TYPE<typename std::decay<decltype(*list.begin())>::type> \
+{ \
+	return NAME(list, [=](U const *t){ return (t->*func)(); }); \
+} \
+ \
+template <template<class> class T, class U> \
+auto NAME(const T<U> &list, bool (U::*func)() const) \
+   -> RET_TYPE<typename std::decay<decltype(*list.begin())>::type> \
+{ \
+   return NAME(list, [=](U const &t){ return (t.*func)(); }); \
+} \
+\
+template <template<class> class T, class U> \
+auto NAME(const T<U *> &list, bool (U::*func)() const) \
+   -> RET_TYPE<typename std::decay<decltype(*list.begin())>::type> \
+{ \
+   return NAME(list, [=](U const *t){ return (t->*func)(); }); \
+} \
+
+__FH_general_filter(listFilter, std::list, __FH_standard_ranged_for)
+__FH_general_filter(vectorFilter, std::vector, __FH_standard_ranged_for)
+__FH_general_filter(setFilter, std::set, __FH_standard_ranged_for)
+
 #endif // __FUNCTIONAL_HELPERS_H__

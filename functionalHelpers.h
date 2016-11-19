@@ -400,5 +400,49 @@ auto max(const T<U *> &list, W (U::*func)() const)
 	return max(list, [=](U const *a){ return (a->*func)(); });
 }
 
+// reduce
+
+template <class T, class F, class U>
+auto reduce(const T &list, F &&func, U memo)
+	-> typename std::decay<decltype(*list.begin())>::type
+{
+	using V = decltype(list.cbegin());
+	
+	for(V it = list.cbegin(); it != list.cend(); ++it) {
+		memo = func(memo, *it);
+	}
+
+    return memo;
+}
+
+template <template<class, class> class T, class U, class V>
+U reduce(const T<U, V> &list, U (U::*func)(const U &) const, const U &memo)
+{
+	return reduce(list, [=](U const &a, U const &b){ return (a.*func)(b); }, memo);
+}
+
+template <template<class> class T, class U>
+U reduce(const T<U> &list, U (U::*func)(const U &) const, const U &memo)
+{
+	return reduce(list, [=](U const &a, U const &b){ return (a.*func)(b); }, memo);
+}
+
+// sum
+
+template <class T, class U>
+auto sum(const T &list, U memo)
+	-> typename std::decay<decltype(*list.begin())>::type
+{
+	return reduce(list, [] (const U &a, const U &b) { return a+b; }, memo);
+}
+
+template <class T>
+auto sum(const T &list)
+	-> typename std::decay<decltype(*list.begin())>::type
+{
+	using U = typename std::decay<decltype(*list.begin())>::type;
+	U memo = 0;
+	return reduce(list, [] (const U &a, const U &b) { return a+b; }, memo);
+}
 
 #endif // __FUNCTIONAL_HELPERS_H__

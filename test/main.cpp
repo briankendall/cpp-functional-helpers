@@ -26,11 +26,13 @@ public:
 	Foo(int a) : value(a) {};
 	int getValue() const { return value; };
 	int fooTimesTwo() const { return value*2; };
+	Foo fooTimesFoo(const Foo &other) const { return Foo(value*other.value); };
 	bool isEven() const { return ::isEven(value); };
 	bool isLessThan(const Foo &other) const { return value < other.value; }
 	bool operator==(const Foo &other) const { return value == other.value; }
 	bool operator<(const Foo &other) const { return isLessThan(other); }
 	bool operator>(const Foo &other) const { return value > other.value; }
+	Foo operator+(const Foo &other) const { return Foo(value + other.value); }
 	int value;
 };
 
@@ -189,6 +191,39 @@ void testMax()
 	TEST(max(listFooPtrs, &Foo::getValue), &fooE);
 }
 
+void testReduce()
+{
+	TEST(reduce(listNumbers, [] (int x, int y) { return x*y; }, 1), 120);
+	TEST(reduce(listNumbers, &timesX, 1), 120);
+	TEST(reduce(listFoos, &Foo::fooTimesFoo, Foo(1)), Foo(120));
+	
+	TEST(reduce(vectorNumbers, [] (int x, int y) { return x*y; }, 1), 120);
+	TEST(reduce(setNumbers, [] (int x, int y) { return x*y; }, 1), 120);
+	TEST(reduce(QListNumbers, [] (int x, int y) { return x*y; }, 1), 120);
+	TEST(reduce(QVectorNumbers, [] (int x, int y) { return x*y; }, 1), 120);
+	TEST(reduce(QSetNumbers, [] (int x, int y) { return x*y; }, 1), 120);
+	TEST(reduce(QLinkedListNumbers, [] (int x, int y) { return x*y; }, 1), 120);
+}
+
+void testSum()
+{
+	TEST(sum(listNumbers, 0), 15);
+	TEST(sum(listNumbers, 100), 115);
+	TEST(sum(listNumbers), 15);
+	TEST(sum(vectorNumbers), 15);
+	TEST(sum(setNumbers), 15);
+	TEST(sum(QListNumbers), 15);
+	TEST(sum(QVectorNumbers), 15);
+	TEST(sum(QSetNumbers), 15);
+	TEST(sum(QLinkedListNumbers), 15);
+	TEST(sum(listFoos), Foo(15));
+	TEST(sum(listFoos, Foo(100)), Foo(115));
+	
+	TEST(sum(list<long long>({1,2,3,4,5})), 15);
+	TEST(sum(list<float>({1.,2.,3.,4.,5.})), 15.0);
+	TEST(sum(list<unsigned char>({'\1','\2','\3','\4','\5'})), (unsigned char)15);
+}
+
 int main()
 {
 	testMap();
@@ -198,6 +233,8 @@ int main()
 	testExtremum();
 	testMin();
 	testMax();
+	testReduce();
+	testSum();
 	
 	qDebug() << "Finished!" << passedTests << "/" << totalTests << "passed";
 	return 0;

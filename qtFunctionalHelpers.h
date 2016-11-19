@@ -35,4 +35,19 @@ __FH_general_filter(QVectorFilter, QVector, Q_FOREACH)
 __FH_general_filter(QSetFilter, QSet, Q_FOREACH)
 __FH_general_filter(QLinkedListFilter, QLinkedList, Q_FOREACH)
 
+// all of
+
+__FH_general_allOf(QListAllOf, QList, Q_FOREACH)
+__FH_general_allOf(QVectorAllOf, QVector, Q_FOREACH)
+__FH_general_allOf(QSetAllOf, QSet, Q_FOREACH)
+__FH_general_allOf(QLinkedListAllOf, QLinkedList, Q_FOREACH)
+
+// any of
+
+__FH_general_anyOf(QListAnyOf, QList, Q_FOREACH)
+__FH_general_anyOf(QVectorAnyOf, QVector, Q_FOREACH)
+__FH_general_anyOf(QSetAnyOf, QSet, Q_FOREACH)
+__FH_general_anyOf(QLinkedListAnyOf, QLinkedList, Q_FOREACH)
+
+
 #endif // __QT_FUNCTIONAL_HELPERS_H__

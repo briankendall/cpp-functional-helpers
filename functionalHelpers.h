@@ -143,4 +143,90 @@ __FH_general_filter(listFilter, std::list, __FH_standard_ranged_for)
 __FH_general_filter(vectorFilter, std::vector, __FH_standard_ranged_for)
 __FH_general_filter(setFilter, std::set, __FH_standard_ranged_for)
 
+// all of
+
+#define __FH_general_allOf(NAME, RET_TYPE, LOOP) \
+template <class T, class F> \
+bool NAME(const T &list, F &&func) \
+{ \
+	LOOP(auto const &item, list) { \
+		if (!func(item)) { \
+			return false; \
+		} \
+	} \
+ \
+    return true; \
+} \
+\
+template <template<class, class> class T, class U, class V> \
+bool NAME(const T<U, V> &list, bool (U::*func)() const) \
+{ \
+	return NAME(list, [=](U const &t){ return (t.*func)(); }); \
+} \
+\
+template <template<class, class> class T, class U, class V> \
+bool NAME(const T<U *, V> &list, bool (U::*func)() const) \
+{ \
+	return NAME(list, [=](U const *t){ return (t->*func)(); }); \
+} \
+\
+template <template<class> class T, class U> \
+bool NAME(const T<U> &list, bool (U::*func)() const) \
+{ \
+	return NAME(list, [=](U const &t){ return (t.*func)(); }); \
+} \
+\
+template <template<class> class T, class U> \
+bool NAME(const T<U *> &list, bool (U::*func)() const) \
+{ \
+	return NAME(list, [=](U const *t){ return (t->*func)(); }); \
+} \
+	
+__FH_general_allOf(listAllOf, std::list, __FH_standard_ranged_for)
+__FH_general_allOf(vectorAllOf, std::vector, __FH_standard_ranged_for)
+__FH_general_allOf(setAllOf, std::set, __FH_standard_ranged_for)
+
+// any of
+
+#define __FH_general_anyOf(NAME, RET_TYPE, LOOP) \
+template <class T, class F> \
+bool NAME(const T &list, F &&func) \
+{ \
+	LOOP(auto const &item, list) { \
+		if (func(item)) { \
+			return true; \
+		} \
+	} \
+ \
+    return false; \
+} \
+\
+template <template<class, class> class T, class U, class V> \
+bool NAME(const T<U, V> &list, bool (U::*func)() const) \
+{ \
+	return NAME(list, [=](U const &t){ return (t.*func)(); }); \
+} \
+\
+template <template<class, class> class T, class U, class V> \
+bool NAME(const T<U *, V> &list, bool (U::*func)() const) \
+{ \
+	return NAME(list, [=](U const *t){ return (t->*func)(); }); \
+} \
+\
+template <template<class> class T, class U> \
+bool NAME(const T<U> &list, bool (U::*func)() const) \
+{ \
+	return NAME(list, [=](U const &t){ return (t.*func)(); }); \
+} \
+\
+template <template<class> class T, class U> \
+bool NAME(const T<U *> &list, bool (U::*func)() const) \
+{ \
+	return NAME(list, [=](U const *t){ return (t->*func)(); }); \
+} \
+	
+__FH_general_anyOf(listAnyOf, std::list, __FH_standard_ranged_for)
+__FH_general_anyOf(vectorAnyOf, std::vector, __FH_standard_ranged_for)
+__FH_general_anyOf(setAnyOf, std::set, __FH_standard_ranged_for)
+
 #endif // __FUNCTIONAL_HELPERS_H__

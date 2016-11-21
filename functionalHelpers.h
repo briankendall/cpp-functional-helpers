@@ -1,3 +1,34 @@
+// functionalHelpers.h
+
+// Providing convenient functional-style helper functions for C++ structures
+// that can be invoked without using STL iterators and will return a new
+// structure rather than modifying an existing one in place.
+//
+// These functions are defined using a couple of methods to make them general
+// purpose and not require any template arguments.
+// 1. In some cases general versions of the functions are defined as a
+//    precompiler macro that takes the name of the container class it will
+//    return as one of its parameters.
+// 2. Oftentimes multiple overloaded versions of the function will be defined
+//    to handle passing in pointers to member functions of classes. Sometimes
+//    there are two versions: one that takes a container of objects and a
+//    pointer to a member function from the objects' class, and one that takes
+//    a container of object pointers and a pointer to a member function. In
+//    some other cases there are four versions: the two cases above for
+//    container classes that use two template arguments (such as the STL
+//    containers) and two more for container classes that use one template
+//    argument (such as Qt's container classes).
+// 3. Some utility functions are defined and overloaded for all the various
+//    supported container types in order to allow performing common tasks
+//    such as adding an item to the container. In the case of a reserving
+//    space in the container, it may do nothing for classes where such a task
+//    is not necessary or applicable.
+// 4. Generally functions in <functional> and <algoritms> are not used as
+//    they don't always work consistently with Qt's container classes across
+//    all of the versions of Qt.
+//
+// See the documentation for an explanation of how to use these functions.
+
 #ifndef __FUNCTIONAL_HELPERS_H__
 #define __FUNCTIONAL_HELPERS_H__
 
@@ -6,6 +37,7 @@
 #include <set>
 
 namespace _FunctionalHelpersUtils {
+	// Default behavior of reserveSize is to do nothing
 	template<template<class> class T, class U>
 	inline void reserveSize(T<U> &container, int size)
 	{
@@ -27,6 +59,7 @@ namespace _FunctionalHelpersUtils {
 		(void)size;
 	}
 	
+	// In the case of vectors, we actually do want reserveSize() to do something.
 	template<class U, class V>
 	inline void reserveSize(std::vector<U, V> &container, int size)
 	{
@@ -52,6 +85,13 @@ namespace _FunctionalHelpersUtils {
 	}
 }
 
+// Some of the functions defined using preprocessor macros take another macro
+// as a parameter that allows looping over the container. We do this instead of
+// just universally using a ranged for because apparently Qt's own macro
+// (Q_FOREACH) gets better performance on Qt's container classes than a regular
+// ranged for does. So we can pass the following macro in when defining a
+// function for an STL container so that it uses a ranged for, and pass in
+// Q_FOREACH when defining functions for Qt's container classes.
 #define __FH_standard_ranged_for(x, y) for(x : y)
 
 // map
@@ -93,6 +133,20 @@ __FH_general_map(vectorMap, std::vector, __FH_standard_ranged_for)
 __FH_general_map(setMap, std::set, __FH_standard_ranged_for)
 
 // compr
+
+// Unlike a lot of the other functions in this file, compr has six overloaded
+// versions in order to handle the following cases, as denoted by the type
+// of argument that is passed in:
+// 1. container of objects, pointer to member function, pointer to member
+//    function
+// 2. container of objects, pointer to member function, general callable
+// 3. container of objects, general callable, pointer to member function
+// 4. container of object pointers, pointer to member function, pointer to
+//    member function
+// 5. container of object pointers, pointer to member function, general
+//    callable
+// 6. container of object pointers, general callable, pointer to member
+//    function
 
 #define __FH_general_compr(NAME, RET_TYPE, LOOP) \
 template <class T, class F1, class F2> \

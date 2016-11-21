@@ -134,9 +134,12 @@ __FH_general_map(setMap, std::set, __FH_standard_ranged_for)
 
 // compr
 
-// Unlike a lot of the other functions in this file, compr has six overloaded
-// versions in order to handle the following cases, as denoted by the type
-// of argument that is passed in:
+// Unlike a lot of the other functions in this file, compr has twelve (!!)
+// overloaded versions in order to handle the following cases, as denoted by
+// the type of argument that is passed in. There are two sets of overloads,
+// six for containers that take two template arguments (i.e. STL containers)
+// and six for containers that take one (i.e. Qt containers). For each, the
+// six overloads are as follows:
 // 1. container of objects, pointer to member function, pointer to member
 //    function
 // 2. container of objects, pointer to member function, general callable
@@ -199,6 +202,44 @@ RET_TYPE<W> NAME(const T<U *, V> &list, W (U::*func)() const, F &&predicate) \
 template <template<class, class> class T, class U, class V, class F> \
 auto NAME(const T<U *, V> &list, F &&func, bool (U::*predicate)() const) \
 	-> RET_TYPE<typename std::decay<decltype(func(*list.begin()))>::type> \
+{ \
+	return NAME(list, func, [=] (U const *a) { return (a->*predicate)(); }); \
+} \
+ \
+template <template<class> class T, class U, class W> \
+RET_TYPE<W> NAME(const T<U> &list, W (U::*func)() const, bool (U::*predicate)() const) \
+{ \
+	return NAME(list, [=] (U const &a){ return (a.*func)(); }, [=] (U const &a) { return (a.*predicate)(); }); \
+} \
+\
+template <template<class> class T, class U, class W, class F> \
+RET_TYPE<W> NAME(const T<U> &list, W (U::*func)() const, F &&predicate) \
+{ \
+	return NAME(list, [=] (U const &a){ return (a.*func)(); }, predicate); \
+} \
+\
+template <template<class> class T, class U, class F> \
+auto NAME(const T<U> &list, F &&func, bool (U::*predicate)() const) \
+   -> RET_TYPE<typename std::decay<decltype(func(*list.begin()))>::type> \
+{ \
+	return NAME(list, func, [=] (U const &a) { return (a.*predicate)(); }); \
+} \
+\
+template <template<class> class T, class U, class W> \
+RET_TYPE<W> NAME(const T<U *> &list, W (U::*func)() const, bool (U::*predicate)() const) \
+{ \
+	return NAME(list, [=] (U const *a){ return (a->*func)(); }, [=] (U const *a) { return (a->*predicate)(); }); \
+} \
+\
+template <template<class> class T, class U, class W, class F> \
+RET_TYPE<W> NAME(const T<U *> &list, W (U::*func)() const, F &&predicate) \
+{ \
+	return NAME(list, [=] (U const *a){ return (a->*func)(); }, predicate); \
+} \
+\
+template <template<class> class T, class U, class F> \
+auto NAME(const T<U *> &list, F &&func, bool (U::*predicate)() const) \
+   -> RET_TYPE<typename std::decay<decltype(func(*list.begin()))>::type> \
 { \
 	return NAME(list, func, [=] (U const *a) { return (a->*predicate)(); }); \
 }

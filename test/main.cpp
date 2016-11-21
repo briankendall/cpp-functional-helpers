@@ -142,38 +142,38 @@ void testFilter()
 
 void testAllOf()
 {
-	TEST(listAllOf(listNumbers, [] (int x) { return (x%2) == 0; }), false);
-	TEST(listAllOf(listNumbers, &isEven), false);
-	TEST(listAllOf(listNumbers, std::bind(isMultiple, std::placeholders::_1, 2)), false);
-	TEST(listAllOf(listFoos, &Foo::isEven), false);
-	TEST(listAllOf(listFooPtrs, &Foo::isEven), false);
+	TEST(allOf(listNumbers, [] (int x) { return (x%2) == 0; }), false);
+	TEST(allOf(listNumbers, &isEven), false);
+	TEST(allOf(listNumbers, std::bind(isMultiple, std::placeholders::_1, 2)), false);
+	TEST(allOf(listFoos, &Foo::isEven), false);
+	TEST(allOf(listFooPtrs, &Foo::isEven), false);
 	
-	TEST(listAllOf(listEvenNumbers, [] (int x) { return (x%2) == 0; }), true);
+	TEST(allOf(listEvenNumbers, [] (int x) { return (x%2) == 0; }), true);
 	
-	TEST(vectorAllOf(vectorNumbers, [] (int x) { return (x%2) == 0; }), false);
-	TEST(setAllOf(setNumbers, [] (int x) { return (x%2) == 0; }), false);
-	TEST(QListAllOf(QListNumbers, [] (int x) { return (x%2) == 0; }), false);
-	TEST(QVectorAllOf(QVectorNumbers, [] (int x) { return (x%2) == 0; }), false);
-	TEST(QSetAllOf(QSetNumbers, [] (int x) { return (x%2) == 0; }), false);
-	TEST(QLinkedListAllOf(QLinkedListNumbers, [] (int x) { return (x%2) == 0; }), false);
+	TEST(allOf(vectorNumbers, [] (int x) { return (x%2) == 0; }), false);
+	TEST(allOf(setNumbers, [] (int x) { return (x%2) == 0; }), false);
+	TEST(allOf(QListNumbers, [] (int x) { return (x%2) == 0; }), false);
+	TEST(allOf(QVectorNumbers, [] (int x) { return (x%2) == 0; }), false);
+	TEST(allOf(QSetNumbers, [] (int x) { return (x%2) == 0; }), false);
+	TEST(allOf(QLinkedListNumbers, [] (int x) { return (x%2) == 0; }), false);
 }
 
 void testAnyOf()
 {
-	TEST(listAnyOf(listNumbers, [] (int x) { return (x%2) == 0; }), true);
-	TEST(listAnyOf(listNumbers, &isEven), true);
-	TEST(listAnyOf(listNumbers, std::bind(isMultiple, std::placeholders::_1, 2)), true);
-	TEST(listAnyOf(listFoos, &Foo::isEven), true);
-	TEST(listAnyOf(listFooPtrs, &Foo::isEven), true);
+	TEST(anyOf(listNumbers, [] (int x) { return (x%2) == 0; }), true);
+	TEST(anyOf(listNumbers, &isEven), true);
+	TEST(anyOf(listNumbers, std::bind(isMultiple, std::placeholders::_1, 2)), true);
+	TEST(anyOf(listFoos, &Foo::isEven), true);
+	TEST(anyOf(listFooPtrs, &Foo::isEven), true);
 	
-	TEST(listAnyOf(listOddNumbers, [] (int x) { return (x%2) == 0; }), false);
+	TEST(anyOf(listOddNumbers, [] (int x) { return (x%2) == 0; }), false);
 	
-	TEST(vectorAnyOf(vectorNumbers, [] (int x) { return (x%2) == 0; }), true);
-	TEST(setAnyOf(setNumbers, [] (int x) { return (x%2) == 0; }), true);
-	TEST(QListAnyOf(QListNumbers, [] (int x) { return (x%2) == 0; }), true);
-	TEST(QVectorAnyOf(QVectorNumbers, [] (int x) { return (x%2) == 0; }), true);
-	TEST(QSetAnyOf(QSetNumbers, [] (int x) { return (x%2) == 0; }), true);
-	TEST(QLinkedListAnyOf(QLinkedListNumbers, [] (int x) { return (x%2) == 0; }), true);
+	TEST(anyOf(vectorNumbers, [] (int x) { return (x%2) == 0; }), true);
+	TEST(anyOf(setNumbers, [] (int x) { return (x%2) == 0; }), true);
+	TEST(anyOf(QListNumbers, [] (int x) { return (x%2) == 0; }), true);
+	TEST(anyOf(QVectorNumbers, [] (int x) { return (x%2) == 0; }), true);
+	TEST(anyOf(QSetNumbers, [] (int x) { return (x%2) == 0; }), true);
+	TEST(anyOf(QLinkedListNumbers, [] (int x) { return (x%2) == 0; }), true);
 }
 
 void testExtremum()

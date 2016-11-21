@@ -260,89 +260,81 @@ __FH_general_filter(setFilter, std::set, __FH_standard_ranged_for)
 
 // all of
 
-#define __FH_general_allOf(NAME, RET_TYPE, LOOP) \
-template <class T, class F> \
-bool NAME(const T &list, F &&func) \
-{ \
-	LOOP(auto const &item, list) { \
-		if (!func(item)) { \
-			return false; \
-		} \
-	} \
- \
-    return true; \
-} \
-\
-template <template<class, class> class T, class U, class V> \
-bool NAME(const T<U, V> &list, bool (U::*func)() const) \
-{ \
-	return NAME(list, [=](U const &t){ return (t.*func)(); }); \
-} \
-\
-template <template<class, class> class T, class U, class V> \
-bool NAME(const T<U *, V> &list, bool (U::*func)() const) \
-{ \
-	return NAME(list, [=](U const *t){ return (t->*func)(); }); \
-} \
-\
-template <template<class> class T, class U> \
-bool NAME(const T<U> &list, bool (U::*func)() const) \
-{ \
-	return NAME(list, [=](U const &t){ return (t.*func)(); }); \
-} \
-\
-template <template<class> class T, class U> \
-bool NAME(const T<U *> &list, bool (U::*func)() const) \
-{ \
-	return NAME(list, [=](U const *t){ return (t->*func)(); }); \
-} \
-	
-__FH_general_allOf(listAllOf, std::list, __FH_standard_ranged_for)
-__FH_general_allOf(vectorAllOf, std::vector, __FH_standard_ranged_for)
-__FH_general_allOf(setAllOf, std::set, __FH_standard_ranged_for)
+template <class T, class F>
+bool allOf(const T &list, F &&func)
+{
+	using U = decltype(list.cbegin());
+	for(U it = list.cbegin(); it != list.cend(); ++it) {
+		if (!func(*it)) {
+			return false;
+		}
+	}
+
+    return true;
+}
+
+template <template<class, class> class T, class U, class V>
+bool allOf(const T<U, V> &list, bool (U::*func)() const)
+{
+	return allOf(list, [=](U const &t){ return (t.*func)(); });
+}
+
+template <template<class, class> class T, class U, class V>
+bool allOf(const T<U *, V> &list, bool (U::*func)() const)
+{
+	return allOf(list, [=](U const *t){ return (t->*func)(); });
+}
+
+template <template<class> class T, class U>
+bool allOf(const T<U> &list, bool (U::*func)() const)
+{
+	return allOf(list, [=](U const &t){ return (t.*func)(); });
+}
+
+template <template<class> class T, class U>
+bool allOf(const T<U *> &list, bool (U::*func)() const)
+{
+	return allOf(list, [=](U const *t){ return (t->*func)(); });
+}
 
 // any of
 
-#define __FH_general_anyOf(NAME, RET_TYPE, LOOP) \
-template <class T, class F> \
-bool NAME(const T &list, F &&func) \
-{ \
-	LOOP(auto const &item, list) { \
-		if (func(item)) { \
-			return true; \
-		} \
-	} \
- \
-    return false; \
-} \
-\
-template <template<class, class> class T, class U, class V> \
-bool NAME(const T<U, V> &list, bool (U::*func)() const) \
-{ \
-	return NAME(list, [=](U const &t){ return (t.*func)(); }); \
-} \
-\
-template <template<class, class> class T, class U, class V> \
-bool NAME(const T<U *, V> &list, bool (U::*func)() const) \
-{ \
-	return NAME(list, [=](U const *t){ return (t->*func)(); }); \
-} \
-\
-template <template<class> class T, class U> \
-bool NAME(const T<U> &list, bool (U::*func)() const) \
-{ \
-	return NAME(list, [=](U const &t){ return (t.*func)(); }); \
-} \
-\
-template <template<class> class T, class U> \
-bool NAME(const T<U *> &list, bool (U::*func)() const) \
-{ \
-	return NAME(list, [=](U const *t){ return (t->*func)(); }); \
-} \
-	
-__FH_general_anyOf(listAnyOf, std::list, __FH_standard_ranged_for)
-__FH_general_anyOf(vectorAnyOf, std::vector, __FH_standard_ranged_for)
-__FH_general_anyOf(setAnyOf, std::set, __FH_standard_ranged_for)
+template <class T, class F>
+bool anyOf(const T &list, F &&func)
+{
+	using U = decltype(list.cbegin());
+	for(U it = list.cbegin(); it != list.cend(); ++it) {
+		if (func(*it)) {
+			return true;
+		}
+	}
+
+    return false;
+}
+
+template <template<class, class> class T, class U, class V>
+bool anyOf(const T<U, V> &list, bool (U::*func)() const)
+{
+	return anyOf(list, [=](U const &t){ return (t.*func)(); });
+}
+
+template <template<class, class> class T, class U, class V>
+bool anyOf(const T<U *, V> &list, bool (U::*func)() const)
+{
+	return anyOf(list, [=](U const *t){ return (t->*func)(); });
+}
+
+template <template<class> class T, class U>
+bool anyOf(const T<U> &list, bool (U::*func)() const)
+{
+	return anyOf(list, [=](U const &t){ return (t.*func)(); });
+}
+
+template <template<class> class T, class U>
+bool anyOf(const T<U *> &list, bool (U::*func)() const)
+{
+	return anyOf(list, [=](U const *t){ return (t->*func)(); });
+}
 
 // extremum
 

@@ -168,77 +168,77 @@ auto NAME(const T &list, F1 &&func, F2 &&predicate) \
     return result; \
 } \
  \
-template <template<class, class> class T, class U, class V, class W> \
-RET_TYPE<W> NAME(const T<U, V> &list, W (U::*func)() const, bool (U::*predicate)() const) \
+template <template<class, class> class T, class U, class V, class W, class X, class Y> \
+RET_TYPE<W> NAME(const T<U, V> &list, W (X::*func)() const, bool (Y::*predicate)() const) \
 { \
 	return NAME(list, [=] (U const &a){ return (a.*func)(); }, [=] (U const &a) { return (a.*predicate)(); }); \
 } \
  \
-template <template<class, class> class T, class U, class V, class W, class F> \
-RET_TYPE<W> NAME(const T<U, V> &list, W (U::*func)() const, F &&predicate) \
+template <template<class, class> class T, class U, class V, class W, class X, class F> \
+RET_TYPE<W> NAME(const T<U, V> &list, W (X::*func)() const, F &&predicate) \
 { \
 	return NAME(list, [=] (U const &a){ return (a.*func)(); }, predicate); \
 } \
  \
-template <template<class, class> class T, class U, class V, class F> \
-auto NAME(const T<U, V> &list, F &&func, bool (U::*predicate)() const) \
+template <template<class, class> class T, class U, class V, class W, class F> \
+auto NAME(const T<U, V> &list, F &&func, bool (W::*predicate)() const) \
 	-> RET_TYPE<typename std::decay<decltype(func(*list.begin()))>::type> \
 { \
 	return NAME(list, func, [=] (U const &a) { return (a.*predicate)(); }); \
 } \
  \
-template <template<class, class> class T, class U, class V, class W> \
-RET_TYPE<W> NAME(const T<U *, V> &list, W (U::*func)() const, bool (U::*predicate)() const) \
+template <template<class, class> class T, class U, class V, class W, class X, class Y> \
+RET_TYPE<W> NAME(const T<U *, V> &list, W (X::*func)() const, bool (Y::*predicate)() const) \
 { \
 	return NAME(list, [=] (U const *a){ return (a->*func)(); }, [=] (U const *a) { return (a->*predicate)(); }); \
 } \
  \
-template <template<class, class> class T, class U, class V, class W, class F> \
-RET_TYPE<W> NAME(const T<U *, V> &list, W (U::*func)() const, F &&predicate) \
+template <template<class, class> class T, class U, class V, class W, class X, class F> \
+RET_TYPE<W> NAME(const T<U *, V> &list, W (X::*func)() const, F &&predicate) \
 { \
 	return NAME(list, [=] (U const *a){ return (a->*func)(); }, predicate); \
 } \
  \
-template <template<class, class> class T, class U, class V, class F> \
-auto NAME(const T<U *, V> &list, F &&func, bool (U::*predicate)() const) \
+template <template<class, class> class T, class U, class V, class W, class F> \
+auto NAME(const T<U *, V> &list, F &&func, bool (W::*predicate)() const) \
 	-> RET_TYPE<typename std::decay<decltype(func(*list.begin()))>::type> \
 { \
 	return NAME(list, func, [=] (U const *a) { return (a->*predicate)(); }); \
 } \
  \
-template <template<class> class T, class U, class W> \
-RET_TYPE<W> NAME(const T<U> &list, W (U::*func)() const, bool (U::*predicate)() const) \
+template <template<class> class T, class U, class W, class X, class Y> \
+RET_TYPE<W> NAME(const T<U> &list, W (X::*func)() const, bool (Y::*predicate)() const) \
 { \
 	return NAME(list, [=] (U const &a){ return (a.*func)(); }, [=] (U const &a) { return (a.*predicate)(); }); \
 } \
 \
-template <template<class> class T, class U, class W, class F> \
-RET_TYPE<W> NAME(const T<U> &list, W (U::*func)() const, F &&predicate) \
+template <template<class> class T, class U, class W, class X, class F> \
+RET_TYPE<W> NAME(const T<U> &list, W (X::*func)() const, F &&predicate) \
 { \
 	return NAME(list, [=] (U const &a){ return (a.*func)(); }, predicate); \
 } \
 \
-template <template<class> class T, class U, class F> \
-auto NAME(const T<U> &list, F &&func, bool (U::*predicate)() const) \
+template <template<class> class T, class U, class X, class F> \
+auto NAME(const T<U> &list, F &&func, bool (X::*predicate)() const) \
    -> RET_TYPE<typename std::decay<decltype(func(*list.begin()))>::type> \
 { \
 	return NAME(list, func, [=] (U const &a) { return (a.*predicate)(); }); \
 } \
 \
-template <template<class> class T, class U, class W> \
-RET_TYPE<W> NAME(const T<U *> &list, W (U::*func)() const, bool (U::*predicate)() const) \
+template <template<class> class T, class U, class W, class X, class Y> \
+RET_TYPE<W> NAME(const T<U *> &list, W (X::*func)() const, bool (Y::*predicate)() const) \
 { \
 	return NAME(list, [=] (U const *a){ return (a->*func)(); }, [=] (U const *a) { return (a->*predicate)(); }); \
 } \
 \
-template <template<class> class T, class U, class W, class F> \
-RET_TYPE<W> NAME(const T<U *> &list, W (U::*func)() const, F &&predicate) \
+template <template<class> class T, class U, class W, class X, class F> \
+RET_TYPE<W> NAME(const T<U *> &list, W (X::*func)() const, F &&predicate) \
 { \
 	return NAME(list, [=] (U const *a){ return (a->*func)(); }, predicate); \
 } \
 \
-template <template<class> class T, class U, class F> \
-auto NAME(const T<U *> &list, F &&func, bool (U::*predicate)() const) \
+template <template<class> class T, class U, class V, class F> \
+auto NAME(const T<U *> &list, F &&func, bool (V::*predicate)() const) \
    -> RET_TYPE<typename std::decay<decltype(func(*list.begin()))>::type> \
 { \
 	return NAME(list, func, [=] (U const *a) { return (a->*predicate)(); }); \
@@ -267,29 +267,29 @@ auto NAME(const T &list, F&& func) \
     return result; \
 } \
  \
-template <template<class, class> class T, class U, class V> \
-auto NAME(const T<U, V> &list, bool (U::*func)() const) \
+template <template<class, class> class T, class U, class V, class W> \
+auto NAME(const T<U, V> &list, bool (W::*func)() const) \
 	-> RET_TYPE<typename std::decay<decltype(*list.begin())>::type> \
 { \
 	return NAME(list, [=](U const &t){ return (t.*func)(); }); \
 } \
  \
-template <template<class, class> class T, class U, class V> \
-auto NAME(const T<U *, V> &list, bool (U::*func)() const) \
+template <template<class, class> class T, class U, class V, class W> \
+auto NAME(const T<U *, V> &list, bool (W::*func)() const) \
 	-> RET_TYPE<typename std::decay<decltype(*list.begin())>::type> \
 { \
 	return NAME(list, [=](U const *t){ return (t->*func)(); }); \
 } \
  \
-template <template<class> class T, class U> \
-auto NAME(const T<U> &list, bool (U::*func)() const) \
+template <template<class> class T, class U, class V> \
+auto NAME(const T<U> &list, bool (V::*func)() const) \
    -> RET_TYPE<typename std::decay<decltype(*list.begin())>::type> \
 { \
    return NAME(list, [=](U const &t){ return (t.*func)(); }); \
 } \
 \
-template <template<class> class T, class U> \
-auto NAME(const T<U *> &list, bool (U::*func)() const) \
+template <template<class> class T, class U, class V> \
+auto NAME(const T<U *> &list, bool (V::*func)() const) \
    -> RET_TYPE<typename std::decay<decltype(*list.begin())>::type> \
 { \
    return NAME(list, [=](U const *t){ return (t->*func)(); }); \
@@ -314,26 +314,26 @@ bool allOf(const T &list, F &&func)
     return true;
 }
 
-template <template<class, class> class T, class U, class V>
-bool allOf(const T<U, V> &list, bool (U::*func)() const)
+template <template<class, class> class T, class U, class V, class W>
+bool allOf(const T<U, V> &list, bool (W::*func)() const)
 {
 	return allOf(list, [=](U const &t){ return (t.*func)(); });
 }
 
-template <template<class, class> class T, class U, class V>
-bool allOf(const T<U *, V> &list, bool (U::*func)() const)
+template <template<class, class> class T, class U, class V, class W>
+bool allOf(const T<U *, V> &list, bool (W::*func)() const)
 {
 	return allOf(list, [=](U const *t){ return (t->*func)(); });
 }
 
-template <template<class> class T, class U>
-bool allOf(const T<U> &list, bool (U::*func)() const)
+template <template<class> class T, class U, class W>
+bool allOf(const T<U> &list, bool (W::*func)() const)
 {
 	return allOf(list, [=](U const &t){ return (t.*func)(); });
 }
 
-template <template<class> class T, class U>
-bool allOf(const T<U *> &list, bool (U::*func)() const)
+template <template<class> class T, class U, class W>
+bool allOf(const T<U *> &list, bool (W::*func)() const)
 {
 	return allOf(list, [=](U const *t){ return (t->*func)(); });
 }
@@ -353,26 +353,26 @@ bool anyOf(const T &list, F &&func)
     return false;
 }
 
-template <template<class, class> class T, class U, class V>
-bool anyOf(const T<U, V> &list, bool (U::*func)() const)
+template <template<class, class> class T, class U, class V, class W>
+bool anyOf(const T<U, V> &list, bool (W::*func)() const)
 {
 	return anyOf(list, [=](U const &t){ return (t.*func)(); });
 }
 
-template <template<class, class> class T, class U, class V>
-bool anyOf(const T<U *, V> &list, bool (U::*func)() const)
+template <template<class, class> class T, class U, class V, class W>
+bool anyOf(const T<U *, V> &list, bool (W::*func)() const)
 {
 	return anyOf(list, [=](U const *t){ return (t->*func)(); });
 }
 
-template <template<class> class T, class U>
-bool anyOf(const T<U> &list, bool (U::*func)() const)
+template <template<class> class T, class U, class W>
+bool anyOf(const T<U> &list, bool (W::*func)() const)
 {
 	return anyOf(list, [=](U const &t){ return (t.*func)(); });
 }
 
-template <template<class> class T, class U>
-bool anyOf(const T<U *> &list, bool (U::*func)() const)
+template <template<class> class T, class U, class W>
+bool anyOf(const T<U *> &list, bool (W::*func)() const)
 {
 	return anyOf(list, [=](U const *t){ return (t->*func)(); });
 }
@@ -396,29 +396,29 @@ auto extremum(const T &list, F &&comp)
     return *extremumValue;
 }
 
-template <template<class, class> class T, class U, class V>
-auto extremum(const T<U, V> &list, bool (U::*func)(const U &) const)
+template <template<class, class> class T, class U, class V, class W>
+auto extremum(const T<U, V> &list, bool (W::*func)(const W &) const)
 	-> typename std::decay<decltype(*list.begin())>::type
 {
 	return extremum(list, [=](U const &a, U const &b){ return (a.*func)(b); });
 }
 
-template <template<class, class> class T, class U, class V>
-auto extremum(const T<U *, V> &list, bool (U::*func)(const U &) const)
+template <template<class, class> class T, class U, class V, class W>
+auto extremum(const T<U *, V> &list, bool (W::*func)(const W &) const)
 	-> typename std::decay<decltype(*list.begin())>::type
 {
 	return extremum(list, [=](U const *a, U const *b){ return (a->*func)(*b); });
 }
 
-template <template<class> class T, class U>
-auto extremum(const T<U> &list, bool (U::*func)(const U &) const)
+template <template<class> class T, class U, class W>
+auto extremum(const T<U> &list, bool (W::*func)(const W &) const)
 	-> typename std::decay<decltype(*list.begin())>::type
 {
 	return extremum(list, [=](U const &a, U const &b){ return (a.*func)(b); });
 }
 
-template <template<class> class T, class U>
-auto extremum(const T<U *> &list, bool (U::*func)(const U &) const)
+template <template<class> class T, class U, class W>
+auto extremum(const T<U *> &list, bool (W::*func)(const W &) const)
 	-> typename std::decay<decltype(*list.begin())>::type
 {
 	return extremum(list, [=](U const *a, U const *b){ return (a->*func)(*b); });
@@ -458,29 +458,29 @@ auto min(const T &list, F &&func)
     return *extremumValue;
 }
 
-template <template<class, class> class T, class U, class V, class W>
-auto min(const T<U, V> &list, W (U::*func)() const)
+template <template<class, class> class T, class U, class V, class W, class X>
+auto min(const T<U, V> &list, W (X::*func)() const)
 	-> typename std::decay<decltype(*list.begin())>::type
 {
 	return min(list, [=](U const &a){ return (a.*func)(); });
 }
 
-template <template<class, class> class T, class U, class V, class W>
-auto min(const T<U *, V> &list, W (U::*func)() const)
+template <template<class, class> class T, class U, class V, class W, class X>
+auto min(const T<U *, V> &list, W (X::*func)() const)
 	-> typename std::decay<decltype(*list.begin())>::type
 {
 	return min(list, [=](U const *a){ return (a->*func)(); });
 }
 
-template <template<class> class T, class U, class W>
-auto min(const T<U> &list, W (U::*func)() const)
+template <template<class> class T, class U, class W, class X>
+auto min(const T<U> &list, W (X::*func)() const)
 	-> typename std::decay<decltype(*list.begin())>::type
 {
 	return min(list, [=](U const &a){ return (a.*func)(); });
 }
 
-template <template<class> class T, class U, class W>
-auto min(const T<U *> &list, W (U::*func)() const)
+template <template<class> class T, class U, class W, class X>
+auto min(const T<U *> &list, W (X::*func)() const)
 	-> typename std::decay<decltype(*list.begin())>::type
 {
 	return min(list, [=](U const *a){ return (a->*func)(); });
@@ -520,29 +520,29 @@ auto max(const T &list, F &&func)
     return *extremumValue;
 }
 
-template <template<class, class> class T, class U, class V, class W>
-auto max(const T<U, V> &list, W (U::*func)() const)
+template <template<class, class> class T, class U, class V, class W, class X>
+auto max(const T<U, V> &list, W (X::*func)() const)
 	-> typename std::decay<decltype(*list.begin())>::type
 {
 	return max(list, [=](U const &a){ return (a.*func)(); });
 }
 
-template <template<class, class> class T, class U, class V, class W>
-auto max(const T<U *, V> &list, W (U::*func)() const)
+template <template<class, class> class T, class U, class V, class W, class X>
+auto max(const T<U *, V> &list, W (X::*func)() const)
 	-> typename std::decay<decltype(*list.begin())>::type
 {
 	return max(list, [=](U const *a){ return (a->*func)(); });
 }
 
-template <template<class> class T, class U, class W>
-auto max(const T<U> &list, W (U::*func)() const)
+template <template<class> class T, class U, class W, class X>
+auto max(const T<U> &list, W (X::*func)() const)
 	-> typename std::decay<decltype(*list.begin())>::type
 {
 	return max(list, [=](U const &a){ return (a.*func)(); });
 }
 
-template <template<class> class T, class U, class W>
-auto max(const T<U *> &list, W (U::*func)() const)
+template <template<class> class T, class U, class W, class X>
+auto max(const T<U *> &list, W (X::*func)() const)
 	-> typename std::decay<decltype(*list.begin())>::type
 {
 	return max(list, [=](U const *a){ return (a->*func)(); });

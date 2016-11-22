@@ -24,6 +24,7 @@
 #define __FUNCTIONAL_HELPERS_H__
 
 #include <list>
+#include <forward_list>
 #include <vector>
 #include <set>
 
@@ -106,7 +107,6 @@ auto NAME(const T &list, F &&func) \
 __FH_general_map(listMap, std::list, __FH_standard_ranged_for)
 __FH_general_map(vectorMap, std::vector, __FH_standard_ranged_for)
 __FH_general_map(setMap, std::set, __FH_standard_ranged_for)
-
 
 // compr
 
@@ -300,6 +300,69 @@ auto sum(const T &list)
 	using U = typename std::decay<decltype(*list.begin())>::type;
 	U memo = U();
 	return reduce(list, [] (const U &a, const U &b) { return a+b; }, memo);
+}
+
+// sorted
+
+// Since std::sort requires a random iterator, we have to define different
+// versions of sorted for both std::list and std::forward_list, and any classes
+// derived from them. This is accomplished by using std::enable_if when
+// determining the return type.
+
+template <class T>
+auto sorted(const T &list)
+	-> typename std::enable_if<!std::is_base_of<std::list<typename T::value_type>, T>::value &&
+				               !std::is_base_of<std::forward_list<typename T::value_type>, T>::value, T>::type
+{
+	T result(list);
+	std::sort(result.begin(), result.end());
+	return result;
+}
+
+template <class T, class F>
+auto sorted(const T &list, F &&comp)
+	-> typename std::enable_if<!std::is_base_of<std::list<typename T::value_type>, T>::value &&
+						       !std::is_base_of<std::forward_list<typename T::value_type>, T>::value, T>::type
+{
+	T result(list);
+	std::sort(result.begin(), result.end(), std::ref(comp));
+	return result;
+}
+
+template <class T>
+auto sorted(const T &list)
+	-> typename std::enable_if<std::is_base_of<std::list<typename T::value_type>, T>::value, T>::type
+{
+	T result(list);
+	result.sort();
+	return result;
+}
+
+template <class T, class F>
+auto sorted(const T &list, F &&comp)
+	-> typename std::enable_if<std::is_base_of<std::list<typename T::value_type>, T>::value, T>::type
+{
+	T result(list);
+	result.sort(std::ref(comp));
+	return result;
+}
+
+template <class T>
+auto sorted(const T &list)
+	-> typename std::enable_if<std::is_base_of<std::forward_list<typename T::value_type>, T>::value, T>::type
+{
+	T result(list);
+	result.sort();
+	return result;
+}
+
+template <class T, class F>
+auto sorted(const T &list, F &&comp)
+	-> typename std::enable_if<std::is_base_of<std::forward_list<typename T::value_type>, T>::value, T>::type
+{
+	T result(list);
+	result.sort(std::ref(comp));
+	return result;
 }
 
 #endif // __FUNCTIONAL_HELPERS_H__

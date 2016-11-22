@@ -50,40 +50,41 @@ public:
 
 class DerivedList : public list<Foo> {
 public:
-	DerivedList(std::initializer_list<Foo> args) : std::list<Foo>(args) {};
+	DerivedList(const list<Foo> &other) : list<Foo>(other) {};
+	DerivedList(initializer_list<Foo> args) : list<Foo>(args) {};
 };
 
 class DerivedQList : public QList<Foo> {
 public:
-	DerivedQList(std::initializer_list<Foo> args) : QList<Foo>(args) {};
+	DerivedQList(initializer_list<Foo> args) : QList<Foo>(args) {};
 };
 
 class DerivedPtrList : public list<Foo *> {
 public:
-	DerivedPtrList(std::initializer_list<Foo *> args) : std::list<Foo *>(args) {};
+	DerivedPtrList(initializer_list<Foo *> args) : list<Foo *>(args) {};
 };
 
 class DerivedQPtrList : public QList<Foo *> {
 public:
-	DerivedQPtrList(std::initializer_list<Foo *> args) : QList<Foo *>(args) {};
+	DerivedQPtrList(initializer_list<Foo *> args) : QList<Foo *>(args) {};
 };
 
-const std::list<int> listNumbers = {1,2,3,4,5};
-const std::vector<int> vectorNumbers = {1,2,3,4,5};
-const std::set<int> setNumbers = {1,2,3,4,5};
+const list<int> listNumbers = {1,2,3,4,5};
+const vector<int> vectorNumbers = {1,2,3,4,5};
+const set<int> setNumbers = {1,2,3,4,5};
 const QList<int> QListNumbers = {1,2,3,4,5};
 const QVector<int> QVectorNumbers = {1,2,3,4,5};
 const QSet<int> QSetNumbers = {1,2,3,4,5};
 const QLinkedList<int> QLinkedListNumbers = {1,2,3,4,5};
 
-const std::list<int> listEvenNumbers = {2,4,6,8,10};
-const std::list<int> listOddNumbers = {1,3,5,7,9};
+const list<int> listEvenNumbers = {2,4,6,8,10};
+const list<int> listOddNumbers = {1,3,5,7,9};
 
 Foo fooA(1), fooB(2), fooC(3), fooD(4), fooE(5);
-const std::list<Foo> listFoos = {Foo(1), Foo(2), Foo(3), Foo(4), Foo(5)};
-const std::list<Foo *> listFooPtrs = {&fooA, &fooB, &fooC, &fooD, &fooE};
-const std::vector<Foo> vectorFoos = {Foo(1), Foo(2), Foo(3), Foo(4), Foo(5)};
-const std::vector<Foo *> vectorFooPtrs = {&fooA, &fooB, &fooC, &fooD, &fooE};
+const list<Foo> listFoos = {Foo(1), Foo(2), Foo(3), Foo(4), Foo(5)};
+const list<Foo *> listFooPtrs = {&fooA, &fooB, &fooC, &fooD, &fooE};
+const vector<Foo> vectorFoos = {Foo(1), Foo(2), Foo(3), Foo(4), Foo(5)};
+const vector<Foo *> vectorFooPtrs = {&fooA, &fooB, &fooC, &fooD, &fooE};
 const QList<Foo> QListFoos = {Foo(1), Foo(2), Foo(3), Foo(4), Foo(5)};
 const QList<Foo *> QListFooPtrs = {&fooA, &fooB, &fooC, &fooD, &fooE};
 const QVector<Foo> QVectorFoos = {Foo(1), Foo(2), Foo(3), Foo(4), Foo(5)};
@@ -98,9 +99,9 @@ int totalTests = 0;
 
 void testMap()
 {
-	const std::list<int> listExpected = listEvenNumbers;
-	const std::vector<int> vectorExpected = {2,4,6,8,10};
-	const std::set<int> setExpected = {2,4,6,8,10};
+	const list<int> listExpected = listEvenNumbers;
+	const vector<int> vectorExpected = {2,4,6,8,10};
+	const set<int> setExpected = {2,4,6,8,10};
 	const QList<int> QListExpected = {2,4,6,8,10};
 	const QVector<int> QVectorExpected = {2,4,6,8,10};
 	const QSet<int> QSetExpected = {2,4,6,8,10};
@@ -108,7 +109,7 @@ void testMap()
 	
 	TEST(listMap(listNumbers, [] (int x) { return x*2; }), listExpected);
 	TEST(listMap(listNumbers, &timesTwo), listExpected);
-	TEST(listMap(listNumbers, std::bind(timesX, 2, std::placeholders::_1)), listExpected);
+	TEST(listMap(listNumbers, bind(timesX, 2, placeholders::_1)), listExpected);
 	TEST(listMap(listFoos, &Foo::fooTimesTwo), listExpected);
 	TEST(listMap(listFooPtrs, &Foo::fooTimesTwo), listExpected);
 	TEST(QListMap(QListFoos, &Foo::fooTimesTwo), QListExpected);
@@ -130,9 +131,9 @@ void testMap()
 
 void testCompr()
 {
-	const std::list<int> listExpected = {4,8};
-	const std::vector<int> vectorExpected = {4,8};
-	const std::set<int> setExpected = {4,8};
+	const list<int> listExpected = {4,8};
+	const vector<int> vectorExpected = {4,8};
+	const set<int> setExpected = {4,8};
 	const QList<int> QListExpected = {4,8};
 	const QVector<int> QVectorExpected = {4,8};
 	const QSet<int> QSetExpected = {4,8};
@@ -140,8 +141,8 @@ void testCompr()
 	
 	TEST(listCompr(listNumbers, [] (int x) { return x*2; }, [] (int x) { return (x%2) == 0;}), listExpected);
 	TEST(listCompr(listNumbers, &timesTwo, &isEven), listExpected);
-	TEST(listCompr(listNumbers, std::bind(timesX, 2, std::placeholders::_1),
-	               std::bind(isMultiple, std::placeholders::_1, 2)),
+	TEST(listCompr(listNumbers, bind(timesX, 2, placeholders::_1),
+	               bind(isMultiple, placeholders::_1, 2)),
 	     listExpected);
 	
 	TEST(listCompr(listFoos, &Foo::fooTimesTwo, &Foo::isEven), listExpected);
@@ -183,9 +184,9 @@ void testCompr()
 
 void testFilter()
 {
-	const std::list<int> listExpected = {2,4};
-	const std::vector<int> vectorExpected = {2,4};
-	const std::set<int> setExpected = {2,4};
+	const list<int> listExpected = {2,4};
+	const vector<int> vectorExpected = {2,4};
+	const set<int> setExpected = {2,4};
 	const QList<int> QListExpected = {2,4};
 	const QVector<int> QVectorExpected = {2,4};
 	const QSet<int> QSetExpected = {2,4};
@@ -193,7 +194,7 @@ void testFilter()
 	
 	TEST(listFilter(listNumbers, [] (int x) { return (x%2) == 0; }), listExpected);
 	TEST(listFilter(listNumbers, &isEven), listExpected);
-	TEST(listFilter(listNumbers, std::bind(isMultiple, std::placeholders::_1, 2)), listExpected);
+	TEST(listFilter(listNumbers, bind(isMultiple, placeholders::_1, 2)), listExpected);
 	TEST(listFilter(listFoos, &Foo::isEven), list<Foo>({fooB, fooD}));
 	TEST(listFilter(listFooPtrs, &Foo::isEven), list<Foo *>({&fooB, &fooD}));
 	TEST(listFilter(derivedListFoos, &Foo::isEven), list<Foo>({fooB, fooD}));
@@ -217,7 +218,7 @@ void testAllOf()
 {
 	TEST(allOf(listNumbers, [] (int x) { return (x%2) == 0; }), false);
 	TEST(allOf(listNumbers, &isEven), false);
-	TEST(allOf(listNumbers, std::bind(isMultiple, std::placeholders::_1, 2)), false);
+	TEST(allOf(listNumbers, bind(isMultiple, placeholders::_1, 2)), false);
 	TEST(allOf(listFoos, &Foo::isEven), false);
 	TEST(allOf(listFooPtrs, &Foo::isEven), false);
 	TEST(allOf(QListFoos, &Foo::isEven), false);
@@ -243,7 +244,7 @@ void testAnyOf()
 {
 	TEST(anyOf(listNumbers, [] (int x) { return (x%2) == 0; }), true);
 	TEST(anyOf(listNumbers, &isEven), true);
-	TEST(anyOf(listNumbers, std::bind(isMultiple, std::placeholders::_1, 2)), true);
+	TEST(anyOf(listNumbers, bind(isMultiple, placeholders::_1, 2)), true);
 	TEST(anyOf(listFoos, &Foo::isEven), true);
 	TEST(anyOf(listFooPtrs, &Foo::isEven), true);
 	TEST(anyOf(QListFoos, &Foo::isEven), true);
@@ -377,6 +378,30 @@ void testSum()
 	TEST(sum(list<unsigned char>({'\1','\2','\3','\4','\5'})), (unsigned char)15);
 }
 
+void testSorted()
+{
+	TEST(sorted(list<int>({3,5,1,4,2})), listNumbers);
+	TEST(sorted(list<int>({3,5,1,4,2}), [] (int a, int b) { return a > b; }), list<int>({5,4,3,2,1}));
+	TEST(sorted(vector<int>({3,5,1,4,2})), vectorNumbers);
+	TEST(sorted(QList<int>({3,5,1,4,2})), QListNumbers);
+	TEST(sorted(QVector<int>({3,5,1,4,2})), QVectorNumbers);
+	
+	TEST(sorted(list<Foo>({fooC, fooB, fooD, fooE, fooA}), [] (const Foo &a, const Foo &b) { return a < b; }), listFoos);
+	TEST(sorted(list<Foo>({fooC, fooB, fooD, fooE, fooA}), &Foo::isLessThan), listFoos);
+	TEST(sorted(list<Foo>({fooC, fooB, fooD, fooE, fooA}), &Foo::baseIsLessThan), listFoos);
+	TEST(sorted(list<Foo *>({&fooC, &fooB, &fooD, &fooE, &fooA}), &Foo::isLessThanPtr), listFooPtrs);
+	TEST(sorted(DerivedList({fooC, fooB, fooD, fooE, fooA}), &Foo::isLessThan), DerivedList(listFoos));
+	
+	TEST(sorted(QList<Foo>({fooC, fooB, fooD, fooE, fooA}), [] (const Foo &a, const Foo &b) { return a < b; }), QListFoos);
+	TEST(sorted(QList<Foo>({fooC, fooB, fooD, fooE, fooA}), &Foo::isLessThan), QListFoos);
+	TEST(sorted(QList<Foo>({fooC, fooB, fooD, fooE, fooA}), &Foo::baseIsLessThan), QListFoos);
+	TEST(sorted(QList<Foo *>({&fooC, &fooB, &fooD, &fooE, &fooA}), &Foo::isLessThanPtr), QListFooPtrs);
+	TEST(sorted(DerivedQList({fooC, fooB, fooD, fooE, fooA}), &Foo::isLessThan), QListFoos);
+	
+	TEST(sorted(forward_list<int>({3,5,1,4,2})), forward_list<int>({1,2,3,4,5}));
+	TEST(sorted(forward_list<int>({3,5,1,4,2}), [] (int a, int b) { return a > b; }), forward_list<int>({5,4,3,2,1}));
+}
+
 int main()
 {
 	testMap();
@@ -389,6 +414,7 @@ int main()
 	testReduce();
 	testSum();
 	testCompr();
+	testSorted();
 	
 	qDebug() << "Finished!" << passedTests << "/" << totalTests << "passed";
 	return 0;

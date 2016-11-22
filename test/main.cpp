@@ -28,6 +28,7 @@ public:
 	int baseFooTimesTwo() const { return value*2; };
 	bool baseIsEven() const { return (value%2) == 0; };
 	bool baseIsLessThan(const BaseFoo &other) const { return value < other.value; }
+	bool baseIsLessThanPtr(const BaseFoo *other) const { return value < other->value; }
 	BaseFoo baseFooTimesFoo(const BaseFoo &other) const { return BaseFoo(value*other.value); };
 	int value;
 };
@@ -40,10 +41,31 @@ public:
 	Foo fooTimesFoo(const Foo &other) const { return Foo(getValue()*other.getValue()); };
 	bool isEven() const { return ::isEven(getValue()); };
 	bool isLessThan(const Foo &other) const { return getValue() < other.getValue(); }
+	bool isLessThanPtr(const Foo *other) const { return getValue() < other->getValue(); }
 	bool operator==(const Foo &other) const { return getValue() == other.getValue(); }
 	bool operator<(const Foo &other) const { return isLessThan(other); }
 	bool operator>(const Foo &other) const { return getValue() > other.getValue(); }
 	Foo operator+(const Foo &other) const { return Foo(getValue() + other.getValue()); }
+};
+
+class DerivedList : public list<Foo> {
+public:
+	DerivedList(std::initializer_list<Foo> args) : std::list<Foo>(args) {};
+};
+
+class DerivedQList : public QList<Foo> {
+public:
+	DerivedQList(std::initializer_list<Foo> args) : QList<Foo>(args) {};
+};
+
+class DerivedPtrList : public list<Foo *> {
+public:
+	DerivedPtrList(std::initializer_list<Foo *> args) : std::list<Foo *>(args) {};
+};
+
+class DerivedQPtrList : public QList<Foo *> {
+public:
+	DerivedQPtrList(std::initializer_list<Foo *> args) : QList<Foo *>(args) {};
 };
 
 const std::list<int> listNumbers = {1,2,3,4,5};
@@ -66,6 +88,10 @@ const QList<Foo> QListFoos = {Foo(1), Foo(2), Foo(3), Foo(4), Foo(5)};
 const QList<Foo *> QListFooPtrs = {&fooA, &fooB, &fooC, &fooD, &fooE};
 const QVector<Foo> QVectorFoos = {Foo(1), Foo(2), Foo(3), Foo(4), Foo(5)};
 const QVector<Foo *> QVectorFooPtrs = {&fooA, &fooB, &fooC, &fooD, &fooE};
+const DerivedList derivedListFoos = {Foo(1), Foo(2), Foo(3), Foo(4), Foo(5)};
+const DerivedQList derivedQListFoos = {Foo(1), Foo(2), Foo(3), Foo(4), Foo(5)};
+const DerivedPtrList derivedListFooPtrs = {&fooA, &fooB, &fooC, &fooD, &fooE};
+const DerivedQPtrList derivedQListFooPtrs = {&fooA, &fooB, &fooC, &fooD, &fooE};
 
 int passedTests = 0;
 int totalTests = 0;
@@ -91,6 +117,8 @@ void testMap()
 	TEST(listMap(listFooPtrs, &Foo::baseFooTimesTwo), listExpected);
 	TEST(QListMap(QListFoos, &Foo::baseFooTimesTwo), QListExpected);
 	TEST(QListMap(QListFooPtrs, &Foo::baseFooTimesTwo), QListExpected);
+	TEST(listMap(derivedListFoos, &Foo::baseFooTimesTwo), listExpected);
+	TEST(QListMap(derivedQListFoos, &Foo::baseFooTimesTwo), QListExpected);
 	
 	TEST(vectorMap(vectorNumbers, [] (int x) { return x*2; }), vectorExpected);
 	TEST(setMap(setNumbers, [] (int x) { return x*2; }), setExpected);
@@ -128,6 +156,8 @@ void testCompr()
 	TEST(QListCompr(QListFooPtrs, &Foo::fooTimesTwo, &Foo::isEven), QListExpected);
 	TEST(QListCompr(QListFooPtrs, &Foo::fooTimesTwo, [] (const Foo *a) { return (a->value%2) == 0; }), QListExpected);
 	TEST(QListCompr(QListFooPtrs, [] (const Foo *a) { return a->fooTimesTwo(); }, &Foo::isEven), QListExpected);
+	TEST(listCompr(derivedListFoos, &Foo::fooTimesTwo, &Foo::isEven), listExpected);
+	TEST(QListCompr(derivedQListFoos, &Foo::fooTimesTwo, &Foo::isEven), QListExpected);
 	
 	TEST(listCompr(listFoos, &Foo::baseFooTimesTwo, &Foo::baseIsEven), listExpected);
 	TEST(listCompr(listFoos, &Foo::baseFooTimesTwo, [] (const Foo &a) { return (a.value%2) == 0; }), listExpected);
@@ -166,11 +196,14 @@ void testFilter()
 	TEST(listFilter(listNumbers, std::bind(isMultiple, std::placeholders::_1, 2)), listExpected);
 	TEST(listFilter(listFoos, &Foo::isEven), list<Foo>({fooB, fooD}));
 	TEST(listFilter(listFooPtrs, &Foo::isEven), list<Foo *>({&fooB, &fooD}));
+	TEST(listFilter(derivedListFoos, &Foo::isEven), list<Foo>({fooB, fooD}));
 	
 	TEST(listFilter(listFoos, &Foo::baseIsEven), list<Foo>({fooB, fooD}));
 	TEST(listFilter(listFooPtrs, &Foo::baseIsEven), list<Foo *>({&fooB, &fooD}));
 	TEST(QListFilter(QListFoos, &Foo::baseIsEven), QList<Foo>({fooB, fooD}));
 	TEST(QListFilter(QListFooPtrs, &Foo::baseIsEven), QList<Foo *>({&fooB, &fooD}));
+	TEST(QListFilter(QListFoos, &Foo::baseIsEven), QList<Foo>({fooB, fooD}));
+	TEST(QListFilter(derivedQListFoos, &Foo::baseIsEven), QList<Foo>({fooB, fooD}));
 	
 	TEST(vectorFilter(vectorNumbers, [] (int x) { return (x%2) == 0; }), vectorExpected);
 	TEST(setFilter(setNumbers, [] (int x) { return (x%2) == 0; }), setExpected);
@@ -193,6 +226,8 @@ void testAllOf()
 	TEST(allOf(listFooPtrs, &Foo::baseIsEven), false);
 	TEST(allOf(QListFoos, &Foo::baseIsEven), false);
 	TEST(allOf(QListFooPtrs, &Foo::baseIsEven), false);
+	TEST(allOf(derivedListFoos, &Foo::isEven), false);
+	TEST(allOf(derivedQListFoos, &Foo::isEven), false);
 	
 	TEST(allOf(listEvenNumbers, [] (int x) { return (x%2) == 0; }), true);
 	
@@ -217,6 +252,8 @@ void testAnyOf()
 	TEST(anyOf(listFooPtrs, &Foo::baseIsEven), true);
 	TEST(anyOf(QListFoos, &Foo::baseIsEven), true);
 	TEST(anyOf(QListFooPtrs, &Foo::baseIsEven), true);
+	TEST(anyOf(derivedListFoos, &Foo::isEven), true);
+	TEST(anyOf(derivedQListFoos, &Foo::isEven), true);
 	
 	TEST(anyOf(listOddNumbers, [] (int x) { return (x%2) == 0; }), false);
 	
@@ -233,13 +270,17 @@ void testExtremum()
 	TEST(extremum(listNumbers, [] (int x, int y) { return x < y; }), 1);
 	TEST(extremum(listNumbers, &isLessThan), 1);
 	TEST(extremum(listFoos, &Foo::isLessThan), fooA);
-	TEST(extremum(listFooPtrs, &Foo::isLessThan), &fooA);
+	TEST(extremum(listFooPtrs, &Foo::isLessThanPtr), &fooA);
 	TEST(extremum(QListFoos, &Foo::isLessThan), fooA);
-	TEST(extremum(QListFooPtrs, &Foo::isLessThan), &fooA);
+	TEST(extremum(QListFooPtrs, &Foo::isLessThanPtr), &fooA);
 	TEST(extremum(listFoos, &Foo::baseIsLessThan), fooA);
-	TEST(extremum(listFooPtrs, &Foo::baseIsLessThan), &fooA);
+	TEST(extremum(listFooPtrs, &Foo::baseIsLessThanPtr), &fooA);
 	TEST(extremum(QListFoos, &Foo::baseIsLessThan), fooA);
-	TEST(extremum(QListFooPtrs, &Foo::baseIsLessThan), &fooA);
+	TEST(extremum(QListFooPtrs, &Foo::baseIsLessThanPtr), &fooA);
+	TEST(extremum(derivedListFoos, &Foo::isLessThan), fooA);
+	TEST(extremum(derivedQListFoos, &Foo::isLessThan), fooA);
+	TEST(extremum(derivedListFooPtrs, &Foo::isLessThanPtr), &fooA);
+	TEST(extremum(derivedQListFooPtrs, &Foo::isLessThanPtr), &fooA);
 	
 	TEST(extremum(vectorNumbers, [] (int x, int y) { return x < y; }), 1);
 	TEST(extremum(setNumbers, [] (int x, int y) { return x < y; }), 1);
@@ -269,6 +310,8 @@ void testMin()
 	TEST(min(listFooPtrs, &Foo::baseGetValue), &fooA);
 	TEST(min(QListFoos, &Foo::baseGetValue), fooA);
 	TEST(min(QListFooPtrs, &Foo::baseGetValue), &fooA);
+	TEST(min(derivedListFoos, &Foo::getValue), fooA);
+	TEST(min(derivedQListFoos, &Foo::baseGetValue), fooA);
 }
 
 void testMax()
@@ -291,6 +334,8 @@ void testMax()
 	TEST(max(listFooPtrs, &Foo::baseGetValue), &fooE);
 	TEST(max(QListFoos, &Foo::baseGetValue), fooE);
 	TEST(max(QListFooPtrs, &Foo::baseGetValue), &fooE);
+	TEST(max(derivedListFoos, &Foo::getValue), fooE);
+	TEST(max(derivedQListFoos, &Foo::baseGetValue), fooE);
 }
 
 void testReduce()
@@ -299,6 +344,8 @@ void testReduce()
 	TEST(reduce(listNumbers, &timesX, 1), 120);
 	TEST(reduce(listFoos, &Foo::fooTimesFoo, Foo(1)), Foo(120));
 	TEST(reduce(QListFoos, &Foo::fooTimesFoo, Foo(1)), Foo(120));
+	TEST(reduce(derivedListFoos, &Foo::fooTimesFoo, Foo(1)), Foo(120));
+	TEST(reduce(derivedQListFoos, &Foo::fooTimesFoo, Foo(1)), Foo(120));
 	
 	TEST(reduce(vectorNumbers, [] (int x, int y) { return x*y; }, 1), 120);
 	TEST(reduce(setNumbers, [] (int x, int y) { return x*y; }, 1), 120);
@@ -322,6 +369,8 @@ void testSum()
 	TEST(sum(listFoos), Foo(15));
 	TEST(sum(listFoos, Foo(100)), Foo(115));
 	TEST(sum(QListFoos), Foo(15));
+	TEST(sum(derivedListFoos), Foo(15));
+	TEST(sum(derivedQListFoos), Foo(15));
 	
 	TEST(sum(list<long long>({1,2,3,4,5})), 15);
 	TEST(sum(list<float>({1.,2.,3.,4.,5.})), 15.0);

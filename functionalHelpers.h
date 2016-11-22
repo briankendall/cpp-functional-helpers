@@ -29,52 +29,52 @@
 #include <set>
 
 namespace _FunctionalHelpersUtils {
-	// Default behavior of reserveSize is to do nothing
-	template<template<class> class T, class U>
-	inline void reserveSize(T<U> &container, int size)
-	{
-		(void)container;
-		(void)size;
-	}
-	
-	template<template<class, class> class T, class U, class V>
-	inline void reserveSize(T<U, V> &container, int size)
-	{
-		(void)container;
-		(void)size;
-	}
-	
-	template<template<class, class, class> class T, class U, class V, class W>
-	inline void reserveSize(T<U, V, W> &container, int size)
-	{
-		(void)container;
-		(void)size;
-	}
-	
-	// In the case of vectors, we actually do want reserveSize() to do something.
-	template<class U, class V>
-	inline void reserveSize(std::vector<U, V> &container, int size)
-	{
-		container.reserve(size);
-	}
-	
-	template<template<class> class T, class U>
-	inline void addItem(T<U> &container, const U &item)
-	{
-		container.push_back(item);
-	}
-	
-	template<template<class, class> class T, class U, class V>
-	inline void addItem(T<U, V> &container, const U &item)
-	{
-		container.push_back(item);
-	}
-	
-	template<class U, class V>
-	inline void addItem(std::set<U, V> &container, const U &item)
-	{
-		container.insert(item);
-	}
+    // Default behavior of reserveSize is to do nothing
+    template<template<class> class T, class U>
+    inline void reserveSize(T<U> &container, int size)
+    {
+        (void)container;
+        (void)size;
+    }
+    
+    template<template<class, class> class T, class U, class V>
+    inline void reserveSize(T<U, V> &container, int size)
+    {
+        (void)container;
+        (void)size;
+    }
+    
+    template<template<class, class, class> class T, class U, class V, class W>
+    inline void reserveSize(T<U, V, W> &container, int size)
+    {
+        (void)container;
+        (void)size;
+    }
+    
+    // In the case of vectors, we actually do want reserveSize() to do something.
+    template<class U, class V>
+    inline void reserveSize(std::vector<U, V> &container, int size)
+    {
+        container.reserve(size);
+    }
+    
+    template<template<class> class T, class U>
+    inline void addItem(T<U> &container, const U &item)
+    {
+        container.push_back(item);
+    }
+    
+    template<template<class, class> class T, class U, class V>
+    inline void addItem(T<U, V> &container, const U &item)
+    {
+        container.push_back(item);
+    }
+    
+    template<class U, class V>
+    inline void addItem(std::set<U, V> &container, const U &item)
+    {
+        container.insert(item);
+    }
 }
 
 // Some of the functions defined using preprocessor macros take another macro
@@ -91,15 +91,15 @@ namespace _FunctionalHelpersUtils {
 #define __FH_general_map(NAME, RET_TYPE, LOOP) \
 template <class T, class F> \
 auto NAME(const T &list, F &&func) \
-	-> RET_TYPE<typename std::decay<decltype(std::ref(func)(decltype(*list.begin())(*list.begin())))>::type> \
+    -> RET_TYPE<typename std::decay<decltype(std::ref(func)(decltype(*list.begin())(*list.begin())))>::type> \
 { \
-	using U = typename std::decay<decltype(std::ref(func)(decltype(*list.begin())(*list.begin())))>::type; \
+    using U = typename std::decay<decltype(std::ref(func)(decltype(*list.begin())(*list.begin())))>::type; \
     RET_TYPE<U> result; \
-	_FunctionalHelpersUtils::reserveSize(result, list.size()); \
+    _FunctionalHelpersUtils::reserveSize(result, list.size()); \
  \
-	for(auto const &item : list) { \
-		_FunctionalHelpersUtils::addItem(result, std::ref(func)(decltype(item)(item))); \
-	} \
+    for(auto const &item : list) { \
+        _FunctionalHelpersUtils::addItem(result, std::ref(func)(decltype(item)(item))); \
+    } \
  \
     return result; \
 }
@@ -118,11 +118,11 @@ auto NAME(const T &list, F1 &&func, F2 &&predicate) \
     using U = typename std::decay<decltype(std::ref(func)(decltype(*list.begin())(*list.begin())))>::type; \
     RET_TYPE<U> result; \
  \
-	LOOP(auto const &item, list) { \
-		if (std::ref(predicate)(decltype(item)(item))) { \
-			_FunctionalHelpersUtils::addItem(result, std::ref(func)(decltype(item)(item))); \
-		} \
-	} \
+    LOOP(auto const &item, list) { \
+        if (std::ref(predicate)(decltype(item)(item))) { \
+            _FunctionalHelpersUtils::addItem(result, std::ref(func)(decltype(item)(item))); \
+        } \
+    } \
  \
     return result; \
 }
@@ -141,11 +141,11 @@ auto NAME(const T &list, F &&func) \
     using U = typename std::decay<decltype(*list.begin())>::type; \
     RET_TYPE<U> result; \
  \
-	LOOP(auto const &item, list) { \
-		if (std::ref(func)(decltype(item)(item))) { \
-			_FunctionalHelpersUtils::addItem(result, item); \
-		} \
-	} \
+    LOOP(auto const &item, list) { \
+        if (std::ref(func)(decltype(item)(item))) { \
+            _FunctionalHelpersUtils::addItem(result, item); \
+        } \
+    } \
  \
     return result; \
 }
@@ -159,13 +159,13 @@ __FH_general_filter(setFilter, std::set, __FH_standard_ranged_for)
 template <class T, class F>
 bool allOf(T const &list, F &&f)
 {
-	using U = decltype(list.cbegin());
-	for(U it = list.cbegin(); it != list.cend(); ++it) {
-		if (!std::ref(f)(decltype(*it)(*it))) {
-			return false;
-		}
-	}
-	return true;
+    using U = decltype(list.cbegin());
+    for(U it = list.cbegin(); it != list.cend(); ++it) {
+        if (!std::ref(f)(decltype(*it)(*it))) {
+            return false;
+        }
+    }
+    return true;
 }
 
 // any of
@@ -173,30 +173,30 @@ bool allOf(T const &list, F &&f)
 template <class T, class F>
 bool anyOf(T const &list, F &&f)
 {
-	using U = decltype(list.cbegin());
-	for(U it = list.cbegin(); it != list.cend(); ++it) {
-		if (std::ref(f)(decltype(*it)(*it))) {
-			return true;
-		}
-	}
-	return false;
+    using U = decltype(list.cbegin());
+    for(U it = list.cbegin(); it != list.cend(); ++it) {
+        if (std::ref(f)(decltype(*it)(*it))) {
+            return true;
+        }
+    }
+    return false;
 }
 
 // extremum
 
 template <class T, class F>
 auto extremum(const T &list, F &&comp)
-	-> typename std::decay<decltype(*list.begin())>::type
+    -> typename std::decay<decltype(*list.begin())>::type
 {
-	using U = typename std::decay<decltype(*list.begin())>::type;
-	using V = decltype(list.cbegin());
-	const U *extremumValue = nullptr;
-	
-	for(V it = list.cbegin(); it != list.cend(); ++it) {
-		if (!extremumValue || std::ref(comp)(decltype(*it)(*it), *extremumValue)) {
-			extremumValue = &(*it);
-		}
-	}
+    using U = typename std::decay<decltype(*list.begin())>::type;
+    using V = decltype(list.cbegin());
+    const U *extremumValue = nullptr;
+    
+    for(V it = list.cbegin(); it != list.cend(); ++it) {
+        if (!extremumValue || std::ref(comp)(decltype(*it)(*it), *extremumValue)) {
+            extremumValue = &(*it);
+        }
+    }
 
     return *extremumValue;
 }
@@ -205,32 +205,32 @@ auto extremum(const T &list, F &&comp)
 
 template <class T>
 auto min(const T &list)
-	-> typename std::decay<decltype(*list.begin())>::type
+    -> typename std::decay<decltype(*list.begin())>::type
 {
-	using U = typename std::decay<decltype(*list.begin())>::type;
-	return extremum(list, [] (const U &a, const U &b) {return a < b; });
+    using U = typename std::decay<decltype(*list.begin())>::type;
+    return extremum(list, [] (const U &a, const U &b) {return a < b; });
 }
 
 // min(container, func)
 
 template <class T, class F>
 auto min(const T &list, F &&func)
-	-> typename std::decay<decltype(*list.begin())>::type
+    -> typename std::decay<decltype(*list.begin())>::type
 {
-	using U = typename std::decay<decltype(*list.begin())>::type;
-	using V = decltype(list.cbegin());
-	using W = typename std::decay<decltype(std::ref(func)(decltype(*list.begin())(*list.begin())))>::type;
-	const U *extremumValue = nullptr;
-	W extremumComparator;
-	
-	for(V it = list.cbegin(); it != list.cend(); ++it) {
-		W currentComparator = std::ref(func)(decltype(*it)(*it));
-		
-		if (!extremumValue || currentComparator < extremumComparator) {
-			extremumValue = &(*it);
-			extremumComparator = currentComparator;
-		}
-	}
+    using U = typename std::decay<decltype(*list.begin())>::type;
+    using V = decltype(list.cbegin());
+    using W = typename std::decay<decltype(std::ref(func)(decltype(*list.begin())(*list.begin())))>::type;
+    const U *extremumValue = nullptr;
+    W extremumComparator;
+    
+    for(V it = list.cbegin(); it != list.cend(); ++it) {
+        W currentComparator = std::ref(func)(decltype(*it)(*it));
+        
+        if (!extremumValue || currentComparator < extremumComparator) {
+            extremumValue = &(*it);
+            extremumComparator = currentComparator;
+        }
+    }
 
     return *extremumValue;
 }
@@ -239,32 +239,32 @@ auto min(const T &list, F &&func)
 
 template <class T>
 auto max(const T &list)
-	-> typename std::decay<decltype(*list.begin())>::type
+    -> typename std::decay<decltype(*list.begin())>::type
 {
-	using U = typename std::decay<decltype(*list.begin())>::type;
-	return extremum(list, [] (const U &a, const U &b) {return a > b; });
+    using U = typename std::decay<decltype(*list.begin())>::type;
+    return extremum(list, [] (const U &a, const U &b) {return a > b; });
 }
 
 // max(container, func)
 
 template <class T, class F>
 auto max(const T &list, F &&func)
-	-> typename std::decay<decltype(*list.begin())>::type
+    -> typename std::decay<decltype(*list.begin())>::type
 {
-	using U = typename std::decay<decltype(*list.begin())>::type;
-	using V = decltype(list.cbegin());
-	using W = typename std::decay<decltype(std::ref(func)(decltype(*list.begin())(*list.begin())))>::type;
-	const U *extremumValue = nullptr;
-	W extremumComparator;
-	
-	for(V it = list.cbegin(); it != list.cend(); ++it) {
-		W currentComparator = std::ref(func)(decltype(*it)(*it));
-		
-		if (!extremumValue || currentComparator > extremumComparator) {
-			extremumValue = &(*it);
-			extremumComparator = currentComparator;
-		}
-	}
+    using U = typename std::decay<decltype(*list.begin())>::type;
+    using V = decltype(list.cbegin());
+    using W = typename std::decay<decltype(std::ref(func)(decltype(*list.begin())(*list.begin())))>::type;
+    const U *extremumValue = nullptr;
+    W extremumComparator;
+    
+    for(V it = list.cbegin(); it != list.cend(); ++it) {
+        W currentComparator = std::ref(func)(decltype(*it)(*it));
+        
+        if (!extremumValue || currentComparator > extremumComparator) {
+            extremumValue = &(*it);
+            extremumComparator = currentComparator;
+        }
+    }
 
     return *extremumValue;
 }
@@ -273,13 +273,13 @@ auto max(const T &list, F &&func)
 
 template <class T, class F, class U>
 auto reduce(const T &list, F &&func, U memo)
-	-> typename std::decay<decltype(*list.begin())>::type
+    -> typename std::decay<decltype(*list.begin())>::type
 {
-	using V = decltype(list.cbegin());
-	
-	for(V it = list.cbegin(); it != list.cend(); ++it) {
-		memo = std::ref(func)(U(memo), decltype(*it)(*it));
-	}
+    using V = decltype(list.cbegin());
+    
+    for(V it = list.cbegin(); it != list.cend(); ++it) {
+        memo = std::ref(func)(U(memo), decltype(*it)(*it));
+    }
 
     return memo;
 }
@@ -288,18 +288,18 @@ auto reduce(const T &list, F &&func, U memo)
 
 template <class T, class U>
 auto sum(const T &list, U memo)
-	-> typename std::decay<decltype(*list.begin())>::type
+    -> typename std::decay<decltype(*list.begin())>::type
 {
-	return reduce(list, [] (const U &a, const U &b) { return a+b; }, memo);
+    return reduce(list, [] (const U &a, const U &b) { return a+b; }, memo);
 }
 
 template <class T>
 auto sum(const T &list)
-	-> typename std::decay<decltype(*list.begin())>::type
+    -> typename std::decay<decltype(*list.begin())>::type
 {
-	using U = typename std::decay<decltype(*list.begin())>::type;
-	U memo = U();
-	return reduce(list, [] (const U &a, const U &b) { return a+b; }, memo);
+    using U = typename std::decay<decltype(*list.begin())>::type;
+    U memo = U();
+    return reduce(list, [] (const U &a, const U &b) { return a+b; }, memo);
 }
 
 // sorted
@@ -311,58 +311,58 @@ auto sum(const T &list)
 
 template <class T>
 auto sorted(const T &list)
-	-> typename std::enable_if<!std::is_base_of<std::list<typename T::value_type>, T>::value &&
-				               !std::is_base_of<std::forward_list<typename T::value_type>, T>::value, T>::type
+    -> typename std::enable_if<!std::is_base_of<std::list<typename T::value_type>, T>::value &&
+                               !std::is_base_of<std::forward_list<typename T::value_type>, T>::value, T>::type
 {
-	T result(list);
-	std::sort(result.begin(), result.end());
-	return result;
+    T result(list);
+    std::sort(result.begin(), result.end());
+    return result;
 }
 
 template <class T, class F>
 auto sorted(const T &list, F &&comp)
-	-> typename std::enable_if<!std::is_base_of<std::list<typename T::value_type>, T>::value &&
-						       !std::is_base_of<std::forward_list<typename T::value_type>, T>::value, T>::type
+    -> typename std::enable_if<!std::is_base_of<std::list<typename T::value_type>, T>::value &&
+                               !std::is_base_of<std::forward_list<typename T::value_type>, T>::value, T>::type
 {
-	T result(list);
-	std::sort(result.begin(), result.end(), std::ref(comp));
-	return result;
+    T result(list);
+    std::sort(result.begin(), result.end(), std::ref(comp));
+    return result;
 }
 
 template <class T>
 auto sorted(const T &list)
-	-> typename std::enable_if<std::is_base_of<std::list<typename T::value_type>, T>::value, T>::type
+    -> typename std::enable_if<std::is_base_of<std::list<typename T::value_type>, T>::value, T>::type
 {
-	T result(list);
-	result.sort();
-	return result;
+    T result(list);
+    result.sort();
+    return result;
 }
 
 template <class T, class F>
 auto sorted(const T &list, F &&comp)
-	-> typename std::enable_if<std::is_base_of<std::list<typename T::value_type>, T>::value, T>::type
+    -> typename std::enable_if<std::is_base_of<std::list<typename T::value_type>, T>::value, T>::type
 {
-	T result(list);
-	result.sort(std::ref(comp));
-	return result;
+    T result(list);
+    result.sort(std::ref(comp));
+    return result;
 }
 
 template <class T>
 auto sorted(const T &list)
-	-> typename std::enable_if<std::is_base_of<std::forward_list<typename T::value_type>, T>::value, T>::type
+    -> typename std::enable_if<std::is_base_of<std::forward_list<typename T::value_type>, T>::value, T>::type
 {
-	T result(list);
-	result.sort();
-	return result;
+    T result(list);
+    result.sort();
+    return result;
 }
 
 template <class T, class F>
 auto sorted(const T &list, F &&comp)
-	-> typename std::enable_if<std::is_base_of<std::forward_list<typename T::value_type>, T>::value, T>::type
+    -> typename std::enable_if<std::is_base_of<std::forward_list<typename T::value_type>, T>::value, T>::type
 {
-	T result(list);
-	result.sort(std::ref(comp));
-	return result;
+    T result(list);
+    result.sort(std::ref(comp));
+    return result;
 }
 
 #endif // __FUNCTIONAL_HELPERS_H__

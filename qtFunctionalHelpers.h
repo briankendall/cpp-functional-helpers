@@ -8,17 +8,17 @@
 #include <QLinkedList>
 
 namespace _FunctionalHelpersUtils {
-	template<class U>
-	inline void reserveSize(QVector<U> &container, int size)
-	{
-		container.reserve(size);
-	}
-	
-	template<class U>
-	inline void addItem(QSet<U> &container, const U &item)
-	{
-		container.insert(item);
-	}
+    template<class U>
+    inline void reserveSize(QVector<U> &container, int size)
+    {
+        container.reserve(size);
+    }
+    
+    template<class U>
+    inline void addItem(QSet<U> &container, const U &item)
+    {
+        container.insert(item);
+    }
 }
 
 // map

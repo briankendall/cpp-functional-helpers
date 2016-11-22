@@ -30,22 +30,8 @@
 
 namespace _FunctionalHelpersUtils {
     // Default behavior of reserveSize is to do nothing
-    template<template<class> class T, class U>
-    inline void reserveSize(T<U> &container, int size)
-    {
-        (void)container;
-        (void)size;
-    }
-    
-    template<template<class, class> class T, class U, class V>
-    inline void reserveSize(T<U, V> &container, int size)
-    {
-        (void)container;
-        (void)size;
-    }
-    
-    template<template<class, class, class> class T, class U, class V, class W>
-    inline void reserveSize(T<U, V, W> &container, int size)
+    template<class T>
+    inline void reserveSize(T &container, int size)
     {
         (void)container;
         (void)size;
@@ -58,14 +44,8 @@ namespace _FunctionalHelpersUtils {
         container.reserve(size);
     }
     
-    template<template<class> class T, class U>
-    inline void addItem(T<U> &container, const U &item)
-    {
-        container.push_back(item);
-    }
-    
-    template<template<class, class> class T, class U, class V>
-    inline void addItem(T<U, V> &container, const U &item)
+    template<class T, class U>
+    inline void addItem(T &container, const U &item)
     {
         container.push_back(item);
     }
@@ -304,10 +284,10 @@ auto sum(const T &list)
 
 // sorted
 
-// Since std::sort requires a random iterator, we have to define different
-// versions of sorted for both std::list and std::forward_list, and any classes
-// derived from them. This is accomplished by using std::enable_if when
-// determining the return type.
+// Since std::sort requires a random access iterator, we have to define
+// different versions of sorted for both std::list and std::forward_list, and
+// any classes derived from them. This is accomplished by using std::enable_if
+// when determining the return type.
 
 template <class T>
 auto sorted(const T &list)

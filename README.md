@@ -30,6 +30,7 @@ Just include functionalHelpers.h if you want to use it with STL containers. Incl
 
 Usage:
 
+    map(container, callable) -> container of same type
     listMap(container, callable) -> std::list
     vectorMap(container, callable) -> std::vector
     setMap(container, callable) -> std::set
@@ -38,12 +39,16 @@ Usage:
     QSetMap(container, callable) -> QSet
     QLinkedListMap(container, callable) -> QLinkedList
 
-Constructs a new container by mapping each value in `container` through a transformation function `callable`. `callable` must take one argument of the same type that is in `container`. What kind of container is returned depends on which version of the function is used. If applicable, the order of the items in the new container matches the original.
+Constructs a new container by mapping each value in `container` through a transformation function `callable`. `callable` must take one argument of the same type that is in `container`.
+
+What kind of container is returned depends on which version of the function is used. For the first form `map`, the same type of container passed into the first argument is what is returned. The remaining forms return a container based off of their name, so the container passed in doesn't have to be of the same type.
+
+If applicable, the order of the items in the new container matches the original.
 
 If the type of items in `container` is an object or pointer to an object, `callable` may be a pointer to a member function on the object's class provided it takes no arguments, e.g.:
 
-    QStringList names = getSomeNames(); 
-    QListMap(names, &QString::toLower);
+    QStringList names = getSomeNames();
+    map(names, &QString::toLower);
 
 ## `filter`
 
@@ -90,11 +95,35 @@ Example:
 
 ## `allOf`
 
-Docs coming soon...
+Usage:
+
+    allOf(container, predicate) -> bool
+    
+Returns true if all of the values in `container` pass the truth test `predicate`.
+
+Example:
+
+    bool isLowerCase(const std::string &s) { return s == map(s, tolower); }
+    std::list<std::string> words1 = {"these", "are", "words"};
+    std::list<std::string> words2 = {"these", "are", "DIFFERENT!!", "words"};
+    allOf(words1, isLowerCase); // returns true
+    allOf(words2, isLowerCase); // returns false
 
 ## `anyOf`
 
-Docs coming soon...
+Usage:
+
+    anyOf(container, predicate) -> bool
+    
+Returns true if at least one of the values in `container` pass the truth test `predicate`.
+
+Example:
+
+    bool isUpperCase(const std::string &s) { return s == map(s, toupper); }
+    std::list<std::string> words1 = {"these", "are", "words"};
+    std::list<std::string> words2 = {"these", "are", "DIFFERENT!!", "words"};
+    anyOf(words1, isUpperCase); // returns false
+    anyOf(words2, isUpperCase); // returns true
 
 ## `extremum`
 

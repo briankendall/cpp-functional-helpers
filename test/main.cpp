@@ -107,9 +107,9 @@ void testMap()
     const QSet<int> QSetExpected = {2,4,6,8,10};
     const QLinkedList<int> QLinkedListExpected = {2,4,6,8,10};
     
-    TEST(listMap(listNumbers, [] (int x) { return x*2; }), listExpected);
-    TEST(listMap(listNumbers, &timesTwo), listExpected);
-    TEST(listMap(listNumbers, bind(timesX, 2, placeholders::_1)), listExpected);
+    TEST(::map(listNumbers, [] (int x) { return x*2; }), listExpected);
+    TEST(::map(listNumbers, &timesTwo), listExpected);
+    TEST(::map(listNumbers, bind(timesX, 2, placeholders::_1)), listExpected);
     TEST(listMap(listFoos, &Foo::fooTimesTwo), listExpected);
     TEST(listMap(listFooPtrs, &Foo::fooTimesTwo), listExpected);
     TEST(QListMap(QListFoos, &Foo::fooTimesTwo), QListExpected);
@@ -121,12 +121,21 @@ void testMap()
     TEST(listMap(derivedListFoos, &Foo::baseFooTimesTwo), listExpected);
     TEST(QListMap(derivedQListFoos, &Foo::baseFooTimesTwo), QListExpected);
     
-    TEST(vectorMap(vectorNumbers, [] (int x) { return x*2; }), vectorExpected);
-    TEST(setMap(setNumbers, [] (int x) { return x*2; }), setExpected);
-    TEST(QListMap(QListNumbers, [] (int x) { return x*2; }), QListExpected);
-    TEST(QVectorMap(QVectorNumbers, [] (int x) { return x*2; }), QVectorExpected);
-    TEST(QSetMap(QSetNumbers, [] (int x) { return x*2; }), QSetExpected);
-    TEST(QLinkedListMap(QLinkedListNumbers, [] (int x) { return x*2; }), QLinkedListExpected);
+    TEST(::map(vectorNumbers, [] (int x) { return x*2; }), vectorExpected);
+    TEST(::map(setNumbers, [] (int x) { return x*2; }), setExpected);
+    TEST(::map(QListNumbers, [] (int x) { return x*2; }), QListExpected);
+    TEST(::map(QVectorNumbers, [] (int x) { return x*2; }), QVectorExpected);
+    TEST(::map(QSetNumbers, [] (int x) { return x*2; }), QSetExpected);
+    TEST(::map(QLinkedListNumbers, [] (int x) { return x*2; }), QLinkedListExpected);
+    TEST(vectorMap(listNumbers, [] (int x) { return x*2; }), vectorExpected);
+    TEST(setMap(listNumbers, [] (int x) { return x*2; }), setExpected);
+    TEST(QListMap(listNumbers, [] (int x) { return x*2; }), QListExpected);
+    TEST(QVectorMap(listNumbers, [] (int x) { return x*2; }), QVectorExpected);
+    TEST(QSetMap(listNumbers, [] (int x) { return x*2; }), QSetExpected);
+    TEST(QLinkedListMap(listNumbers, [] (int x) { return x*2; }), QLinkedListExpected);
+    
+    TEST(::map(string("abcde"), toupper), string("ABCDE"));
+    TEST(::map(string("abcde"), [] (char c) { return toupper(c); }), string("ABCDE"));
 }
 
 void testCompr()
@@ -402,6 +411,10 @@ void testSorted()
     TEST(sorted(forward_list<int>({3,5,1,4,2}), [] (int a, int b) { return a > b; }), forward_list<int>({5,4,3,2,1}));
 }
 
+bool isLowerCase(const std::string &s) {
+    return s == ::map(s, tolower);
+}
+
 int main()
 {
     testMap();
@@ -415,6 +428,13 @@ int main()
     testSum();
     testCompr();
     testSorted();
+    
+    
+    std::list<std::string> words1 = {"these", "are", "words"};
+    std::list<std::string> words2 = {"these", "are", "DIFFERENT!!", "words"};
+    qDebug() << allOf(words1, isLowerCase); // returns true
+    qDebug() << allOf(words2, isLowerCase); // returns false
+                            
     
     qDebug() << "Finished!" << passedTests << "/" << totalTests << "passed";
     return 0;

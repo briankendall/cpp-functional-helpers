@@ -44,6 +44,13 @@ namespace _FunctionalHelpersUtils {
         container.reserve(size);
     }
     
+    // And also STL strings
+    template<class U>
+    inline void reserveSize(std::basic_string<U> &container, int size)
+    {
+        container.reserve(size);
+    }
+    
     template<class T, class U>
     inline void addItem(T &container, const U &item)
     {
@@ -68,25 +75,37 @@ namespace _FunctionalHelpersUtils {
 
 // map
 
-#define __FH_general_map(NAME, RET_TYPE, LOOP) \
+template <class T, class U, class F>
+U map(const T &list, F &&func)
+{
+    using ItType = decltype(list.cbegin());
+    U result;
+    _FunctionalHelpersUtils::reserveSize(result, list.size());
+    
+    for(ItType it = list.cbegin(); it != list.cend(); ++it) {
+        _FunctionalHelpersUtils::addItem(result, std::ref(func)(decltype(*it)(*it))); \
+    }
+    
+    return result;
+}
+
+template <class T, class F> T map(const T &list, F &&func)
+{
+    return ::map<T, T, F>(list, std::move(func));
+}
+
+#define __FH_general_map(NAME, RET_TYPE) \
 template <class T, class F> \
 auto NAME(const T &list, F &&func) \
     -> RET_TYPE<typename std::decay<decltype(std::ref(func)(decltype(*list.begin())(*list.begin())))>::type> \
 { \
-    using U = typename std::decay<decltype(std::ref(func)(decltype(*list.begin())(*list.begin())))>::type; \
-    RET_TYPE<U> result; \
-    _FunctionalHelpersUtils::reserveSize(result, list.size()); \
- \
-    for(auto const &item : list) { \
-        _FunctionalHelpersUtils::addItem(result, std::ref(func)(decltype(item)(item))); \
-    } \
- \
-    return result; \
+    using U = RET_TYPE<typename std::decay<decltype(std::ref(func)(decltype(*list.begin())(*list.begin())))>::type>; \
+    return ::map<T, U, F>(list, std::move(func)); \
 }
 
-__FH_general_map(listMap, std::list, __FH_standard_ranged_for)
-__FH_general_map(vectorMap, std::vector, __FH_standard_ranged_for)
-__FH_general_map(setMap, std::set, __FH_standard_ranged_for)
+__FH_general_map(listMap, std::list)
+__FH_general_map(vectorMap, std::vector)
+__FH_general_map(setMap, std::set)
 
 // compr
 

@@ -297,6 +297,6 @@ Example:
 
 Part of the point of this project was to familiarize myself with some of the more esoteric aspects of C++11. (And boy howdy does it get esoteric.) If there's a more efficient or elegant way to implement any of these functions, I'd love to see it! Also, while I tried to keep performance in mind when writing these, I'm not 100% sure I got it right, particularly when it comes to C++11's automatic move semantics and such. So if there's an error there I'd be happy to see it corrected.
 
-Not every STL and Qt container is currently supported -- just the ones I use a lot -- particularly for the functions that return a specific type based on their name (like listMap, vectorMap, etc). However it should in most cases be trivially easy to support another container.
+Not every STL and Qt container is currently supported -- just the ones I use a lot -- particularly for the functions that return a specific type based on their name (like listMap, vectorMap, etc). However it should in most cases be trivially easy to support another container if it uses STL-style iterators and implements a `begin`, `end`, `cbegin`, and `cend` methods like Qt's containers do. That said, these functions could be rewritten to be more agnostic about which method is used for iterator over the containers.
 
 And obviously, I'll be adding more functions to this bit by bit.

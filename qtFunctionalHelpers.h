@@ -33,10 +33,10 @@ __FH_general_map(QLinkedListMap, QLinkedList)
 
 // compr
 
-__FH_general_compr(QListCompr, QList, Q_FOREACH)
-__FH_general_compr(QVectorCompr, QVector, Q_FOREACH)
-__FH_general_compr(QSetCompr, QSet, Q_FOREACH)
-__FH_general_compr(QLinkedListCompr, QLinkedList, Q_FOREACH)
+__FH_general_compr(QListCompr, QList)
+__FH_general_compr(QVectorCompr, QVector)
+__FH_general_compr(QSetCompr, QSet)
+__FH_general_compr(QLinkedListCompr, QLinkedList)
 
 // filter
 

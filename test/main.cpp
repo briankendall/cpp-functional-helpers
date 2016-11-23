@@ -148,10 +148,9 @@ void testCompr()
     const QSet<int> QSetExpected = {4,8};
     const QLinkedList<int> QLinkedListExpected = {4,8};
     
-    TEST(listCompr(listNumbers, [] (int x) { return x*2; }, [] (int x) { return (x%2) == 0;}), listExpected);
-    TEST(listCompr(listNumbers, &timesTwo, &isEven), listExpected);
-    TEST(listCompr(listNumbers, bind(timesX, 2, placeholders::_1),
-                   bind(isMultiple, placeholders::_1, 2)),
+    TEST(compr(listNumbers, [] (int x) { return x*2; }, [] (int x) { return (x%2) == 0;}), listExpected);
+    TEST(compr(listNumbers, &timesTwo, &isEven), listExpected);
+    TEST(compr(listNumbers, bind(timesX, 2, placeholders::_1), bind(isMultiple, placeholders::_1, 2)),
          listExpected);
     
     TEST(listCompr(listFoos, &Foo::fooTimesTwo, &Foo::isEven), listExpected);
@@ -182,12 +181,19 @@ void testCompr()
     TEST(QListCompr(QListFooPtrs, &Foo::baseFooTimesTwo, [] (const Foo *a) { return (a->value%2) == 0; }), QListExpected);
     TEST(QListCompr(QListFooPtrs, [] (const Foo *a) { return a->baseFooTimesTwo(); }, &Foo::baseIsEven), QListExpected);
     
-    TEST(vectorCompr(vectorNumbers, [] (int x) { return x*2; }, [] (int x) { return (x%2) == 0;}), vectorExpected);
-    TEST(setCompr(setNumbers, [] (int x) { return x*2; }, [] (int x) { return (x%2) == 0;}), setExpected);
-    TEST(QListCompr(QListNumbers, [] (int x) { return x*2; }, [] (int x) { return (x%2) == 0;}), QListExpected);
-    TEST(QVectorCompr(QVectorNumbers, [] (int x) { return x*2; }, [] (int x) { return (x%2) == 0;}), QVectorExpected);
-    TEST(QSetCompr(QSetNumbers, [] (int x) { return x*2; }, [] (int x) { return (x%2) == 0;}), QSetExpected);
-    TEST(QLinkedListCompr(QLinkedListNumbers, [] (int x) { return x*2; }, [] (int x) { return (x%2) == 0;}),
+    TEST(compr(vectorNumbers, [] (int x) { return x*2; }, [] (int x) { return (x%2) == 0;}), vectorExpected);
+    TEST(compr(setNumbers, [] (int x) { return x*2; }, [] (int x) { return (x%2) == 0;}), setExpected);
+    TEST(compr(QListNumbers, [] (int x) { return x*2; }, [] (int x) { return (x%2) == 0;}), QListExpected);
+    TEST(compr(QVectorNumbers, [] (int x) { return x*2; }, [] (int x) { return (x%2) == 0;}), QVectorExpected);
+    TEST(compr(QSetNumbers, [] (int x) { return x*2; }, [] (int x) { return (x%2) == 0;}), QSetExpected);
+    TEST(compr(QLinkedListNumbers, [] (int x) { return x*2; }, [] (int x) { return (x%2) == 0;}), QLinkedListExpected);
+    
+    TEST(vectorCompr(listNumbers, [] (int x) { return x*2; }, [] (int x) { return (x%2) == 0;}), vectorExpected);
+    TEST(setCompr(listNumbers, [] (int x) { return x*2; }, [] (int x) { return (x%2) == 0;}), setExpected);
+    TEST(QListCompr(listNumbers, [] (int x) { return x*2; }, [] (int x) { return (x%2) == 0;}), QListExpected);
+    TEST(QVectorCompr(listNumbers, [] (int x) { return x*2; }, [] (int x) { return (x%2) == 0;}), QVectorExpected);
+    TEST(QSetCompr(listNumbers, [] (int x) { return x*2; }, [] (int x) { return (x%2) == 0;}), QSetExpected);
+    TEST(QLinkedListCompr(listNumbers, [] (int x) { return x*2; }, [] (int x) { return (x%2) == 0;}),
          QLinkedListExpected);
 }
 
@@ -411,10 +417,6 @@ void testSorted()
     TEST(sorted(forward_list<int>({3,5,1,4,2}), [] (int a, int b) { return a > b; }), forward_list<int>({5,4,3,2,1}));
 }
 
-bool isLowerCase(const std::string &s) {
-    return s == ::map(s, tolower);
-}
-
 int main()
 {
     testMap();
@@ -428,13 +430,6 @@ int main()
     testSum();
     testCompr();
     testSorted();
-    
-    
-    std::list<std::string> words1 = {"these", "are", "words"};
-    std::list<std::string> words2 = {"these", "are", "DIFFERENT!!", "words"};
-    qDebug() << allOf(words1, isLowerCase); // returns true
-    qDebug() << allOf(words2, isLowerCase); // returns false
-                            
     
     qDebug() << "Finished!" << passedTests << "/" << totalTests << "passed";
     return 0;

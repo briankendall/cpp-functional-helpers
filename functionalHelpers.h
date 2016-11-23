@@ -109,26 +109,38 @@ __FH_general_map(setMap, std::set)
 
 // compr
 
-#define __FH_general_compr(NAME, RET_TYPE, LOOP) \
+template <class T, class U, class F1, class F2>
+U compr(const T &list, F1 &&func, F2 &&predicate)
+{
+    using ItType = decltype(list.cbegin());
+    U result;
+    
+    for(ItType it = list.cbegin(); it != list.cend(); ++it) {
+        if (std::ref(predicate)(decltype(*it)(*it))) {
+            _FunctionalHelpersUtils::addItem(result, std::ref(func)(decltype(*it)(*it)));
+        }
+    }
+    
+    return result;
+}
+
+template <class T, class F1, class F2> T compr(const T &list, F1 &&func, F2 &&predicate)
+{
+    return ::compr<T, T, F1, F2>(list, std::move(func), std::move(predicate));
+}
+
+#define __FH_general_compr(NAME, RET_TYPE) \
 template <class T, class F1, class F2> \
 auto NAME(const T &list, F1 &&func, F2 &&predicate) \
     -> RET_TYPE<typename std::decay<decltype(std::ref(func)(decltype(*list.begin())(*list.begin())))>::type> \
 { \
-    using U = typename std::decay<decltype(std::ref(func)(decltype(*list.begin())(*list.begin())))>::type; \
-    RET_TYPE<U> result; \
- \
-    LOOP(auto const &item, list) { \
-        if (std::ref(predicate)(decltype(item)(item))) { \
-            _FunctionalHelpersUtils::addItem(result, std::ref(func)(decltype(item)(item))); \
-        } \
-    } \
- \
-    return result; \
+    using U = RET_TYPE<typename std::decay<decltype(std::ref(func)(decltype(*list.begin())(*list.begin())))>::type>; \
+    return ::compr<T, U, F1, F2>(list, std::move(func), std::move(predicate)); \
 }
 
-__FH_general_compr(listCompr, std::list, __FH_standard_ranged_for)
-__FH_general_compr(vectorCompr, std::vector, __FH_standard_ranged_for)
-__FH_general_compr(setCompr, std::set, __FH_standard_ranged_for)
+__FH_general_compr(listCompr, std::list)
+__FH_general_compr(vectorCompr, std::vector)
+__FH_general_compr(setCompr, std::set)
 
 // filter
 

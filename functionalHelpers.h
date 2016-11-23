@@ -64,15 +64,6 @@ namespace _FunctionalHelpersUtils {
     }
 }
 
-// Some of the functions defined using preprocessor macros take another macro
-// as a parameter that allows looping over the container. We do this instead of
-// just universally using a ranged for because apparently Qt's own macro
-// (Q_FOREACH) gets better performance on Qt's container classes than a regular
-// ranged for does. So we can pass the following macro in when defining a
-// function for an STL container so that it uses a ranged for, and pass in
-// Q_FOREACH when defining functions for Qt's container classes.
-#define __FH_standard_ranged_for(x, y) for(x : y)
-
 // map
 
 template <class T, class U, class F>
@@ -89,12 +80,13 @@ U map(const T &list, F &&func)
     return result;
 }
 
-template <class T, class F> T map(const T &list, F &&func)
+template <class T, class F>
+T map(const T &list, F &&func)
 {
     return ::map<T, T, F>(list, std::move(func));
 }
 
-#define __FH_general_map(NAME, RET_TYPE) \
+#define __FH_map_with_specific_return_type(NAME, RET_TYPE) \
 template <class T, class F> \
 auto NAME(const T &list, F &&func) \
     -> RET_TYPE<typename std::decay<decltype(std::ref(func)(decltype(*list.begin())(*list.begin())))>::type> \
@@ -103,9 +95,9 @@ auto NAME(const T &list, F &&func) \
     return ::map<T, U, F>(list, std::move(func)); \
 }
 
-__FH_general_map(listMap, std::list)
-__FH_general_map(vectorMap, std::vector)
-__FH_general_map(setMap, std::set)
+__FH_map_with_specific_return_type(listMap, std::list)
+__FH_map_with_specific_return_type(vectorMap, std::vector)
+__FH_map_with_specific_return_type(setMap, std::set)
 
 // compr
 
@@ -124,12 +116,13 @@ U compr(const T &list, F1 &&func, F2 &&predicate)
     return result;
 }
 
-template <class T, class F1, class F2> T compr(const T &list, F1 &&func, F2 &&predicate)
+template <class T, class F1, class F2>
+T compr(const T &list, F1 &&func, F2 &&predicate)
 {
     return ::compr<T, T, F1, F2>(list, std::move(func), std::move(predicate));
 }
 
-#define __FH_general_compr(NAME, RET_TYPE) \
+#define __FH_compr_with_specific_return_type(NAME, RET_TYPE) \
 template <class T, class F1, class F2> \
 auto NAME(const T &list, F1 &&func, F2 &&predicate) \
     -> RET_TYPE<typename std::decay<decltype(std::ref(func)(decltype(*list.begin())(*list.begin())))>::type> \
@@ -138,32 +131,45 @@ auto NAME(const T &list, F1 &&func, F2 &&predicate) \
     return ::compr<T, U, F1, F2>(list, std::move(func), std::move(predicate)); \
 }
 
-__FH_general_compr(listCompr, std::list)
-__FH_general_compr(vectorCompr, std::vector)
-__FH_general_compr(setCompr, std::set)
+__FH_compr_with_specific_return_type(listCompr, std::list)
+__FH_compr_with_specific_return_type(vectorCompr, std::vector)
+__FH_compr_with_specific_return_type(setCompr, std::set)
 
 // filter
 
-#define __FH_general_filter(NAME, RET_TYPE, LOOP) \
+template <class T, class U, class F>
+U filter(const T &list, F &&predicate)
+{
+    using ItType = decltype(list.cbegin());
+    U result;
+    
+    for(ItType it = list.cbegin(); it != list.cend(); ++it) {
+        if (std::ref(predicate)(decltype(*it)(*it))) {
+            _FunctionalHelpersUtils::addItem(result, *it);
+        }
+    }
+    
+    return result;
+}
+
+template <class T, class F>
+T filter(const T &list, F &&predicate)
+{
+    return ::filter<T, T, F>(list, std::move(predicate));
+}
+
+#define __FH_filter_with_specific_return_type(NAME, RET_TYPE) \
 template <class T, class F> \
 auto NAME(const T &list, F &&func) \
     -> RET_TYPE<typename std::decay<decltype(*list.begin())>::type> \
 { \
-    using U = typename std::decay<decltype(*list.begin())>::type; \
-    RET_TYPE<U> result; \
- \
-    LOOP(auto const &item, list) { \
-        if (std::ref(func)(decltype(item)(item))) { \
-            _FunctionalHelpersUtils::addItem(result, item); \
-        } \
-    } \
- \
-    return result; \
+    using U = RET_TYPE<typename std::decay<decltype(*list.begin())>::type>; \
+    return ::filter<T, U, F>(list, std::move(func)); \
 }
 
-__FH_general_filter(listFilter, std::list, __FH_standard_ranged_for)
-__FH_general_filter(vectorFilter, std::vector, __FH_standard_ranged_for)
-__FH_general_filter(setFilter, std::set, __FH_standard_ranged_for)
+__FH_filter_with_specific_return_type(listFilter, std::list)
+__FH_filter_with_specific_return_type(vectorFilter, std::vector)
+__FH_filter_with_specific_return_type(setFilter, std::set)
 
 // all of
 

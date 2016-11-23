@@ -195,6 +195,8 @@ void testCompr()
     TEST(QSetCompr(listNumbers, [] (int x) { return x*2; }, [] (int x) { return (x%2) == 0;}), QSetExpected);
     TEST(QLinkedListCompr(listNumbers, [] (int x) { return x*2; }, [] (int x) { return (x%2) == 0;}),
          QLinkedListExpected);
+    
+    TEST(compr(std::string("aBcDeFgH"), tolower, isupper), std::string("bdfh"));
 }
 
 void testFilter()
@@ -221,12 +223,21 @@ void testFilter()
     TEST(QListFilter(QListFoos, &Foo::baseIsEven), QList<Foo>({fooB, fooD}));
     TEST(QListFilter(derivedQListFoos, &Foo::baseIsEven), QList<Foo>({fooB, fooD}));
     
-    TEST(vectorFilter(vectorNumbers, [] (int x) { return (x%2) == 0; }), vectorExpected);
-    TEST(setFilter(setNumbers, [] (int x) { return (x%2) == 0; }), setExpected);
-    TEST(QListFilter(QListNumbers, [] (int x) { return (x%2) == 0; }), QListExpected);
-    TEST(QVectorFilter(QVectorNumbers, [] (int x) { return (x%2) == 0; }), QVectorExpected);
-    TEST(QSetFilter(QSetNumbers, [] (int x) { return (x%2) == 0; }), QSetExpected);
-    TEST(QLinkedListFilter(QLinkedListNumbers, [] (int x) { return (x%2) == 0; }), QLinkedListExpected);
+    TEST(filter(vectorNumbers, [] (int x) { return (x%2) == 0; }), vectorExpected);
+    TEST(filter(setNumbers, [] (int x) { return (x%2) == 0; }), setExpected);
+    TEST(filter(QListNumbers, [] (int x) { return (x%2) == 0; }), QListExpected);
+    TEST(filter(QVectorNumbers, [] (int x) { return (x%2) == 0; }), QVectorExpected);
+    TEST(filter(QSetNumbers, [] (int x) { return (x%2) == 0; }), QSetExpected);
+    TEST(filter(QLinkedListNumbers, [] (int x) { return (x%2) == 0; }), QLinkedListExpected);
+    
+    TEST(vectorFilter(listNumbers, [] (int x) { return (x%2) == 0; }), vectorExpected);
+    TEST(setFilter(listNumbers, [] (int x) { return (x%2) == 0; }), setExpected);
+    TEST(QListFilter(listNumbers, [] (int x) { return (x%2) == 0; }), QListExpected);
+    TEST(QVectorFilter(listNumbers, [] (int x) { return (x%2) == 0; }), QVectorExpected);
+    TEST(QSetFilter(listNumbers, [] (int x) { return (x%2) == 0; }), QSetExpected);
+    TEST(QLinkedListFilter(listNumbers, [] (int x) { return (x%2) == 0; }), QLinkedListExpected);
+    
+    TEST(filter(std::string("aBcDeFgH"), isupper), std::string("BDFH"));
 }
 
 void testAllOf()

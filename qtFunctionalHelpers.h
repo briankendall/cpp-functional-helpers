@@ -26,23 +26,23 @@ namespace _FunctionalHelpersUtils {
 
 // map
 
-__FH_general_map(QListMap, QList)
-__FH_general_map(QVectorMap, QVector)
-__FH_general_map(QSetMap, QSet)
-__FH_general_map(QLinkedListMap, QLinkedList)
+__FH_map_with_specific_return_type(QListMap, QList)
+__FH_map_with_specific_return_type(QVectorMap, QVector)
+__FH_map_with_specific_return_type(QSetMap, QSet)
+__FH_map_with_specific_return_type(QLinkedListMap, QLinkedList)
 
 // compr
 
-__FH_general_compr(QListCompr, QList)
-__FH_general_compr(QVectorCompr, QVector)
-__FH_general_compr(QSetCompr, QSet)
-__FH_general_compr(QLinkedListCompr, QLinkedList)
+__FH_compr_with_specific_return_type(QListCompr, QList)
+__FH_compr_with_specific_return_type(QVectorCompr, QVector)
+__FH_compr_with_specific_return_type(QSetCompr, QSet)
+__FH_compr_with_specific_return_type(QLinkedListCompr, QLinkedList)
 
 // filter
 
-__FH_general_filter(QListFilter, QList, Q_FOREACH)
-__FH_general_filter(QVectorFilter, QVector, Q_FOREACH)
-__FH_general_filter(QSetFilter, QSet, Q_FOREACH)
-__FH_general_filter(QLinkedListFilter, QLinkedList, Q_FOREACH)
+__FH_filter_with_specific_return_type(QListFilter, QList)
+__FH_filter_with_specific_return_type(QVectorFilter, QVector)
+__FH_filter_with_specific_return_type(QSetFilter, QSet)
+__FH_filter_with_specific_return_type(QLinkedListFilter, QLinkedList)
 
 #endif // __QT_FUNCTIONAL_HELPERS_H__

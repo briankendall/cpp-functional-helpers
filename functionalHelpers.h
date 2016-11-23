@@ -288,9 +288,31 @@ auto max(const T &list, F &&func)
 
 // reduce
 
-template <class T, class F, class U>
-auto reduce(const T &list, F &&func, U memo)
+template <class T, class F>
+auto reduce(const T &list, F &&func)
     -> typename std::decay<decltype(*list.begin())>::type
+{
+    using U = typename std::decay<decltype(*list.begin())>::type;
+    using V = decltype(list.cbegin());
+    V it = list.cbegin();
+    
+    if (it == list.cend()) {
+        return U();
+    }
+    
+    U memo = *it;
+    ++it;
+    
+    while(it != list.cend()) {
+        memo = std::ref(func)(U(memo), decltype(*it)(*it));
+        ++it;
+    }
+
+    return memo;
+}
+
+template <class T, class F, class U>
+U reduce(const T &list, F &&func, U memo)
 {
     using V = decltype(list.cbegin());
     
@@ -315,8 +337,7 @@ auto sum(const T &list)
     -> typename std::decay<decltype(*list.begin())>::type
 {
     using U = typename std::decay<decltype(*list.begin())>::type;
-    U memo = U();
-    return reduce(list, [] (const U &a, const U &b) { return a+b; }, memo);
+    return reduce(list, [] (const U &a, const U &b) { return a+b; });
 }
 
 // sorted

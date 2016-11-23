@@ -380,6 +380,14 @@ void testReduce()
     TEST(reduce(QVectorNumbers, [] (int x, int y) { return x*y; }, 1), 120);
     TEST(reduce(QSetNumbers, [] (int x, int y) { return x*y; }, 1), 120);
     TEST(reduce(QLinkedListNumbers, [] (int x, int y) { return x*y; }, 1), 120);
+    
+    TEST(reduce(listNumbers, [] (int x, int y) { return x*y; }), 120);
+    TEST(reduce(listNumbers, &timesX), 120);
+    TEST(reduce(listFoos, &Foo::fooTimesFoo), Foo(120));
+    TEST(reduce(list<int>(), [] (int x, int y) { return x*y; }), 0);
+    TEST(reduce(list<Foo>(), &Foo::fooTimesFoo), Foo());
+    
+    TEST(reduce(listNumbers, [] (const QString &a, int b) { return a + QString::number(b); }, QString("X")), "X12345");
 }
 
 void testSum()

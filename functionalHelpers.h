@@ -62,6 +62,16 @@ namespace _FunctionalHelpersUtils {
     {
         container.insert(item);
     }
+    
+    // Helper to determine whether there's a const_iterator for T.
+    template<typename T>
+    struct has_const_iterator {
+    private:
+        template<typename C> static char test(typename C::const_iterator*);
+        template<typename C> static int  test(...);
+    public:
+        enum { value = sizeof(test<T>(0)) == sizeof(char) };
+    };
 }
 
 // map
@@ -402,5 +412,89 @@ auto sorted(const T &list, F &&comp)
     result.sort(std::ref(comp));
     return result;
 }
+
+// contains
+
+template <class T, class U>
+bool contains(const T &container, const U &val)
+{
+    using ItType = decltype(container.cbegin());
+    
+    for(ItType it = container.cbegin(); it != container.cend(); ++it) {
+        if ((*it) == val) {
+            return true;
+        }
+    }
+    
+    return false;
+}
+
+template <class T, class U>
+bool contains(const std::set<T, U> &container, const T &val)
+{
+    return container.find(val) != container.end();
+}
+
+// omit
+
+template <class T, class U, class V>
+typename std::enable_if<!_FunctionalHelpersUtils::has_const_iterator<V>::value, U>::type
+omit(const T &container, const V &omitted)
+{
+    using ItType = decltype(container.cbegin());
+    U result;
+    
+    for(ItType it = container.cbegin(); it != container.cend(); ++it) {
+        if (!((*it) == omitted)) {
+            _FunctionalHelpersUtils::addItem(result, *it);
+        }
+    }
+    
+    return result;
+}
+
+template <class T, class V>
+typename std::enable_if<!_FunctionalHelpersUtils::has_const_iterator<V>::value, T>::type
+omit(const T &container, const V &omitted)
+{
+    return ::omit<T, T, V>(container, omitted);
+}
+
+
+template <class T, class U, class V>
+typename std::enable_if<_FunctionalHelpersUtils::has_const_iterator<V>::value, U>::type
+omit(const T &container, const V &omitted)
+{
+    using ItType = decltype(container.cbegin());
+    U result;
+    
+    for(ItType it = container.cbegin(); it != container.cend(); ++it) {
+        if (!contains(omitted, *it)) {
+            _FunctionalHelpersUtils::addItem(result, *it);
+        }
+    }
+    
+    return result;
+}
+
+template <class T, class V>
+typename std::enable_if<_FunctionalHelpersUtils::has_const_iterator<V>::value, T>::type
+omit(const T &container, const V &omitted)
+{
+    return ::omit<T, T, V>(container, omitted);
+}
+
+#define __FH_omit_with_specific_return_type(NAME, RET_TYPE) \
+template <class T, class V> \
+auto NAME(const T &container, const V &omitted) \
+    -> RET_TYPE<typename std::decay<decltype(*container.begin())>::type> \
+{ \
+    using U = RET_TYPE<typename std::decay<decltype(*container.begin())>::type>; \
+    return omit<T, U, V>(container, omitted); \
+}
+
+__FH_omit_with_specific_return_type(listOmit, std::list)
+__FH_omit_with_specific_return_type(vectorOmit, std::vector)
+__FH_omit_with_specific_return_type(setOmit, std::set)
 
 #endif // __FUNCTIONAL_HELPERS_H__

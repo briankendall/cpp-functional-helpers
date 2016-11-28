@@ -20,6 +20,8 @@ A couple of headers that provide convenient functional-style helper functions th
 * [`reduce`](#reduce)
 * [`sum`](#sum)
 * [`sorted`](#sorted)
+* [`contains`](#contains)
+* [`omit`](#omit)
 * [Future work and contributing](#future-work-and-contributing)
 
 ## How to include
@@ -270,8 +272,8 @@ Example:
 
 Usage:
 
-    sorted(container)
-    sorted(container, comparator)
+    sorted(container) -> container of same type
+    sorted(container, comparator) -> container of same type
     
 Constructs a new container containing the items of `container` in sorted order.
 
@@ -291,7 +293,60 @@ Example:
     
     sorted(numbers, [] (const QString &a, const QString &b) { return a.toInt() < b.toInt(); });
     // Returns QStringList(("2", "12", "46", "354"))
+
+## `contains`
+
+Usage:
+
+    contains(container, value) -> bool
     
+Returns true if `container` has at least one item that is equal to `value`. Comparison is done using the `==` operator.
+
+Example:
+
+    contains(std::list({1, 2, 3, 4, 5}), 2);
+    // Returns true
+
+## `omit`
+
+Usage:
+
+    omit(container1, value) -> container of same type as container1
+    omit(container1, container2) -> container of same type as container1
+    listOmit(container1, value) -> std::list
+    listOmit(container1, container2) -> std::list
+    vectorOmit(container1, value) -> std::vector
+    vectorOmit(container1, container2) -> std::vector
+    setOmit(container1, value) -> std::set
+    setOmit(container1, container2) -> std::set
+    QListOmit(container1, value) -> QList
+    QListOmit(container1, container2) -> QList
+    QVectorOmit(container1, value) -> QVector
+    QVectorOmit(container1, container2) -> QVector
+    QSetOmit(container1, value) -> QSet
+    QSetOmit(container1, container2) -> QSet
+    QLinkedListOmit(container1, value) -> QLinkedList
+    QLinkedListOmit(container1, container2) -> QLinkedList
+    
+If the second parameter is not a container type (i.e. does not define a `const_iterator`), constructs a new container that contains each value in `container1` that is not equal to the second parameter `value`.
+
+If the second parameter is a container type, constructs a new container that contains each value in `container1` that is not equal to any value in `container2`.
+
+What kind of container is returned depends on which version of the function is used. For the first two forms `omit`, the same type of container passed into the first parameter is what is returned. The remaining forms return a container based off of their name, so `container1` doesn't have to be of the same type.
+
+If applicable, the order of the items in the new container matches the original.
+
+Comparison is done using the `==` operator.
+
+Example:
+
+    omit(std::list<int>({1, 2, 3, 4, 5}), 3);
+    // returns std::list<int>({1, 2, 4, 5})
+    
+    std::set<int> exclude = {1, 2, 3};
+    omit(std::list<int>({1, 2, 3, 4, 5}), exclude);
+    // return std::list<int>({4, 5})
+
 
 ## Future work and contributing
 

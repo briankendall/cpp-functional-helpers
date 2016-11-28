@@ -436,6 +436,58 @@ void testSorted()
     TEST(sorted(forward_list<int>({3,5,1,4,2}), [] (int a, int b) { return a > b; }), forward_list<int>({5,4,3,2,1}));
 }
 
+void testContains()
+{
+    TEST(contains(listNumbers, 1), true);
+    TEST(contains(listNumbers, 100), false);
+    TEST(contains(listFoos, fooA), true);
+    TEST(contains(listFoos, Foo(100)), false);
+    TEST(contains(vectorNumbers, 1), true);
+    TEST(contains(setNumbers, 4), true);
+    TEST(contains(QListNumbers, 1), true);
+    TEST(contains(QVectorNumbers, 1), true);
+    TEST(contains(QSetNumbers, 4), true);
+}
+
+void testOmit()
+{
+    TEST(omit(listNumbers, 1), list<int>({2, 3, 4, 5}));
+    TEST(omit(listNumbers, list<int>({1, 2, 3})), list<int>({4, 5}));
+    TEST(omit(listNumbers, set<int>({1, 2, 3})), list<int>({4, 5}));
+    TEST(omit(listFoos, fooA), list<Foo>({fooB, fooC, fooD, fooE}));
+    TEST(omit(listFoos, set<Foo>({fooA, fooB, fooC})), list<Foo>({fooD, fooE}));
+    TEST(omit(vectorNumbers, 1), vector<int>({2, 3, 4, 5}));
+    TEST(omit(vectorNumbers, list<int>({1, 2, 3})), vector<int>({4, 5}));
+    TEST(omit(vectorNumbers, set<int>({1, 2, 3})), vector<int>({4, 5}));
+    TEST(omit(setNumbers, 1), set<int>({2, 3, 4, 5}));
+    TEST(omit(setNumbers, list<int>({1, 2, 3})), set<int>({4, 5}));
+    TEST(omit(setNumbers, set<int>({1, 2, 3})), set<int>({4, 5}));
+    TEST(omit(QListNumbers, 1), QList<int>({2, 3, 4, 5}));
+    TEST(omit(QListNumbers, list<int>({1, 2, 3})), QList<int>({4, 5}));
+    TEST(omit(QListNumbers, set<int>({1, 2, 3})), QList<int>({4, 5}));
+    TEST(omit(QVectorNumbers, 1), QVector<int>({2, 3, 4, 5}));
+    TEST(omit(QVectorNumbers, list<int>({1, 2, 3})), QVector<int>({4, 5}));
+    TEST(omit(QVectorNumbers, set<int>({1, 2, 3})), QVector<int>({4, 5}));
+    TEST(omit(QSetNumbers, 1), QSet<int>({2, 3, 4, 5}));
+    TEST(omit(QSetNumbers, list<int>({1, 2, 3})), QSet<int>({4, 5}));
+    TEST(omit(QSetNumbers, set<int>({1, 2, 3})), QSet<int>({4, 5}));
+    
+    TEST(listOmit(vectorNumbers, 1), list<int>({2, 3, 4, 5}));
+    TEST(listOmit(vectorNumbers, list<int>({1, 2, 3})), list<int>({4, 5}));
+    TEST(vectorOmit(vectorNumbers, 1), vector<int>({2, 3, 4, 5}));
+    TEST(vectorOmit(vectorNumbers, list<int>({1, 2, 3})), vector<int>({4, 5}));
+    TEST(setOmit(vectorNumbers, 1), set<int>({2, 3, 4, 5}));
+    TEST(setOmit(vectorNumbers, list<int>({1, 2, 3})), set<int>({4, 5}));
+    TEST(QListOmit(vectorNumbers, 1), QList<int>({2, 3, 4, 5}));
+    TEST(QListOmit(vectorNumbers, list<int>({1, 2, 3})), QList<int>({4, 5}));
+    TEST(QVectorOmit(vectorNumbers, 1), QVector<int>({2, 3, 4, 5}));
+    TEST(QVectorOmit(vectorNumbers, list<int>({1, 2, 3})), QVector<int>({4, 5}));
+    TEST(QSetOmit(vectorNumbers, 1), QSet<int>({2, 3, 4, 5}));
+    TEST(QSetOmit(vectorNumbers, list<int>({1, 2, 3})), QSet<int>({4, 5}));
+    TEST(QLinkedListOmit(vectorNumbers, 1), QLinkedList<int>({2, 3, 4, 5}));
+    TEST(QLinkedListOmit(vectorNumbers, list<int>({1, 2, 3})), QLinkedList<int>({4, 5}));
+}
+
 int main()
 {
     testMap();
@@ -449,6 +501,8 @@ int main()
     testSum();
     testCompr();
     testSorted();
+    testContains();
+    testOmit();
     
     qDebug() << "Finished!" << passedTests << "/" << totalTests << "passed";
     return 0;

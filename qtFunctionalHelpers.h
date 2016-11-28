@@ -45,4 +45,19 @@ __FH_filter_with_specific_return_type(QVectorFilter, QVector)
 __FH_filter_with_specific_return_type(QSetFilter, QSet)
 __FH_filter_with_specific_return_type(QLinkedListFilter, QLinkedList)
 
+// contains
+
+template <class T>
+bool contains(const QSet<T> &container, const T &val)
+{
+    return container.contains(val);
+}
+
+// omit
+
+__FH_omit_with_specific_return_type(QListOmit, QList)
+__FH_omit_with_specific_return_type(QVectorOmit, QVector)
+__FH_omit_with_specific_return_type(QSetOmit, QSet)
+__FH_omit_with_specific_return_type(QLinkedListOmit, QLinkedList)
+
 #endif // __QT_FUNCTIONAL_HELPERS_H__

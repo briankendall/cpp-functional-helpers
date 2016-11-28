@@ -435,6 +435,10 @@ void testSorted()
     
     TEST(sorted(forward_list<int>({3,5,1,4,2})), forward_list<int>({1,2,3,4,5}));
     TEST(sorted(forward_list<int>({3,5,1,4,2}), [] (int a, int b) { return a > b; }), forward_list<int>({5,4,3,2,1}));
+    
+    QStringList items = {"CCC", "eee", "Bbb", "aaa", "DDD"};
+    TEST(sorted(items), QStringList({"Bbb", "CCC", "DDD", "aaa", "eee"}));
+    TEST(sorted(items, Qt::CaseInsensitive), QStringList({"aaa", "Bbb", "CCC", "DDD", "eee"}));
 }
 
 void testContains()

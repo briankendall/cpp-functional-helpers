@@ -45,6 +45,16 @@ __FH_filter_with_specific_return_type(QVectorFilter, QVector)
 __FH_filter_with_specific_return_type(QSetFilter, QSet)
 __FH_filter_with_specific_return_type(QLinkedListFilter, QLinkedList)
 
+// sorted
+
+// Adding an overload for convenient sorting of QStringLists
+inline QStringList sorted(const QStringList &list, Qt::CaseSensitivity sensitivity=Qt::CaseSensitive)
+{
+    QStringList result = list;
+    result.sort(sensitivity);
+    return result;
+}
+
 // contains
 
 template <class T>

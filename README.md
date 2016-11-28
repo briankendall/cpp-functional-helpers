@@ -274,6 +274,7 @@ Usage:
 
     sorted(container) -> container of same type
     sorted(container, comparator) -> container of same type
+    sorted(QStringList, Qt::CaseSensitivity) -> QStringList
     
 Constructs a new container containing the items of `container` in sorted order.
 
@@ -281,11 +282,16 @@ For the first form of `sorted`, items are compared using the `<` operator.
 
 For the second form, items are compared using the function `comparator`. `comparator` must return a `bool` and take two parameters whose type is the value type of `container`.
 
+The third form is a convenience function that allows sorting QStringLists in a case-insensitive fashion.
+
 Example:
 
-    QStringList words = {"once", "upon", "a", "time"};
+    QStringList words = {"Once", "upon", "a", "time"};
     sorted(words);
-    // Returns QStringList({"a", "once", "time", "upon"})
+    // Returns QStringList({"Once", "a", "time", "upon"})
+    
+    sorted(words, Qt::CaseInsensitive);
+    // Returns QStringList({"a", "Once", "time", "upon"})
     
     QStringList numbers = {"12", "354", "2", "46"};
     sorted(numbers);

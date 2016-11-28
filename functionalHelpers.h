@@ -77,7 +77,7 @@ namespace _FunctionalHelpersUtils {
 // map
 
 template <class T, class U, class F>
-U map(const T &list, F &&func)
+U map(const T &list, const F &func)
 {
     using ItType = decltype(list.cbegin());
     U result;
@@ -91,18 +91,18 @@ U map(const T &list, F &&func)
 }
 
 template <class T, class F>
-T map(const T &list, F &&func)
+T map(const T &list, const F &func)
 {
-    return ::map<T, T, F>(list, std::move(func));
+    return ::map<T, T, F>(list, func);
 }
 
 #define __FH_map_with_specific_return_type(NAME, RET_TYPE) \
 template <class T, class F> \
-auto NAME(const T &list, F &&func) \
+auto NAME(const T &list, const F &func) \
     -> RET_TYPE<typename std::decay<decltype(std::ref(func)(decltype(*list.begin())(*list.begin())))>::type> \
 { \
     using U = RET_TYPE<typename std::decay<decltype(std::ref(func)(decltype(*list.begin())(*list.begin())))>::type>; \
-    return ::map<T, U, F>(list, std::move(func)); \
+    return ::map<T, U, F>(list, func); \
 }
 
 __FH_map_with_specific_return_type(listMap, std::list)
@@ -112,7 +112,7 @@ __FH_map_with_specific_return_type(setMap, std::set)
 // compr
 
 template <class T, class U, class F1, class F2>
-U compr(const T &list, F1 &&func, F2 &&predicate)
+U compr(const T &list, const F1 &func, const F2 &predicate)
 {
     using ItType = decltype(list.cbegin());
     U result;
@@ -127,18 +127,18 @@ U compr(const T &list, F1 &&func, F2 &&predicate)
 }
 
 template <class T, class F1, class F2>
-T compr(const T &list, F1 &&func, F2 &&predicate)
+T compr(const T &list, const F1 &func, const F2 &predicate)
 {
-    return ::compr<T, T, F1, F2>(list, std::move(func), std::move(predicate));
+    return ::compr<T, T, F1, F2>(list, func, predicate);
 }
 
 #define __FH_compr_with_specific_return_type(NAME, RET_TYPE) \
 template <class T, class F1, class F2> \
-auto NAME(const T &list, F1 &&func, F2 &&predicate) \
+auto NAME(const T &list, const F1 &func, const F2 &predicate) \
     -> RET_TYPE<typename std::decay<decltype(std::ref(func)(decltype(*list.begin())(*list.begin())))>::type> \
 { \
     using U = RET_TYPE<typename std::decay<decltype(std::ref(func)(decltype(*list.begin())(*list.begin())))>::type>; \
-    return ::compr<T, U, F1, F2>(list, std::move(func), std::move(predicate)); \
+    return ::compr<T, U, F1, F2>(list, func, predicate); \
 }
 
 __FH_compr_with_specific_return_type(listCompr, std::list)
@@ -148,7 +148,7 @@ __FH_compr_with_specific_return_type(setCompr, std::set)
 // filter
 
 template <class T, class U, class F>
-U filter(const T &list, F &&predicate)
+U filter(const T &list, const F &predicate)
 {
     using ItType = decltype(list.cbegin());
     U result;
@@ -163,18 +163,18 @@ U filter(const T &list, F &&predicate)
 }
 
 template <class T, class F>
-T filter(const T &list, F &&predicate)
+T filter(const T &list, const F &predicate)
 {
-    return ::filter<T, T, F>(list, std::move(predicate));
+    return ::filter<T, T, F>(list, predicate);
 }
 
 #define __FH_filter_with_specific_return_type(NAME, RET_TYPE) \
 template <class T, class F> \
-auto NAME(const T &list, F &&func) \
+auto NAME(const T &list, const F &func) \
     -> RET_TYPE<typename std::decay<decltype(*list.begin())>::type> \
 { \
     using U = RET_TYPE<typename std::decay<decltype(*list.begin())>::type>; \
-    return ::filter<T, U, F>(list, std::move(func)); \
+    return ::filter<T, U, F>(list, func); \
 }
 
 __FH_filter_with_specific_return_type(listFilter, std::list)
@@ -184,7 +184,7 @@ __FH_filter_with_specific_return_type(setFilter, std::set)
 // all of
 
 template <class T, class F>
-bool allOf(T const &list, F &&f)
+bool allOf(T const &list, const F &f)
 {
     using U = decltype(list.cbegin());
     for(U it = list.cbegin(); it != list.cend(); ++it) {
@@ -198,7 +198,7 @@ bool allOf(T const &list, F &&f)
 // any of
 
 template <class T, class F>
-bool anyOf(T const &list, F &&f)
+bool anyOf(T const &list, const F &f)
 {
     using U = decltype(list.cbegin());
     for(U it = list.cbegin(); it != list.cend(); ++it) {
@@ -212,7 +212,7 @@ bool anyOf(T const &list, F &&f)
 // extremum
 
 template <class T, class F>
-auto extremum(const T &list, F &&comp)
+auto extremum(const T &list, const F &comp)
     -> typename std::decay<decltype(*list.begin())>::type
 {
     using U = typename std::decay<decltype(*list.begin())>::type;
@@ -241,7 +241,7 @@ auto min(const T &list)
 // min(container, func)
 
 template <class T, class F>
-auto min(const T &list, F &&func)
+auto min(const T &list, const F &func)
     -> typename std::decay<decltype(*list.begin())>::type
 {
     using U = typename std::decay<decltype(*list.begin())>::type;
@@ -275,7 +275,7 @@ auto max(const T &list)
 // max(container, func)
 
 template <class T, class F>
-auto max(const T &list, F &&func)
+auto max(const T &list, const F &func)
     -> typename std::decay<decltype(*list.begin())>::type
 {
     using U = typename std::decay<decltype(*list.begin())>::type;
@@ -299,7 +299,7 @@ auto max(const T &list, F &&func)
 // reduce
 
 template <class T, class F>
-auto reduce(const T &list, F &&func)
+auto reduce(const T &list, const F &func)
     -> typename std::decay<decltype(*list.begin())>::type
 {
     using U = typename std::decay<decltype(*list.begin())>::type;
@@ -322,7 +322,7 @@ auto reduce(const T &list, F &&func)
 }
 
 template <class T, class F, class U>
-U reduce(const T &list, F &&func, U memo)
+U reduce(const T &list, const F &func, U memo)
 {
     using V = decltype(list.cbegin());
     
@@ -368,7 +368,7 @@ auto sorted(const T &list)
 }
 
 template <class T, class F>
-auto sorted(const T &list, F &&comp)
+auto sorted(const T &list, const F &comp)
     -> typename std::enable_if<!std::is_base_of<std::list<typename T::value_type>, T>::value &&
                                !std::is_base_of<std::forward_list<typename T::value_type>, T>::value, T>::type
 {
@@ -387,7 +387,7 @@ auto sorted(const T &list)
 }
 
 template <class T, class F>
-auto sorted(const T &list, F &&comp)
+auto sorted(const T &list, const F &comp)
     -> typename std::enable_if<std::is_base_of<std::list<typename T::value_type>, T>::value, T>::type
 {
     T result(list);
@@ -405,7 +405,7 @@ auto sorted(const T &list)
 }
 
 template <class T, class F>
-auto sorted(const T &list, F &&comp)
+auto sorted(const T &list, const F &comp)
     -> typename std::enable_if<std::is_base_of<std::forward_list<typename T::value_type>, T>::value, T>::type
 {
     T result(list);

@@ -110,6 +110,7 @@ void testMap()
     TEST(::map(listNumbers, [] (int x) { return x*2; }), listExpected);
     TEST(::map(listNumbers, &timesTwo), listExpected);
     TEST(::map(listNumbers, bind(timesX, 2, placeholders::_1)), listExpected);
+    TEST(listMap(listFoos, [] (const Foo &foo) { return foo.fooTimesTwo(); }), listExpected);
     TEST(listMap(listFoos, &Foo::fooTimesTwo), listExpected);
     TEST(listMap(listFooPtrs, &Foo::fooTimesTwo), listExpected);
     TEST(QListMap(QListFoos, &Foo::fooTimesTwo), QListExpected);

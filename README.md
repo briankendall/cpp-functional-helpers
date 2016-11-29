@@ -36,10 +36,12 @@ Usage:
     listMap(container, callable) -> std::list
     vectorMap(container, callable) -> std::vector
     setMap(container, callable) -> std::set
+    stringMap(container, callable) -> std::string
     QListMap(container, callable) -> QList
     QVectorMap(container, callable) -> QVector
     QSetMap(container, callable) -> QSet
     QLinkedListMap(container, callable) -> QLinkedList
+    QStringMap(container, callable) -> QString
 
 Constructs a new container by mapping each value in `container` through a transformation function `callable`. `callable` must take one argument of the same type that is in `container`.
 

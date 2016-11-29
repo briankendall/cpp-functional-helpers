@@ -1,6 +1,11 @@
 #ifndef __QT_FUNCTIONAL_HELPERS_H__
 #define __QT_FUNCTIONAL_HELPERS_H__
 
+// For some reason it's necessary to include <vector> before any of Qt's
+// headers, otherwise we'll get the error "too few arguments for class template
+// 'vector'" when using versions of a function that take template-template
+// arguments.
+#include <vector>
 #include <QVector>
 #include <QList>
 #include <QSet>
@@ -30,6 +35,7 @@ __FH_map_with_specific_return_type(QListMap, QList)
 __FH_map_with_specific_return_type(QVectorMap, QVector)
 __FH_map_with_specific_return_type(QSetMap, QSet)
 __FH_map_with_specific_return_type(QLinkedListMap, QLinkedList)
+__FH_map_with_fully_specified_return_type(QStringMap, QString)
 
 // compr
 
@@ -71,3 +77,4 @@ __FH_omit_with_specific_return_type(QSetOmit, QSet)
 __FH_omit_with_specific_return_type(QLinkedListOmit, QLinkedList)
 
 #endif // __QT_FUNCTIONAL_HELPERS_H__
+

@@ -27,6 +27,7 @@
 #include <forward_list>
 #include <vector>
 #include <set>
+#include <string>
 
 namespace _FunctionalHelpersUtils {
     // Default behavior of reserveSize is to do nothing
@@ -90,24 +91,31 @@ U map(const T &list, const F &func)
     return result;
 }
 
-template <class T, class F>
-T map(const T &list, const F &func)
+template <template <class...> class T, class U, class F>
+auto map(const T<U> &list, const F &func)
+    -> T<typename std::decay<decltype(std::ref(func)(decltype(*list.begin())(*list.begin())))>::type>
 {
-    return ::map<T, T, F>(list, func);
+    using V = typename std::decay<decltype(std::ref(func)(decltype(*list.begin())(*list.begin())))>::type;
+    return ::map<T<U>, T<V>, F>(list, func);
+}
+
+#define __FH_map_with_fully_specified_return_type(NAME, RET_TYPE) \
+template <class T, class F> \
+auto NAME(const T &list, const F &func) \
+    -> RET_TYPE \
+{ \
+    using U = RET_TYPE; \
+    return ::map<T, U, F>(list, func); \
 }
 
 #define __FH_map_with_specific_return_type(NAME, RET_TYPE) \
-template <class T, class F> \
-auto NAME(const T &list, const F &func) \
-    -> RET_TYPE<typename std::decay<decltype(std::ref(func)(decltype(*list.begin())(*list.begin())))>::type> \
-{ \
-    using U = RET_TYPE<typename std::decay<decltype(std::ref(func)(decltype(*list.begin())(*list.begin())))>::type>; \
-    return ::map<T, U, F>(list, func); \
-}
+    __FH_map_with_fully_specified_return_type(NAME, \
+        RET_TYPE<typename std::decay<decltype(std::ref(func)(decltype(*list.begin())(*list.begin())))>::type>)
 
 __FH_map_with_specific_return_type(listMap, std::list)
 __FH_map_with_specific_return_type(vectorMap, std::vector)
 __FH_map_with_specific_return_type(setMap, std::set)
+__FH_map_with_fully_specified_return_type(stringMap, std::string)
 
 // compr
 

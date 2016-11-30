@@ -134,24 +134,31 @@ U compr(const T &list, const F1 &func, const F2 &predicate)
     return result;
 }
 
-template <class T, class F1, class F2>
-T compr(const T &list, const F1 &func, const F2 &predicate)
+template <template <class...> class T, class U, class F1, class F2>
+auto compr(const T<U> &list, const F1 &func, const F2 &predicate)
+-> T<typename std::decay<decltype(std::ref(func)(decltype(*list.begin())(*list.begin())))>::type>
 {
-    return ::compr<T, T, F1, F2>(list, func, predicate);
+    using V = typename std::decay<decltype(std::ref(func)(decltype(*list.begin())(*list.begin())))>::type;
+    return ::compr<T<U>, T<V>, F1, F2>(list, func, predicate);
+}
+
+#define __FH_compr_with_fully_specified_return_type(NAME, RET_TYPE) \
+template <class T, class F1, class F2> \
+auto NAME(const T &list, const F1 &func, const F2 &predicate) \
+    -> RET_TYPE \
+{ \
+    using U = RET_TYPE; \
+    return ::compr<T, U, F1, F2>(list, func, predicate); \
 }
 
 #define __FH_compr_with_specific_return_type(NAME, RET_TYPE) \
-template <class T, class F1, class F2> \
-auto NAME(const T &list, const F1 &func, const F2 &predicate) \
-    -> RET_TYPE<typename std::decay<decltype(std::ref(func)(decltype(*list.begin())(*list.begin())))>::type> \
-{ \
-    using U = RET_TYPE<typename std::decay<decltype(std::ref(func)(decltype(*list.begin())(*list.begin())))>::type>; \
-    return ::compr<T, U, F1, F2>(list, func, predicate); \
-}
+    __FH_compr_with_fully_specified_return_type(NAME, \
+        RET_TYPE<typename std::decay<decltype(std::ref(func)(decltype(*list.begin())(*list.begin())))>::type>)
 
 __FH_compr_with_specific_return_type(listCompr, std::list)
 __FH_compr_with_specific_return_type(vectorCompr, std::vector)
 __FH_compr_with_specific_return_type(setCompr, std::set)
+__FH_compr_with_fully_specified_return_type(stringCompr, std::string)
 
 // filter
 

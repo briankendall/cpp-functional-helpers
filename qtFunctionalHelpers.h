@@ -1,10 +1,15 @@
 #ifndef __QT_FUNCTIONAL_HELPERS_H__
 #define __QT_FUNCTIONAL_HELPERS_H__
 
-// For some reason it's necessary to include <vector> before any of Qt's
-// headers, otherwise we'll get the error "too few arguments for class template
-// 'vector'" when using versions of a function that take template-template
-// arguments.
+// For some reason it's necessary to include <vector> before some of Qt's
+// headers (like <QString>), otherwise we'll get the error "too few arguments
+// for class template 'vector'" when using versions of a function that take
+// template-template arguments.
+
+#ifdef QSTRING_H
+#error qtFunctionalHelpers.h must be included before included before Qt headers (namely QString).
+#endif
+
 #include <vector>
 #include <QVector>
 #include <QList>
@@ -43,6 +48,7 @@ __FH_compr_with_specific_return_type(QListCompr, QList)
 __FH_compr_with_specific_return_type(QVectorCompr, QVector)
 __FH_compr_with_specific_return_type(QSetCompr, QSet)
 __FH_compr_with_specific_return_type(QLinkedListCompr, QLinkedList)
+__FH_compr_with_fully_specified_return_type(QStringCompr, QString)
 
 // filter
 

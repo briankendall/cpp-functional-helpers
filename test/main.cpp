@@ -170,6 +170,20 @@ void testCompr()
     TEST(compr(listNumbers, &timesTwo, &isEven), listExpected);
     TEST(compr(listNumbers, bind(timesX, 2, placeholders::_1), bind(isMultiple, placeholders::_1, 2)),
          listExpected);
+    TEST(compr(listFoos, &Foo::fooTimesTwo, &Foo::isEven), listExpected);
+    TEST(compr(listFoos, &Foo::fooTimesTwo, [] (const Foo &a) { return (a.value%2) == 0; }), listExpected);
+    TEST(compr(listFoos, [] (const Foo &a) { return a.fooTimesTwo(); }, &Foo::isEven), listExpected);
+    TEST(compr(listFooPtrs, &Foo::fooTimesTwo, &Foo::isEven), listExpected);
+    TEST(compr(listFooPtrs, &Foo::fooTimesTwo, [] (const Foo *a) { return (a->value%2) == 0; }), listExpected);
+    TEST(compr(listFooPtrs, [] (const Foo *a) { return a->fooTimesTwo(); }, &Foo::isEven), listExpected);
+    TEST(compr(QListFoos, &Foo::fooTimesTwo, &Foo::isEven), QListExpected);
+    TEST(compr(QListFoos, &Foo::fooTimesTwo, [] (const Foo &a) { return (a.value%2) == 0; }), QListExpected);
+    TEST(compr(QListFoos, [] (const Foo &a) { return a.fooTimesTwo(); }, &Foo::isEven), QListExpected);
+    TEST(compr(QListFooPtrs, &Foo::fooTimesTwo, &Foo::isEven), QListExpected);
+    TEST(compr(QListFooPtrs, &Foo::fooTimesTwo, [] (const Foo *a) { return (a->value%2) == 0; }), QListExpected);
+    TEST(compr(QListFooPtrs, [] (const Foo *a) { return a->fooTimesTwo(); }, &Foo::isEven), QListExpected);
+    TEST(compr(derivedListFoos, &Foo::fooTimesTwo, &Foo::isEven), listExpected);
+    TEST(compr(derivedQListFoos, &Foo::fooTimesTwo, &Foo::isEven), QListExpected);
     
     TEST(listCompr(listFoos, &Foo::fooTimesTwo, &Foo::isEven), listExpected);
     TEST(listCompr(listFoos, &Foo::fooTimesTwo, [] (const Foo &a) { return (a.value%2) == 0; }), listExpected);
@@ -214,7 +228,10 @@ void testCompr()
     TEST(QLinkedListCompr(listNumbers, [] (int x) { return x*2; }, [] (int x) { return (x%2) == 0;}),
          QLinkedListExpected);
     
-    TEST(compr(std::string("aBcDeFgH"), tolower, isupper), std::string("bdfh"));
+    TEST(compr(std::string("aBcDeFgH"), (char(*)(char))(tolower), isupper), std::string("bdfh"));
+    TEST(stringCompr(std::string("aBcDeFgH"), tolower, isupper), std::string("bdfh"));
+    TEST(QStringCompr(QString("aBcDeFgH"), [] (QChar c) { return c.toLower(); },
+         [] (QChar c) { return c.isUpper(); }), QString("bdfh"));
 }
 
 void testFilter()

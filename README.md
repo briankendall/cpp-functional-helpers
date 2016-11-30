@@ -103,10 +103,12 @@ Usage:
     listCompr(container, callable, predicate) -> std::list
     vectorCompr(container, callable, predicate) -> std::vector
     setCompr(container, callable, predicate) -> std::set
+    stringCompr(container, callable, predicate) -> std::string
     QListCompr(container, callable, predicate) -> QList
     QVectorCompr(container, callable, predicate) -> QVector
     QSetCompr(container, callable, predicate) -> QSet
     QLinkedListCompr(container, callable, predicate) -> QLinkedList
+    QStringCompr(container, callable, predicate) -> QString
 
 Inspired by Python's list comprehensions (hence 'compr'), this is a convenience function that is equivalent to:
 

@@ -527,5 +527,4 @@ T reversed(const T &container)
     return result;
 }
 
-
 #endif // __FUNCTIONAL_HELPERS_H__

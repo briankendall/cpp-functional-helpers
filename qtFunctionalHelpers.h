@@ -82,5 +82,43 @@ __FH_omit_with_specific_return_type(QVectorOmit, QVector)
 __FH_omit_with_specific_return_type(QSetOmit, QSet)
 __FH_omit_with_specific_return_type(QLinkedListOmit, QLinkedList)
 
+// reversed
+
+// Special casing reversed() for Qt containers in order to achieve
+// compatibility with Qt versions before 5.6 as they do not implement crbegin()
+// or crend()
+
+template <template <class> class Container, class T, template <class> class Iterator>
+Container<T> reversed(const Container<T> &container)
+{
+    Container<T> result;
+    Iterator<T> it(container);
+    it.toBack();
+    
+    while(it.hasPrevious()) {
+        _FunctionalHelpersUtils::addItem(result, it.previous());
+    }
+    
+    return result;
+}
+
+template <class T>
+QList<T> reversed(const QList<T> &container)
+{
+    return reversed<QList, T, QListIterator>(container);
+}
+
+template <class T>
+QLinkedList<T> reversed(const QLinkedList<T> &container)
+{
+    return reversed<QLinkedList, T, QLinkedListIterator>(container);
+}
+
+template <class T>
+QVector<T> reversed(const QVector<T> &container)
+{
+    return reversed<QVector, T, QVectorIterator>(container);
+}
+
 #endif // __QT_FUNCTIONAL_HELPERS_H__
 

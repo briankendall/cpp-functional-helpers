@@ -91,8 +91,8 @@ U map(const T &list, const F &func)
     return result;
 }
 
-template <template <class...> class T, class U, class F>
-auto map(const T<U> &list, const F &func)
+template <template <class...> class T, class U, class F, class ... Rest>
+auto map(const T<U, Rest...> &list, const F &func)
     -> T<typename std::decay<decltype(std::ref(func)(decltype(*list.begin())(*list.begin())))>::type>
 {
     using V = typename std::decay<decltype(std::ref(func)(decltype(*list.begin())(*list.begin())))>::type;
@@ -511,5 +511,21 @@ auto NAME(const T &container, const V &omitted) \
 __FH_omit_with_specific_return_type(listOmit, std::list)
 __FH_omit_with_specific_return_type(vectorOmit, std::vector)
 __FH_omit_with_specific_return_type(setOmit, std::set)
+
+// reversed
+
+template <class T>
+T reversed(const T &container)
+{
+    using ItType = decltype(container.crbegin());
+    T result;
+    
+    for(ItType it = container.crbegin(); it != container.crend(); ++it) {
+        _FunctionalHelpersUtils::addItem(result, *it);
+    }
+    
+    return result;
+}
+
 
 #endif // __FUNCTIONAL_HELPERS_H__

@@ -22,6 +22,7 @@ A couple of headers that provide convenient functional-style helper functions th
 * [`sorted`](#sorted)
 * [`contains`](#contains)
 * [`omit`](#omit)
+* [`reversed`](#reversed)
 * [Future work and contributing](#future-work-and-contributing)
 
 ## How to include
@@ -357,6 +358,20 @@ Example:
     omit(std::list<int>({1, 2, 3, 4, 5}), exclude);
     // return std::list<int>({4, 5})
 
+## `reversed`
+
+Usage:
+
+    reversed(container) -> container of same type
+    
+Returns a new container that contains all the items of `container` but in reverse order.
+
+Note: you can pass unordered containers (like `set`) into this function and it won't result in a compiler error, though doing so will of course return an identical collection.
+
+Example:
+
+    contains(QList<int>({1, 2, 3, 4, 5});
+    // Returns QList<int>({5, 4, 3, 2, 1})
 
 ## Future work and contributing
 

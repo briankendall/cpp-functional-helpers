@@ -5,10 +5,9 @@
 // headers (like <QString>), otherwise we'll get the error "too few arguments
 // for class template 'vector'" when using versions of a function that take
 // template-template arguments.
-
-#ifdef QSTRING_H
-#error qtFunctionalHelpers.h must be included before included before Qt headers (namely QString).
-#endif
+//
+// NB: if you get that error, move your include of <qtFunctionalHelpers.h>
+// above <vector>
 
 #include <vector>
 #include <QVector>

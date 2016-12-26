@@ -25,6 +25,8 @@ A couple of headers that provide convenient functional-style helper functions th
 * [`reversed`](#reversed)
 * [`first`](#first)
 * [`last`](#last)
+* [`range`](#range)
+* [`mapRange`](#maprange)
 * [Future work and contributing](#future-work-and-contributing)
 
 ## How to include
@@ -422,6 +424,119 @@ Example:
 
     last(QList<int>(), 42);
     // Returns 42
+    
+## `range`
+
+Usage:
+
+    listRange(start, end, increment) -> std::list<int>
+    listRange(start, end) -> std::list<int>
+    listRange(end) -> std::list<int>
+    vectorRange(start, end, increment) -> std::vector<int>
+    vectorRange(start, end) -> std::vector<int>
+    vectorRange(end) -> std::vector<int>
+    setRange(start, end, increment) -> std::set<int>
+    setRange(start, end) -> std::set<int>
+    setRange(end) -> std::set<int>
+    QListRange(start, end, increment) -> std::QList<int>
+    QListRange(start, end) -> std::QList<int>
+    QListRange(end) -> std::QList<int>
+    QVectorRange(start, end, increment) -> std::QVector<int>
+    QVectorRange(start, end) -> std::QVector<int>
+    QVectorRange(end) -> std::QVector<int>
+    QSetRange(start, end, increment) -> std::QSet<int>
+    QSetRange(start, end) -> std::QSet<int>
+    QSetRange(end) -> std::QSet<int>
+    QLinkedListRange(start, end, increment) -> std::QLinkedList<int>
+    QLinkedListRange(start, end) -> std::QLinkedList<int>
+    QLinkedListRange(end) -> std::QLinkedList<int>
+    
+Inspired by the `range` function in python, returns a container containing an arithmetic progression similar to what one would see in a basic `for` loop. Specifically, the result of `range` can be defined using the following psuedo-code for when `inc` is positive:
+
+    for(int i = start; i < end; i += inc)
+        push_back(i);
+
+When `inc` is negative, the conditional changes to `i > end`.
+
+If `inc` is omitted, it defaults to 1. If `start` is omitted, it defaults to 0.
+
+What kind of container is returned depends on which version of the function is used.
+
+Example:
+
+    listRange(10) // returns std::list<int>({0, 1, 2, 3, 4, 5, 6, 7, 8, 9})
+    vectorRange(1, 6) // returns std::vector<int>({1, 2, 3, 4, 5})
+    QListRange(5, 0, -1) // returns QList<int>({5, 4, 3, 2, 1})
+
+## `mapRange`
+
+Usage:
+
+     listMapRange(start, end, increment, callable) -> std::list
+     listMapRange(start, end, callable) -> std::list
+     listMapRange(end, callable) -> std::list
+     listMapRange(start, end, increment, callable, predicate) -> std::list
+     listMapRange(start, end, callable, predicate) -> std::list
+     listMapRange(end, callable, predicate) -> std::list
+     vectorMapRange(start, end, increment, callable) -> std::vector
+     vectorMapRange(start, end, callable) -> std::vector
+     vectorMapRange(end, callable) -> std::vector
+     vectorMapRange(start, end, increment, callable, predicate) -> std::vector
+     vectorMapRange(start, end, callable, predicate) -> std::vector
+     vectorMapRange(end, callable, predicate) -> std::vector
+     setMapRange(start, end, increment, callable) -> std::set
+     setMapRange(start, end, callable) -> std::set
+     setMapRange(end, callable) -> std::set
+     setMapRange(start, end, increment, callable, predicate) -> std::set
+     setMapRange(start, end, callable, predicate) -> std::set
+     setMapRange(end, callable, predicate) -> std::set
+     QListMapRange(start, end, increment, callable) -> std::QList
+     QListMapRange(start, end, callable) -> std::QList
+     QListMapRange(end, callable) -> std::QList
+     QListMapRange(start, end, increment, callable, predicate) -> std::QList
+     QListMapRange(start, end, callable, predicate) -> std::QList
+     QListMapRange(end, callable, predicate) -> std::QList
+     QVectorMapRange(start, end, increment, callable) -> std::QVector
+     QVectorMapRange(start, end, callable) -> std::QVector
+     QVectorMapRange(end, callable) -> std::QVector
+     QVectorMapRange(start, end, increment, callable, predicate) -> std::QVector
+     QVectorMapRange(start, end, callable, predicate) -> std::QVector
+     QVectorMapRange(end, callable, predicate) -> std::QVector
+     QSetMapRange(start, end, increment, callable) -> std::QSet
+     QSetMapRange(start, end, callable) -> std::QSet
+     QSetMapRange(end, callable) -> std::QSet
+     QSetMapRange(start, end, increment, callable, predicate) -> std::QSet
+     QSetMapRange(start, end, callable, predicate) -> std::QSet
+     QSetMapRange(end, callable, predicate) -> std::QSet
+     QLinkedListMapRange(start, end, increment, callable) -> std::QLinkedList
+     QLinkedListMapRange(start, end, callable) -> std::QLinkedList
+     QLinkedListMapRange(end, callable) -> std::QLinkedList
+     QLinkedListMapRange(start, end, increment, callable, predicate) -> std::QLinkedList
+     QLinkedListMapRange(start, end, callable, predicate) -> std::QLinkedList
+     QLinkedListMapRange(end, callable, predicate) -> std::QLinkedList
+
+A convenience function that is the equivalent of:
+
+    map(filter(range(start, end, increment), predicate), callable)
+    
+or, if `predicate` is omitted:
+
+    map(range(start, end, increment), callable)
+    
+but is more efficient as only one container is constructed.
+
+As with `range`, when increment is omitted, it defaults to 1, and when start is omitted, it defaults to 0.
+
+What kind of container is returned depends on which version of the function is used.
+
+Examples:
+
+    listMapRange(5, [] (int x) { return x*x; });
+    // returns std::list({0, 1, 4, 9, 16})
+    vectorMapRange(-1, -6, -1, [] (int x) { return x*x; });
+    // returns std::vector({1, 4, 9, 16, 25})
+    QListMapRange(1, 15, [] (int x) { return x*x; }, [] (int x) { return (x%3) != 0; });
+    // returns QList((1, 4, 16, 25, 49, 64, 100, 121, 169, 196))
 
 ## Future work and contributing
 

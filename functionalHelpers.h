@@ -579,4 +579,95 @@ auto last(const T &container, const U &defaultValue)
     }
 }
 
+// range
+
+#define __FH_range_with_return_type(NAME, RET_TYPE) \
+RET_TYPE<int> NAME(int start, int end, int inc=1) \
+{ \
+    RET_TYPE<int> result; \
+    int sign = (inc < 0) ? -1 : 1; \
+     \
+    for(int i = start; (i*sign) < (end*sign); i += inc) { \
+        _FunctionalHelpersUtils::addItem(result, i); \
+    } \
+     \
+    return result; \
+} \
+ \
+RET_TYPE<int> NAME(int end) \
+{ \
+    return NAME(0, end); \
+}
+
+__FH_range_with_return_type(listRange, std::list)
+__FH_range_with_return_type(vectorRange, std::vector)
+__FH_range_with_return_type(setRange, std::set)
+
+// mapRange
+
+#define __FH_mapRange_with_return_type(NAME, RET_TYPE) \
+template <class F1> \
+auto NAME(int start, int end, int inc, const F1 &func) \
+-> RET_TYPE<typename std::decay<decltype(std::ref(func)(0))>::type> \
+{ \
+    using U = typename std::decay<decltype(std::ref(func)(0))>::type; \
+    RET_TYPE<U> result; \
+    int sign = (inc < 0) ? -1 : 1; \
+     \
+    for(int i = start; (i*sign) < (end*sign); i += inc) { \
+        _FunctionalHelpersUtils::addItem(result, std::ref(func)(i)); \
+    } \
+     \
+    return result; \
+} \
+ \
+template <class F1, class F2> \
+auto NAME(int start, int end, int inc, const F1 &func, const F2 &predicate) \
+-> RET_TYPE<typename std::decay<decltype(std::ref(func)(0))>::type> \
+{ \
+    using U = typename std::decay<decltype(std::ref(func)(0))>::type; \
+    RET_TYPE<U> result; \
+    int sign = (inc < 0) ? -1 : 1; \
+     \
+    for(int i = start; (i*sign) < (end*sign); i += inc) { \
+        if (std::ref(predicate)(i)) { \
+            _FunctionalHelpersUtils::addItem(result, std::ref(func)(i)); \
+        } \
+    } \
+     \
+    return result; \
+} \
+ \
+template <class F1> \
+auto NAME(int start, int end, const F1 &func) \
+-> RET_TYPE<typename std::decay<decltype(std::ref(func)(0))>::type> \
+{ \
+    return NAME(start, end, 1, func); \
+} \
+ \
+template <class F1, class F2> \
+auto NAME(int start, int end, const F1 &func, const F2 &predicate) \
+-> RET_TYPE<typename std::decay<decltype(std::ref(func)(0))>::type> \
+{ \
+    return NAME(start, end, 1, func, predicate); \
+} \
+ \
+template <class F1> \
+auto NAME(int end, const F1 &func) \
+-> RET_TYPE<typename std::decay<decltype(std::ref(func)(0))>::type> \
+{ \
+    return NAME(0, end, 1, func); \
+} \
+ \
+template <class F1, class F2> \
+auto NAME(int end, const F1 &func, const F2 &predicate) \
+-> RET_TYPE<typename std::decay<decltype(std::ref(func)(0))>::type> \
+{ \
+    return NAME(0, end, 1, func, predicate); \
+}
+
+__FH_mapRange_with_return_type(listMapRange, std::list)
+__FH_mapRange_with_return_type(vectorMapRange, std::vector)
+__FH_mapRange_with_return_type(setMapRange, std::set)
+
 #endif // __FUNCTIONAL_HELPERS_H__

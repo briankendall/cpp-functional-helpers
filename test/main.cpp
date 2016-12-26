@@ -1,5 +1,6 @@
 #include <qtFunctionalHelpers.h>
 #include <qDebug>
+#include <QItemSelection>
 
 // A quick set of tests for functionHelpers.h and qtFunctionalHelpers.h
 // Mainly used to check for compile errors. Also checks for correct results at runtime, but
@@ -550,6 +551,7 @@ void testFirst()
     TEST(first(QListNumbers), 1);
     TEST(first(QVectorNumbers), 1);
     TEST(first(QLinkedListNumbers), 1);
+    TEST(first(QStringList({"one", "two", "three"})), QString("one"));
 }
 
 void testLast()
@@ -565,6 +567,8 @@ void testLast()
     TEST(last(QListNumbers), 5);
     TEST(last(QVectorNumbers), 5);
     TEST(last(QLinkedListNumbers), 5);
+    TEST(last(QStringList({"one", "two", "three"})), QString("three"));
+    TEST(last(QItemSelection()), QItemSelectionRange());
 }
 
 int main()

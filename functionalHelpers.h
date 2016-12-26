@@ -531,7 +531,7 @@ T reversed(const T &container)
 
 template <class T>
 auto first(const T &container)
- -> typename std::decay<decltype(*container.begin())>::type
+ -> typename std::decay<decltype(*container.cbegin())>::type
 {
     using U = typename std::decay<decltype(*container.begin())>::type;
     
@@ -544,7 +544,7 @@ auto first(const T &container)
 
 template <class T, class U>
 auto first(const T &container, const U &defaultValue)
- -> typename std::decay<decltype(*container.begin())>::type
+ -> typename std::decay<decltype(*container.cbegin())>::type
 {
     if (container.size() == 0) {
         return defaultValue;
@@ -557,7 +557,7 @@ auto first(const T &container, const U &defaultValue)
 
 template <class T>
 auto last(const T &container)
- -> typename std::decay<decltype(*container.begin())>::type
+ -> typename std::decay<decltype(*container.crbegin())>::type
 {
     using U = typename std::decay<decltype(*container.begin())>::type;
     
@@ -570,7 +570,7 @@ auto last(const T &container)
 
 template <class T, class U>
 auto last(const T &container, const U &defaultValue)
- -> typename std::decay<decltype(*container.begin())>::type
+ -> typename std::decay<decltype(*container.crbegin())>::type
 {
     if (container.size() == 0) {
         return defaultValue;

@@ -582,7 +582,7 @@ auto last(const T &container, const U &defaultValue)
 // range
 
 #define __FH_range_with_return_type(NAME, RET_TYPE) \
-RET_TYPE<int> NAME(int start, int end, int inc=1) \
+inline RET_TYPE<int> NAME(int start, int end, int inc=1) \
 { \
     RET_TYPE<int> result; \
     int sign = (inc < 0) ? -1 : 1; \
@@ -594,7 +594,7 @@ RET_TYPE<int> NAME(int start, int end, int inc=1) \
     return result; \
 } \
  \
-RET_TYPE<int> NAME(int end) \
+inline RET_TYPE<int> NAME(int end) \
 { \
     return NAME(0, end); \
 }

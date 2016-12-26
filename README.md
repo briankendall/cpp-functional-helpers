@@ -48,7 +48,7 @@ Usage:
     QLinkedListMap(container, callable) -> QLinkedList
     QStringMap(container, callable) -> QString
 
-Constructs a new container by mapping each value in `container` through a transformation function `callable`. `callable` must take one argument of the same type that is in `container`.
+Constructs a new container by mapping each value in `container` through a transformation function `callable`. `callable` must take one argument of the same type that is in `container` and return a value. The value type of the new container will be the same as the return type of `callable`.
 
 What kind of container is returned depends on which version of the function is used. For the first form `map`, the same type of container passed into the first parameter is what is returned. The remaining forms return a container based off of their name, so the container passed in doesn't have to be of the same type.
 
@@ -81,7 +81,7 @@ Usage:
     QSetFilter(container, predicate) -> QSet
     QLinkedListFilter(container, predicate) -> QLinkedList
 
-Constructs a new container containg each value in `container` test passes a truth test `predicate`. `callable` must take one argument of the same type that is in `container` and return a boolean.
+Constructs a new container containg each value in `container` test passes a truth test `predicate`. `predicate ` must take one argument of the same type that is in `container` and return a boolean.
 
 What kind of container is returned depends on which version of the function is used. For the first form `filter`, the same type of container passed into the first parameter is what is returned. The remaining forms return a container based off of their name, so the container passed in doesn't have to be of the same type.
 
@@ -135,7 +135,7 @@ Usage:
 
     allOf(container, predicate) -> bool
     
-Returns true if all of the values in `container` pass the truth test `predicate`.
+Returns true if all of the values in `container` pass the truth test `predicate`. `predicate ` must take one argument of the same type that is in `container` and return a boolean.
 
 Example:
 
@@ -151,7 +151,7 @@ Usage:
 
     anyOf(container, predicate) -> bool
     
-Returns true if at least one of the values in `container` pass the truth test `predicate`.
+Returns true if at least one of the values in `container` pass the truth test `predicate`. `predicate ` must take one argument of the same type that is in `container` and return a boolean.
 
 Example:
 
@@ -176,7 +176,7 @@ Example:
     class StylishGarb {
     public:
         StylishGarb(int c) : coolness(c) {};
-        int isSwankier(const StylishGarb &other) const { return coolness > other.coolness; };
+        bool isSwankier(const StylishGarb &other) const { return coolness > other.coolness; };
         int coolness;
     };
     
@@ -370,7 +370,7 @@ Usage:
     
 Returns a new container that contains all the items of `container` but in reverse order.
 
-Note: you can pass unordered containers (like `set`) into this function and it won't result in a compiler error, though doing so will of course return an identical collection.
+Note: you can pass unordered containers (like `set`) into this function and it won't result in a compiler error, though doing so will of course return an identical container.
 
 Example:
 
@@ -386,7 +386,9 @@ Usage:
     
 Returns the first element of `container` with bounds checking.
 
-If `container` is empty, the first form returns an instance of `container`'s value type using its default constructor (or 0 for a fundamental type), and the second form returns `defaultValue`. Note that for the first type, a default value is not constructed unless `container` is empty.
+If `container` is empty, the first form returns an instance of `container`'s value type using its default constructor (or 0 for a fundamental type). Note that a default value is constructed if and only if `container` is empty.
+
+The second form returns `defaultValue` if `container` is empty.
 
 Note: you can pass unordered containers (like `set`) into this function and it may not result in a compiler error, though its return value will be an undefined and probably arbitrary element in `container`.
 
@@ -410,7 +412,9 @@ Usage:
 
 Returns the last element of `container` with bounds checking.
 
-If `container` is empty, the first form returns an instance of `container`'s value type using its default constructor (or 0 for a fundamental type), and the second form returns `defaultValue`. Note that for the first type, a default value is not constructed unless `container` is empty.
+If `container` is empty, the first form returns an instance of `container`'s value type using its default constructor (or 0 for a fundamental type). Note that a default value is constructed if and only if `container` is empty.
+
+The second form returns `defaultValue` if `container` is empty.
 
 Note: you can pass unordered containers (like `set`) into this function and it may not result in a compiler error, though its return value will be an undefined and probably arbitrary element in `container`.
 
@@ -438,23 +442,23 @@ Usage:
     setRange(start, end, increment) -> std::set<int>
     setRange(start, end) -> std::set<int>
     setRange(end) -> std::set<int>
-    QListRange(start, end, increment) -> std::QList<int>
-    QListRange(start, end) -> std::QList<int>
-    QListRange(end) -> std::QList<int>
-    QVectorRange(start, end, increment) -> std::QVector<int>
-    QVectorRange(start, end) -> std::QVector<int>
-    QVectorRange(end) -> std::QVector<int>
-    QSetRange(start, end, increment) -> std::QSet<int>
-    QSetRange(start, end) -> std::QSet<int>
-    QSetRange(end) -> std::QSet<int>
-    QLinkedListRange(start, end, increment) -> std::QLinkedList<int>
-    QLinkedListRange(start, end) -> std::QLinkedList<int>
-    QLinkedListRange(end) -> std::QLinkedList<int>
+    QListRange(start, end, increment) -> QList<int>
+    QListRange(start, end) -> QList<int>
+    QListRange(end) -> QList<int>
+    QVectorRange(start, end, increment) -> QVector<int>
+    QVectorRange(start, end) -> QVector<int>
+    QVectorRange(end) -> QVector<int>
+    QSetRange(start, end, increment) -> QSet<int>
+    QSetRange(start, end) -> QSet<int>
+    QSetRange(end) -> QSet<int>
+    QLinkedListRange(start, end, increment) -> QLinkedList<int>
+    QLinkedListRange(start, end) -> QLinkedList<int>
+    QLinkedListRange(end) -> QLinkedList<int>
     
 Inspired by the `range` function in python, returns a container containing an arithmetic progression similar to what one would see in a basic `for` loop. Specifically, the result of `range` can be defined using the following psuedo-code for when `inc` is positive:
 
     for(int i = start; i < end; i += inc)
-        push_back(i);
+        list.append(i);
 
 When `inc` is negative, the conditional changes to `i > end`.
 
@@ -490,30 +494,30 @@ Usage:
      setMapRange(start, end, increment, callable, predicate) -> std::set
      setMapRange(start, end, callable, predicate) -> std::set
      setMapRange(end, callable, predicate) -> std::set
-     QListMapRange(start, end, increment, callable) -> std::QList
-     QListMapRange(start, end, callable) -> std::QList
-     QListMapRange(end, callable) -> std::QList
-     QListMapRange(start, end, increment, callable, predicate) -> std::QList
-     QListMapRange(start, end, callable, predicate) -> std::QList
-     QListMapRange(end, callable, predicate) -> std::QList
-     QVectorMapRange(start, end, increment, callable) -> std::QVector
-     QVectorMapRange(start, end, callable) -> std::QVector
-     QVectorMapRange(end, callable) -> std::QVector
-     QVectorMapRange(start, end, increment, callable, predicate) -> std::QVector
-     QVectorMapRange(start, end, callable, predicate) -> std::QVector
-     QVectorMapRange(end, callable, predicate) -> std::QVector
-     QSetMapRange(start, end, increment, callable) -> std::QSet
-     QSetMapRange(start, end, callable) -> std::QSet
-     QSetMapRange(end, callable) -> std::QSet
-     QSetMapRange(start, end, increment, callable, predicate) -> std::QSet
-     QSetMapRange(start, end, callable, predicate) -> std::QSet
-     QSetMapRange(end, callable, predicate) -> std::QSet
-     QLinkedListMapRange(start, end, increment, callable) -> std::QLinkedList
-     QLinkedListMapRange(start, end, callable) -> std::QLinkedList
-     QLinkedListMapRange(end, callable) -> std::QLinkedList
-     QLinkedListMapRange(start, end, increment, callable, predicate) -> std::QLinkedList
-     QLinkedListMapRange(start, end, callable, predicate) -> std::QLinkedList
-     QLinkedListMapRange(end, callable, predicate) -> std::QLinkedList
+     QListMapRange(start, end, increment, callable) -> QList
+     QListMapRange(start, end, callable) -> QList
+     QListMapRange(end, callable) -> QList
+     QListMapRange(start, end, increment, callable, predicate) -> QList
+     QListMapRange(start, end, callable, predicate) -> QList
+     QListMapRange(end, callable, predicate) -> QList
+     QVectorMapRange(start, end, increment, callable) -> QVector
+     QVectorMapRange(start, end, callable) -> QVector
+     QVectorMapRange(end, callable) -> QVector
+     QVectorMapRange(start, end, increment, callable, predicate) -> QVector
+     QVectorMapRange(start, end, callable, predicate) -> QVector
+     QVectorMapRange(end, callable, predicate) -> QVector
+     QSetMapRange(start, end, increment, callable) -> QSet
+     QSetMapRange(start, end, callable) -> QSet
+     QSetMapRange(end, callable) -> QSet
+     QSetMapRange(start, end, increment, callable, predicate) -> QSet
+     QSetMapRange(start, end, callable, predicate) -> QSet
+     QSetMapRange(end, callable, predicate) -> QSet
+     QLinkedListMapRange(start, end, increment, callable) -> QLinkedList
+     QLinkedListMapRange(start, end, callable) -> QLinkedList
+     QLinkedListMapRange(end, callable) -> QLinkedList
+     QLinkedListMapRange(start, end, increment, callable, predicate) -> QLinkedList
+     QLinkedListMapRange(start, end, callable, predicate) -> QLinkedList
+     QLinkedListMapRange(end, callable, predicate) -> QLinkedList
 
 A convenience function that is the equivalent of:
 
@@ -542,6 +546,6 @@ Examples:
 
 Part of the point of this project was to familiarize myself with some of the more esoteric aspects of C++11. (And boy howdy does it get esoteric.) If there's a more efficient or elegant way to implement any of these functions, I'd love to see it! Also, while I tried to keep performance in mind when writing these, I'm not 100% sure I got it right, particularly when it comes to C++11's automatic move semantics and such. So if there's an error there I'd be happy to see it corrected.
 
-Not every STL and Qt container is currently supported -- just the ones I use a lot -- particularly for the functions that return a specific type based on their name (like listMap, vectorMap, etc). However it should in most cases be trivially easy to support another container if it uses STL-style iterators and implements a `begin`, `end`, `cbegin`, and `cend` methods like Qt's containers do. That said, these functions could be rewritten to be more agnostic about which method is used for iterator over the containers.
+Not every STL and Qt container is currently supported -- just the ones I use a lot -- particularly for the functions that return a specific type based on their name (like listMap, vectorMap, etc). However it should in most cases be easy to support another container if it uses STL-style iterators and implements a `begin`, `end`, `cbegin`, and `cend` methods like Qt's containers do. That said, these functions could be rewritten to be more agnostic about which method is used for iterating over the containers.
 
 And obviously, I'll be adding more functions to this bit by bit.

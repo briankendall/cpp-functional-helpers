@@ -527,4 +527,56 @@ T reversed(const T &container)
     return result;
 }
 
+// first
+
+template <class T>
+auto first(const T &container)
+ -> typename std::decay<decltype(*container.begin())>::type
+{
+    using U = typename std::decay<decltype(*container.begin())>::type;
+    
+    if (container.size() == 0) {
+        return U();
+    } else {
+        return *(container.cbegin());
+    }
+}
+
+template <class T, class U>
+auto first(const T &container, const U &defaultValue)
+ -> typename std::decay<decltype(*container.begin())>::type
+{
+    if (container.size() == 0) {
+        return defaultValue;
+    } else {
+        return *(container.cbegin());
+    }
+}
+
+// last
+
+template <class T>
+auto last(const T &container)
+ -> typename std::decay<decltype(*container.begin())>::type
+{
+    using U = typename std::decay<decltype(*container.begin())>::type;
+    
+    if (container.size() == 0) {
+        return U();
+    } else {
+        return *(container.crbegin());
+    }
+}
+
+template <class T, class U>
+auto last(const T &container, const U &defaultValue)
+ -> typename std::decay<decltype(*container.begin())>::type
+{
+    if (container.size() == 0) {
+        return defaultValue;
+    } else {
+        return *(container.crbegin());
+    }
+}
+
 #endif // __FUNCTIONAL_HELPERS_H__

@@ -119,5 +119,30 @@ QVector<T> reversed(const QVector<T> &container)
     return reversed<QVector, T, QVectorIterator>(container);
 }
 
+// last
+
+// Special casing last() for Qt containers in order to achieve compatibility
+// with Qt versions before 5.6 as they do not implement crbegin() or crend()
+
+template <template <class> class T, class U>
+U last(const T<U> &container)
+{
+    if (container.size() == 0) {
+        return U();
+    } else {
+        return container.last();
+    }
+}
+
+template <template <class> class T, class U>
+U last(const T<U> &container, const U &defaultValue)
+{
+    if (container.size() == 0) {
+        return defaultValue;
+    } else {
+        return container.last();
+    }
+}
+
 #endif // __QT_FUNCTIONAL_HELPERS_H__
 

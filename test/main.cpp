@@ -537,6 +537,36 @@ void testReversed()
     TEST(reversed(QLinkedListNumbers), QLinkedList<int>({5, 4, 3, 2, 1}));
 }
 
+void testFirst()
+{
+    TEST(first(listNumbers), 1);
+    TEST(first(listNumbers, 0), 1);
+    TEST(first(std::list<int>()), 0);
+    TEST(first(std::list<int>(), 12345), 12345);
+    TEST(first(listFoos), fooA);
+    TEST(first(std::list<Foo>(), fooC), fooC);
+    TEST(first(std::list<Foo>()), Foo());
+    TEST(first(vectorNumbers), 1);
+    TEST(first(QListNumbers), 1);
+    TEST(first(QVectorNumbers), 1);
+    TEST(first(QLinkedListNumbers), 1);
+}
+
+void testLast()
+{
+    TEST(last(listNumbers), 5);
+    TEST(last(listNumbers, 0), 5);
+    TEST(last(std::list<int>()), 0);
+    TEST(last(std::list<int>(), 12345), 12345);
+    TEST(last(listFoos), fooE);
+    TEST(last(std::list<Foo>(), fooC), fooC);
+    TEST(last(std::list<Foo>()), Foo());
+    TEST(last(vectorNumbers), 5);
+    TEST(last(QListNumbers), 5);
+    TEST(last(QVectorNumbers), 5);
+    TEST(last(QLinkedListNumbers), 5);
+}
+
 int main()
 {
     testMap();
@@ -553,6 +583,8 @@ int main()
     testContains();
     testOmit();
     testReversed();
+    testFirst();
+    testLast();
     
     qDebug() << "Finished!" << passedTests << "/" << totalTests << "passed";
     return 0;

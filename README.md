@@ -23,6 +23,8 @@ A couple of headers that provide convenient functional-style helper functions th
 * [`contains`](#contains)
 * [`omit`](#omit)
 * [`reversed`](#reversed)
+* [`first`](#first)
+* [`last`](#last)
 * [Future work and contributing](#future-work-and-contributing)
 
 ## How to include
@@ -372,6 +374,54 @@ Example:
 
     contains(QList<int>({1, 2, 3, 4, 5});
     // Returns QList<int>({5, 4, 3, 2, 1})
+
+## `first`
+
+Usage:
+
+    first(container) -> value type of container
+    first(container, defaultValue) -> value type of container
+    
+Returns the first element of `container` with bounds checking.
+
+If `container` is empty, the first form returns an instance of `container`'s value type using its default constructor (or 0 for a fundamental type), and the second form returns `defaultValue`. Note that for the first type, a default value is not constructed unless `container` is empty.
+
+Note: you can pass unordered containers (like `set`) into this function and it may not result in a compiler error, though its return value will be an undefined and probably arbitrary element in `container`.
+
+Example:
+
+    first(std::list<int>({1, 2, 3, 4, 5});
+    // Returns 1
+
+    first(std::list<int>());
+    // Returns 0
+
+    first(std::list<int>(), 42);
+    // Returns 42
+
+## `last`
+
+Usage:
+
+    last(container) -> value type of container
+    last(container, defaultValue) -> value type of container
+
+Returns the last element of `container` with bounds checking.
+
+If `container` is empty, the first form returns an instance of `container`'s value type using its default constructor (or 0 for a fundamental type), and the second form returns `defaultValue`. Note that for the first type, a default value is not constructed unless `container` is empty.
+
+Note: you can pass unordered containers (like `set`) into this function and it may not result in a compiler error, though its return value will be an undefined and probably arbitrary element in `container`.
+
+Example:
+
+    last(QList<int>({1, 2, 3, 4, 5});
+    // Returns 5
+
+    last(QList<int>());
+    // Returns 0
+
+    last(QList<int>(), 42);
+    // Returns 42
 
 ## Future work and contributing
 

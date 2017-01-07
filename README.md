@@ -166,36 +166,53 @@ Example:
 Usage:
 
     extremum(container, comparator) -> value type of container
+    extremum(container, comparator, defaultValue) -> value type of container
     
 where `comparator` is a function that returns a bool and has two parameters whose type are the value type of `container`.
 
 Returns the item in container for whom `comparator(item, anyOtherItem)` returns true. If there is no such item, the results are undefined.
 
+If `container` is empty, the first form returns an instance of `container`'s value type using its default constructor (or 0 for a fundamental type). Note that a default value is constructed if and only if `container` is empty.
+
+The second form returns `defaultValue` if `container` is empty.
+
 Example:
 
     class StylishGarb {
     public:
-        StylishGarb(int c) : coolness(c) {};
+        StylishGarb(int c=0) : coolness(c) {};
         bool isSwankier(const StylishGarb &other) const { return coolness > other.coolness; };
         int coolness;
     };
     
     std::list<StylishGarb> pimpinOutfit = {StylishGarb(143), StylishGarb(9134), StylishGarb(851495)};
     extremum(pimpinOutfit, &StylishGarb::isSwankier);
-    // returns StylushGarb(851495);
+    // returns StylushGarb(851495)
+    
+    extremum(std::list<StylushGarb>(), &StylishGarb::isSwankier);
+    // returns StylishGarb(0)
+    
 
 ## `min`
 
 Usage:
 
     min(container) -> value type of container
+    min(container, defaultValue) -> value type of container
     min(container, callable) -> value type of container
+    min(container, callable, defaultValue) -> value type of container
     
-Returns the minimum value in `container`. If the first form is used, the value type of `container` must allow use of the `<` operator as it will be used to determine the order.
+Returns the minimum value in `container`. If the first or second forms are used, the value type of `container` must allow use of the `<` operator as it will be used to determine the order.
 
-If the second form is used and `callable` is provided, it will be used on each value in `container` to generate the criterion by which the value is ranked. The return value of `callable` must allow use of the `<` operator.
+If the third or fourth form is used and `callable` is provided, it will be used on each value in `container` to generate the criterion by which the value is ranked. The return value of `callable` must allow use of the `<` operator.
 
-Example:
+If `container` is empty, the first and second forms return an instance of `container`'s value type using its default constructor (or 0 for a fundamental type). Note that a default value is constructed if and only if `container` is empty.
+
+The third and fourth forms return `defaultValue` if `container` is empty.
+
+**Important note:** if the value type of `container` is callable with a single argument whose type is also the value type of `container`, then it is not possible to use the second form of `min`. This is because, when calling `min` with two arguments, the compiler determines whether to use the second or third form of `min` depending on whether the second argument is callable in this manner. See the last two examples below for a demonstration of how this can happen.
+
+Examples:
 
     std::list<std::string> words = {"once", "upon", "a", "time"};
     min(words);
@@ -206,17 +223,50 @@ Example:
                                     {15, -3}};
     min(sequences, &QList<int>::size);
     // returns QList<int>({15, -3})
+    
+    min(std::list<int>());
+    // returns 0
+    
+    min(std::list<int>(), 123);
+    // returns 123
+    
+    class CallableClass {
+    public:
+        CallableClass(int a=0) : value(a) {};
+        int operator()(const CallableClass &other) const { return -1 * other.value; };
+        bool operator<(const CallableClass &other) const { return value < other.value; };
+        int value;
+    };
+    
+    min(list<CallableClass>(), CallableClass(123));
+    // returns CallableClass(0)
+    // Note: does not return CallableClass(123) because the third form of min is
+    // being used, not the second
+	
+    min(list<CallableClass>({CallableClass(1), CallableClass(2)}), CallableClass(0));
+    // returns CallableClass(2)
+    // Note: does not return CallableClass(1) because the third form of min is
+    // being used, and CallableClass::operator()(const CallableClass &other)
+    // returns *the opposite* of other.value.
 
 ## `max`
 
 Usage:
 
     max(container) -> value type of container
+    max(container, defaultValue) -> value type of container
     max(container, callable) -> value type of container
+    max(container, callable, defaultValue) -> value type of container
     
-Returns the maximum value in `container`. If the first form is used, the value type of `container` must allow use of the `>` operator as it will be used to determine the order.
+Returns the maximum value in `container`. If the first or second form is used, the value type of `container` must allow use of the `>` operator as it will be used to determine the order.
 
-If the second form is used and `callable` is provided, it will be used on each value in `container` to generate the criterion by which the value is ranked. The return value of `callable` must allow use of the `>` operator.
+If the third or fourth form is used and `callable` is provided, it will be used on each value in `container` to generate the criterion by which the value is ranked. The return value of `callable` must allow use of the `>` operator.
+
+If `container` is empty, the first and second forms return an instance of `container`'s value type using its default constructor (or 0 for a fundamental type). Note that a default value is constructed if and only if `container` is empty.
+
+The third and fourth forms return `defaultValue` if `container` is empty.
+
+**Important note:** if the value type of `container` is callable with a single argument whose type is also the value type of `container`, then it is not possible to use the second form of `max`. This is because, when calling `max` with two arguments, the compiler determines whether to use the second or third form of `max` depending on whether the second argument is callable in this manner. See the last two examples below for a demonstration of how this can happen.
 
 Example:
 
@@ -229,6 +279,31 @@ Example:
                                     {15, -3}};
     max(sequences, &QList<int>::size);
     // returns QList<int>({6, 9, -10, 4, 5, 12})
+    
+    max(std::list<int>());
+    // returns 0
+    
+    max(std::list<int>(), 123);
+    // returns 123
+    
+    class CallableClass {
+    public:
+        CallableClass(int a=0) : value(a) {};
+        int operator()(const CallableClass &other) const { return -1 * other.value; };
+        bool operator<(const CallableClass &other) const { return value < other.value; };
+        int value;
+    };
+    
+    max(list<CallableClass>(), CallableClass(123));
+    // returns CallableClass(0)
+    // Note: does not return CallableClass(123) because the third form of max is
+    // being used, not the second
+	
+    max(list<CallableClass>({CallableClass(1), CallableClass(2)}), CallableClass(0));
+    // returns CallableClass(1)
+    // Note: does not return CallableClass(1) because the third form of max is
+    // being used, and CallableClass::operator()(const CallableClass &other)
+    // returns *the opposite* of other.value.
 
 ## `reduce`
 

@@ -70,6 +70,15 @@ public:
     DerivedQPtrList(initializer_list<Foo *> args) : QList<Foo *>(args) {};
 };
 
+class CallableClass {
+public:
+    CallableClass(int a=0) : value(a) {};
+    int operator()(const CallableClass &thing) const { return -thing.value; };
+    bool operator==(const CallableClass &other) const { return value == other.value; };
+    bool operator<(const CallableClass &other) const { return value < other.value; };
+    int value;
+};
+
 const list<int> listNumbers = {1,2,3,4,5};
 const vector<int> vectorNumbers = {1,2,3,4,5};
 const set<int> setNumbers = {1,2,3,4,5};
@@ -352,6 +361,9 @@ void testExtremum()
     TEST(extremum(QVectorNumbers, [] (int x, int y) { return x < y; }), 1);
     TEST(extremum(QSetNumbers, [] (int x, int y) { return x < y; }), 1);
     TEST(extremum(QLinkedListNumbers, [] (int x, int y) { return x < y; }), 1);
+    
+    TEST(extremum(list<int>(), [] (int x, int y) { return x < y; }), 0);
+    TEST(extremum(list<int>(), [] (int x, int y) { return x < y; }, 123), 123);
 }
 
 void testMin()
@@ -376,6 +388,14 @@ void testMin()
     TEST(min(QListFooPtrs, &Foo::baseGetValue), &fooA);
     TEST(min(derivedListFoos, &Foo::getValue), fooA);
     TEST(min(derivedQListFoos, &Foo::baseGetValue), fooA);
+    
+    TEST(min(list<int>()), 0);
+    TEST(min(list<int>(), 123), 123);
+    TEST(min(list<Foo>(), Foo(123)), Foo(123));
+    
+    // Example of gotcha where the second argument to min is callable with the value type of the passed in container:
+    TEST(min(list<CallableClass>(), CallableClass(123)), CallableClass(0));
+    TEST(min(list<CallableClass>({CallableClass(1), CallableClass(2)}), CallableClass(123)), CallableClass(2));
 }
 
 void testMax()
@@ -400,6 +420,14 @@ void testMax()
     TEST(max(QListFooPtrs, &Foo::baseGetValue), &fooE);
     TEST(max(derivedListFoos, &Foo::getValue), fooE);
     TEST(max(derivedQListFoos, &Foo::baseGetValue), fooE);
+    
+    TEST(max(list<int>()), 0);
+    TEST(max(list<int>(), 123), 123);
+    TEST(max(list<Foo>(), Foo(123)), Foo(123));
+    
+    // Example of gotcha where the second argument to max is callable with the value type of the passed in container:
+    TEST(max(list<CallableClass>(), CallableClass(123)), CallableClass(0));
+    TEST(max(list<CallableClass>({CallableClass(1), CallableClass(2)}), CallableClass(123)), CallableClass(1));
 }
 
 void testReduce()
@@ -715,6 +743,15 @@ void testMapRange()
     TEST(QLinkedListMapRange(5, [] (int x) { return x+1; }, [] (int x) { return (x%2) == 0; }), QLinkedList<int>({1, 3, 5}));
 }
 
+
+class CallableClass2 {
+public:
+    CallableClass2(int a=0) : value(a) {};
+    int operator()(const CallableClass2 &other) const { return -1 * other.value; };
+    bool operator<(const CallableClass2 &other) const { return value < other.value; };
+    int value;
+};
+
 int main()
 {
     testMap();
@@ -736,8 +773,16 @@ int main()
     testRange();
     testMapRange();
     
-    qDebug() << QListMapRange(1, 15, [] (int x) { return x*x; }, [] (int x) { return (x%3) != 0; });
+    CallableClass2 blah = min(list<CallableClass2>(), CallableClass2(123));
+    CallableClass2 blah2 = min(list<CallableClass2>({CallableClass2(1), CallableClass2(2)}), CallableClass2(123));
+    qDebug() << blah.value;
+    qDebug() << blah2.value;
     
+            /*
+            // Example of gotcha where the second argument to min is callable with the value type of the passed in container:
+            TEST(min(list<CallableClass>(), CallableClass(123)), CallableClass(0));
+            TEST(min(list<CallableClass>({CallableClass(1), CallableClass(2)}), CallableClass(123)), CallableClass(2));
+    */
     qDebug() << "Finished!" << passedTests << "/" << totalTests << "passed";
     return 0;
 }

@@ -73,6 +73,16 @@ namespace _FunctionalHelpersUtils {
     public:
         enum { value = sizeof(test<T>(0)) == sizeof(char) };
     };
+    
+    template<class F, class...Args>
+    struct is_callable
+    {
+        //template<class U> static auto test(U* p) -> decltype((*p)(std::declval<Args>()...), void(), std::true_type());
+        template<class U> static auto test(U* p) -> decltype(std::ref(*p)(std::declval<Args>()...), void(), std::true_type());
+        template<class U> static auto test(...) -> decltype(std::false_type());
+    
+        static constexpr bool value = decltype(test<F>(0))::value;
+    };
 }
 
 // map
@@ -226,21 +236,50 @@ bool anyOf(T const &list, const F &f)
 
 // extremum
 
+namespace _FunctionalHelpersUtils {
+    template <class T, class F>
+    auto extremumBase(const T &list, const F &comp)
+        -> const typename std::decay<decltype(*list.begin())>::type *
+    {
+        using U = typename std::decay<decltype(*list.begin())>::type;
+        using V = decltype(list.cbegin());
+        const U *extremumValue = nullptr;
+        
+        for(V it = list.cbegin(); it != list.cend(); ++it) {
+            if (!extremumValue || std::ref(comp)(decltype(*it)(*it), *extremumValue)) {
+                extremumValue = &(*it);
+            }
+        }
+    
+        return extremumValue;
+    }
+}
+
 template <class T, class F>
 auto extremum(const T &list, const F &comp)
     -> typename std::decay<decltype(*list.begin())>::type
 {
     using U = typename std::decay<decltype(*list.begin())>::type;
-    using V = decltype(list.cbegin());
-    const U *extremumValue = nullptr;
+    const U *extremumValue = _FunctionalHelpersUtils::extremumBase(list, comp);
     
-    for(V it = list.cbegin(); it != list.cend(); ++it) {
-        if (!extremumValue || std::ref(comp)(decltype(*it)(*it), *extremumValue)) {
-            extremumValue = &(*it);
-        }
+    if (extremumValue) {
+        return *extremumValue;
+    } else {
+        return U();
     }
+}
 
-    return *extremumValue;
+template <class T, class F, class U>
+auto extremum(const T &list, const F &comp, const U &defaultVal)
+    -> typename std::decay<decltype(*list.begin())>::type
+{
+    const U *extremumValue = _FunctionalHelpersUtils::extremumBase(list, comp);
+    
+    if (extremumValue) {
+        return *extremumValue;
+    } else {
+        return defaultVal;
+    }
 }
 
 // min(container)
@@ -253,28 +292,64 @@ auto min(const T &list)
     return extremum(list, [] (const U &a, const U &b) {return a < b; });
 }
 
+template <class T, class U>
+auto min(const T &list, const U &defaultVal)
+  -> typename std::enable_if<!_FunctionalHelpersUtils::is_callable<U, typename std::decay<decltype(*list.begin())>::type>::value, U>::type
+{
+    return extremum(list, [] (const U &a, const U &b) {return a < b; }, defaultVal);
+}
+
 // min(container, func)
+
+namespace _FunctionalHelpersUtils {
+    template <class T, class F>
+    auto minBase(const T &list, const F &func)
+      -> const typename std::decay<decltype(*list.begin())>::type *
+    {
+        using U = typename std::decay<decltype(*list.begin())>::type;
+        using V = decltype(list.cbegin());
+        using W = typename std::decay<decltype(std::ref(func)(decltype(*list.begin())(*list.begin())))>::type;
+        const U *extremumValue = nullptr;
+        W extremumComparator;
+        
+        for(V it = list.cbegin(); it != list.cend(); ++it) {
+            W currentComparator = std::ref(func)(decltype(*it)(*it));
+            
+            if (!extremumValue || currentComparator < extremumComparator) {
+                extremumValue = &(*it);
+                extremumComparator = currentComparator;
+            }
+        }
+    
+        return extremumValue;
+    }
+}
 
 template <class T, class F>
 auto min(const T &list, const F &func)
-    -> typename std::decay<decltype(*list.begin())>::type
+  -> typename std::enable_if<_FunctionalHelpersUtils::is_callable<F, typename std::decay<decltype(*list.begin())>::type>::value,
+                             typename std::decay<decltype(*list.begin())>::type>::type
 {
     using U = typename std::decay<decltype(*list.begin())>::type;
-    using V = decltype(list.cbegin());
-    using W = typename std::decay<decltype(std::ref(func)(decltype(*list.begin())(*list.begin())))>::type;
-    const U *extremumValue = nullptr;
-    W extremumComparator;
-    
-    for(V it = list.cbegin(); it != list.cend(); ++it) {
-        W currentComparator = std::ref(func)(decltype(*it)(*it));
-        
-        if (!extremumValue || currentComparator < extremumComparator) {
-            extremumValue = &(*it);
-            extremumComparator = currentComparator;
-        }
-    }
+    const U *extremumValue = _FunctionalHelpersUtils::minBase(list, func);
 
-    return *extremumValue;
+    if (extremumValue) {
+        return *extremumValue;
+    } else {
+        return U();
+    }
+}
+
+template <class T, class F, class U>
+U min(const T &list, const F &func, const U &defaultVal)
+{
+    const U *extremumValue = _FunctionalHelpersUtils::minBase(list, func);
+
+    if (extremumValue) {
+        return *extremumValue;
+    } else {
+        return defaultVal;
+    }
 }
 
 // max(container)
@@ -287,28 +362,64 @@ auto max(const T &list)
     return extremum(list, [] (const U &a, const U &b) {return a > b; });
 }
 
+template <class T, class U>
+auto max(const T &list, const U &defaultVal)
+  -> typename std::enable_if<!_FunctionalHelpersUtils::is_callable<U, typename std::decay<decltype(*list.begin())>::type>::value, U>::type
+{
+    return extremum(list, [] (const U &a, const U &b) {return a > b; }, defaultVal);
+}
+
 // max(container, func)
+
+namespace _FunctionalHelpersUtils {
+    template <class T, class F>
+    auto maxBase(const T &list, const F &func)
+        -> const typename std::decay<decltype(*list.begin())>::type *
+    {
+        using U = typename std::decay<decltype(*list.begin())>::type;
+        using V = decltype(list.cbegin());
+        using W = typename std::decay<decltype(std::ref(func)(decltype(*list.begin())(*list.begin())))>::type;
+        const U *extremumValue = nullptr;
+        W extremumComparator;
+        
+        for(V it = list.cbegin(); it != list.cend(); ++it) {
+            W currentComparator = std::ref(func)(decltype(*it)(*it));
+            
+            if (!extremumValue || currentComparator > extremumComparator) {
+                extremumValue = &(*it);
+                extremumComparator = currentComparator;
+            }
+        }
+    
+        return extremumValue;
+    }
+}
 
 template <class T, class F>
 auto max(const T &list, const F &func)
-    -> typename std::decay<decltype(*list.begin())>::type
+  -> typename std::enable_if<_FunctionalHelpersUtils::is_callable<F, typename std::decay<decltype(*list.begin())>::type>::value,
+                             typename std::decay<decltype(*list.begin())>::type>::type
 {
     using U = typename std::decay<decltype(*list.begin())>::type;
-    using V = decltype(list.cbegin());
-    using W = typename std::decay<decltype(std::ref(func)(decltype(*list.begin())(*list.begin())))>::type;
-    const U *extremumValue = nullptr;
-    W extremumComparator;
-    
-    for(V it = list.cbegin(); it != list.cend(); ++it) {
-        W currentComparator = std::ref(func)(decltype(*it)(*it));
-        
-        if (!extremumValue || currentComparator > extremumComparator) {
-            extremumValue = &(*it);
-            extremumComparator = currentComparator;
-        }
-    }
+    const U *extremumValue = _FunctionalHelpersUtils::maxBase(list, func);
 
-    return *extremumValue;
+    if (extremumValue) {
+        return *extremumValue;
+    } else {
+        return U();
+    }
+}
+
+template <class T, class F, class U>
+U max(const T &list, const F &func, const U &defaultVal)
+{
+    const U *extremumValue = _FunctionalHelpersUtils::maxBase(list, func);
+
+    if (extremumValue) {
+        return *extremumValue;
+    } else {
+        return defaultVal;
+    }
 }
 
 // reduce

@@ -779,4 +779,42 @@ __FH_mapRange_with_return_type(listMapRange, std::list)
 __FH_mapRange_with_return_type(vectorMapRange, std::vector)
 __FH_mapRange_with_return_type(setMapRange, std::set)
 
+// flatten
+
+template <class T, class U>
+inline U flatten(const T &container)
+{
+    U result;
+    
+    for(auto it = container.cbegin(); it != container.cend(); ++it) {
+        for(auto jt = it->cbegin(); jt != it->cend(); ++jt) {
+            _FunctionalHelpersUtils::addItem(result, *jt);
+        }
+    }
+    
+    return result;
+}
+
+template <template <class...> class T1, template <class...> class T2, class U, class ... Rest1, class ... Rest2>
+auto flatten(const T1< T2<U, Rest2...>, Rest1...> &container)
+ -> T2<typename std::decay<decltype(*(container.cbegin()->cbegin()))>::type>
+{
+    using V = typename std::decay<decltype(*(container.cbegin()->cbegin()))>::type;
+    return ::flatten<T1< T2<U> >, T2<V> >(container);
+}
+
+
+#define __FH_flatten_with_return_type(NAME, RET_TYPE) \
+template <class T> \
+auto NAME(const T &container) \
+ -> RET_TYPE<typename std::decay<decltype(*(container.cbegin()->cbegin()))>::type> \
+{ \
+    using U = RET_TYPE<typename std::decay<decltype(*(container.cbegin()->cbegin()))>::type>; \
+    return ::flatten<T, U>(container); \
+}
+
+__FH_flatten_with_return_type(listFlatten, std::list)
+__FH_flatten_with_return_type(vectorFlatten, std::vector)
+__FH_flatten_with_return_type(setFlatten, std::set)
+
 #endif // __FUNCTIONAL_HELPERS_H__

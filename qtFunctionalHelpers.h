@@ -158,5 +158,13 @@ __FH_mapRange_with_return_type(QVectorMapRange, QVector)
 __FH_mapRange_with_return_type(QSetMapRange, QSet)
 __FH_mapRange_with_return_type(QLinkedListMapRange, QLinkedList)
 
+// flatten
+
+__FH_flatten_with_return_type(QListFlatten, QList)
+__FH_flatten_with_return_type(QVectorFlatten, QVector)
+__FH_flatten_with_return_type(QSetFlatten, QSet)
+__FH_flatten_with_return_type(QLinkedListFlatten, QLinkedList)
+
+
 #endif // __QT_FUNCTIONAL_HELPERS_H__
 

@@ -743,14 +743,32 @@ void testMapRange()
     TEST(QLinkedListMapRange(5, [] (int x) { return x+1; }, [] (int x) { return (x%2) == 0; }), QLinkedList<int>({1, 3, 5}));
 }
 
-
-class CallableClass2 {
-public:
-    CallableClass2(int a=0) : value(a) {};
-    int operator()(const CallableClass2 &other) const { return -1 * other.value; };
-    bool operator<(const CallableClass2 &other) const { return value < other.value; };
-    int value;
-};
+void testFlatten()
+{
+    TEST(flatten(std::list<std::list<int> >({{1, 2, 3}, {4, 5, 6}, {7, 8, 9}})), std::list<int>({1,2,3,4,5,6,7,8,9}));
+    TEST(flatten(std::vector<std::vector<int> >({{1, 2, 3}, {4, 5, 6}, {7, 8, 9}})), std::vector<int>({1,2,3,4,5,6,7,8,9}));
+    TEST(flatten(std::set<std::set<int> >({{1, 2, 3}, {4, 5, 6}, {7, 8, 9}})), std::set<int>({1,2,3,4,5,6,7,8,9}));
+    TEST(flatten(QList<QList<int> >({{1, 2, 3}, {4, 5, 6}, {7, 8, 9}})), QList<int>({1,2,3,4,5,6,7,8,9}));
+    TEST(flatten(QVector<QVector<int> >({{1, 2, 3}, {4, 5, 6}, {7, 8, 9}})), QVector<int>({1,2,3,4,5,6,7,8,9}));
+    TEST(flatten(QSet<QSet<int> >({{1, 2, 3}, {4, 5, 6}, {7, 8, 9}})), QSet<int>({1,2,3,4,5,6,7,8,9}));
+    TEST(flatten(QLinkedList<QLinkedList<int> >({{1, 2, 3}, {4, 5, 6}, {7, 8, 9}})), QLinkedList<int>({1,2,3,4,5,6,7,8,9}));
+    TEST(flatten(QList<QVector<int> >({{1, 2, 3}, {4, 5, 6}, {7, 8, 9}})), QVector<int>({1,2,3,4,5,6,7,8,9}));
+    TEST(flatten(QVector<QSet<int> >({{1, 2, 3}, {4, 5, 6}, {7, 8, 9}})), QSet<int>({1,2,3,4,5,6,7,8,9}));
+    
+    TEST(listFlatten(std::list<std::list<int> >({{1, 2, 3}, {4, 5, 6}, {7, 8, 9}})), std::list<int>({1,2,3,4,5,6,7,8,9}));
+    TEST(vectorFlatten(std::list<std::list<int> >({{1, 2, 3}, {4, 5, 6}, {7, 8, 9}})), std::vector<int>({1,2,3,4,5,6,7,8,9}));
+    TEST(setFlatten(std::list<std::list<int> >({{1, 2, 3}, {4, 5, 6}, {7, 8, 9}})), std::set<int>({1,2,3,4,5,6,7,8,9}));
+    TEST(QListFlatten(QList<QList<int> >({{1, 2, 3}, {4, 5, 6}, {7, 8, 9}})), QList<int>({1,2,3,4,5,6,7,8,9}));
+    TEST(QVectorFlatten(QVector<QVector<int> >({{1, 2, 3}, {4, 5, 6}, {7, 8, 9}})), QVector<int>({1,2,3,4,5,6,7,8,9}));
+    TEST(QSetFlatten(QSet<QSet<int> >({{1, 2, 3}, {4, 5, 6}, {7, 8, 9}})), QSet<int>({1,2,3,4,5,6,7,8,9}));
+    TEST(QLinkedListFlatten(QList<QVector<int> >({{1, 2, 3}, {4, 5, 6}, {7, 8, 9}})), QLinkedList<int>({1,2,3,4,5,6,7,8,9}));
+    TEST(listFlatten(std::list<std::list<Foo> >({{fooA, fooB}, {fooC, fooD}, {fooE}})), std::list<Foo>({fooA, fooB, fooC, fooD, fooE}));
+    
+    TEST(listFlatten(std::vector<std::list<int> >({{1, 2, 3}, {4, 5, 6}, {7, 8, 9}})), std::list<int>({1,2,3,4,5,6,7,8,9}));
+    TEST(listFlatten(std::vector<std::vector<int> >({{1, 2, 3}, {4, 5, 6}, {7, 8, 9}})), std::list<int>({1,2,3,4,5,6,7,8,9}));
+    TEST(listFlatten(std::list<std::vector<int> >({{1, 2, 3}, {4, 5, 6}, {7, 8, 9}})), std::list<int>({1,2,3,4,5,6,7,8,9}));
+    TEST(setFlatten(std::list<std::set<int> >({{1, 2, 3}, {4, 5, 6}, {7, 8, 9}})), std::set<int>({1,2,3,4,5,6,7,8,9}));
+}
 
 int main()
 {
@@ -772,17 +790,8 @@ int main()
     testLast();
     testRange();
     testMapRange();
+    testFlatten();
     
-    CallableClass2 blah = min(list<CallableClass2>(), CallableClass2(123));
-    CallableClass2 blah2 = min(list<CallableClass2>({CallableClass2(1), CallableClass2(2)}), CallableClass2(123));
-    qDebug() << blah.value;
-    qDebug() << blah2.value;
-    
-            /*
-            // Example of gotcha where the second argument to min is callable with the value type of the passed in container:
-            TEST(min(list<CallableClass>(), CallableClass(123)), CallableClass(0));
-            TEST(min(list<CallableClass>({CallableClass(1), CallableClass(2)}), CallableClass(123)), CallableClass(2));
-    */
     qDebug() << "Finished!" << passedTests << "/" << totalTests << "passed";
     return 0;
 }

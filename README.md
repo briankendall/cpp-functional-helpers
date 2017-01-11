@@ -27,6 +27,7 @@ A couple of headers that provide convenient functional-style helper functions th
 * [`last`](#last)
 * [`range`](#range)
 * [`mapRange`](#maprange)
+* [`flatten`](#flatten)
 * [Future work and contributing](#future-work-and-contributing)
 
 ## How to include
@@ -616,6 +617,36 @@ Examples:
     // returns std::vector({1, 4, 9, 16, 25})
     QListMapRange(1, 15, [] (int x) { return x*x; }, [] (int x) { return (x%3) != 0; });
     // returns QList((1, 4, 16, 25, 49, 64, 100, 121, 169, 196))
+
+## `flatten`
+
+Usage:
+
+    flatten(container of containers) -> container of same type as inner container
+    listFlatten(container of containers) -> std::list
+    vectorFlatten(container of containers) -> std::vector
+    setFlatten(container of containers) -> std::set
+    QListFlatten(container of containers) -> QList
+    QVectorFlatten(container of containers) -> QVector
+    QSetFlatten(container of containers) -> QSet
+    QLinkedListFlatten(container of containers) -> QLinkedList
+
+Constructs a new container by adding all of the inner items of a container of containers.
+
+What kind of container is returned depends on which version of the function is used. For the first form `flatten`, the return value is the same type as the inner container, i.e. if a value of type `ListType1<ListType2<ValueType> >` is passed in, then the result is `ListType2<ValueType>`. The remaining forms return a container based off of their name, so the container passed in doesn't have to be of the same type.
+
+If applicable, the order of the items in the new container matches the original, e.g. `flatten(std::list<std::list<int> >({{1, 2, 3}, {4, 5, 6}, {7, 8, 9}}))` returns `std::list<int>({1, 2, 3, 4, 5, 6, 7, 8, 9})`.
+
+Examples:
+
+    flatten(QList< QVector<int> >({{1, 2}, {3, 4, 5}}))
+    // returns QVector<int>({1, 2, 3, 4, 5})
+    
+    setFlatten(std::list< std::vector<int> >({{1, 2}, {3, 4}, {5, 6}}))
+    // returns std::set<int>({1, 2, 3, 4, 5, 6})
+    
+    flatten(std::vector< std::vector<int> >())
+    // returns std::vector<int>()
 
 ## Future work and contributing
 

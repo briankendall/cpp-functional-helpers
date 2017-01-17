@@ -315,9 +315,9 @@ Usage:
     
 Reduces `container` to a value which is the result of running each element in `collection` through `callable`, and each iteration is passed in the result of the previous iteration. 
 
-If the first form of `reduce` is used, the first iteration is passed in the first two elements of `container`. `callable` must be a function that takes two parameters whose type is the value type of `container` and whose return value is also the value type of `container`.
+If the first form of `reduce` is used, the first iteration is passed in the first two elements of `container`. `callable` must be a function that takes two parameters whose type is the value type of `container` and whose return value is also the value type of `container`. If passed an empty list, returns an instance of `container`'s value type using its default constructor.
 
-Is the second form is used, the first iteration is passed in the first element of `container` and `startingValue`. `callable` must be a function that takes two parameters where the type of the first parameter is the type of startingValue, the type of the second parameter is the value type of `container`, and whose return value is the type of `startingValue`.
+Is the second form is used, the first iteration is passed in the first element of `container` and `startingValue`. `callable` must be a function that takes two parameters where the type of the first parameter is the type of startingValue, the type of the second parameter is the value type of `container`, and whose return value is the type of `startingValue`. If passed an empty list, returns an instance of `startingValue`'s value type using its default constructor.
 
 Example:
 

@@ -235,9 +235,9 @@ Returns the minimum value in `container`. If the first or second forms are used,
 
 If the third or fourth form is used and `callable` is provided, it will be used on each value in `container` to generate the criterion by which the value is ranked. The return value of `callable` must allow use of the `<` operator.
 
-If `container` is empty, the first and second forms return an instance of `container`'s value type using its default constructor (or 0 for a fundamental type). Note that a default value is constructed if and only if `container` is empty.
+If `container` is empty, the first and third forms return an instance of `container`'s value type using its default constructor (or 0 for a fundamental type). Note that a default value is constructed if and only if `container` is empty.
 
-The third and fourth forms return `defaultValue` if `container` is empty.
+The second and fourth forms return `defaultValue` if `container` is empty.
 
 **Important note:** if the value type of `container` is callable with a single argument whose type is also the value type of `container`, then it is not possible to use the second form of `min`. This is because, when calling `min` with two arguments, the compiler determines whether to use the second or third form of `min` depending on whether the second argument is callable in this manner. See the last two examples below for a demonstration of how this can happen.
 
@@ -291,9 +291,9 @@ Returns the maximum value in `container`. If the first or second form is used, t
 
 If the third or fourth form is used and `callable` is provided, it will be used on each value in `container` to generate the criterion by which the value is ranked. The return value of `callable` must allow use of the `>` operator.
 
-If `container` is empty, the first and second forms return an instance of `container`'s value type using its default constructor (or 0 for a fundamental type). Note that a default value is constructed if and only if `container` is empty.
+If `container` is empty, the first and third forms return an instance of `container`'s value type using its default constructor (or 0 for a fundamental type). Note that a default value is constructed if and only if `container` is empty.
 
-The third and fourth forms return `defaultValue` if `container` is empty.
+The second and fourth forms return `defaultValue` if `container` is empty.
 
 **Important note:** if the value type of `container` is callable with a single argument whose type is also the value type of `container`, then it is not possible to use the second form of `max`. This is because, when calling `max` with two arguments, the compiler determines whether to use the second or third form of `max` depending on whether the second argument is callable in this manner. See the last two examples below for a demonstration of how this can happen.
 
@@ -343,9 +343,9 @@ Usage:
     
 Reduces `container` to a value which is the result of running each element in `collection` through `callable`, and each iteration is passed in the result of the previous iteration. 
 
-If the first form of `reduce` is used, the first iteration is passed in the first two elements of `container`. `callable` must be a function that takes two parameters whose type is the value type of `container` and whose return value is also the value type of `container`.
+If the first form of `reduce` is used, the first iteration is passed in the first two elements of `container`. `callable` must be a function that takes two parameters whose type is the value type of `container` and whose return value is also the value type of `container`. If passed an empty list, returns an instance of `container`'s value type using its default constructor.
 
-Is the second form is used, the first iteration is passed in the first element of `container` and `startingValue`. `callable` must be a function that takes two parameters where the type of the first parameter is the type of startingValue, the type of the second parameter is the value type of `container`, and whose return value is the type of `startingValue`.
+Is the second form is used, the first iteration is passed in the first element of `container` and `startingValue`. `callable` must be a function that takes two parameters where the type of the first parameter is the type of startingValue, the type of the second parameter is the value type of `container`, and whose return value is the type of `startingValue`. If passed an empty list, returns an instance of `startingValue`'s value type using its default constructor.
 
 Example:
 

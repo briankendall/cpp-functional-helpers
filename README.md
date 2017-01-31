@@ -11,6 +11,7 @@ A couple of headers that provide convenient functional-style helper functions th
 * [How to include](#how-to-include)
 * [`map`](#map)
 * [`filter`](#filter)
+* [`reject`](#reject)
 * [`compr`](#compr)
 * [`allOf`](#allof)
 * [`anyOf`](#anyof)
@@ -82,7 +83,7 @@ Usage:
     QSetFilter(container, predicate) -> QSet
     QLinkedListFilter(container, predicate) -> QLinkedList
 
-Constructs a new container containg each value in `container` test passes a truth test `predicate`. `predicate ` must take one argument of the same type that is in `container` and return a boolean.
+Constructs a new container containing each value in `container` that passes a truth test `predicate`. `predicate ` must take one argument of the same type that is in `container` and return a boolean. This function is the opposite of `reject`.
 
 What kind of container is returned depends on which version of the function is used. For the first form `filter`, the same type of container passed into the first parameter is what is returned. The remaining forms return a container based off of their name, so the container passed in doesn't have to be of the same type.
 
@@ -95,12 +96,39 @@ If the type of items in `container` is an object or pointer to an object, `calla
 
 Examples:
 
-    filter(std::string("abcdeFGHJI"), islower);
+    filter(std::string("abcdeFGHIJ"), islower);
     // returns std::string("abcde")
     
     QList<int> numbers = {1, 2, 3, 4, 5};
     QSetFilter(numbers, [] (int x) { return (x%2 == 0); });
     // returns: QSet<int>({2, 4})
+
+## `reject`
+
+Usage:
+
+    reject(container, callable) -> container of same type
+    reject<ContainerType>(container, predicate) -> ContainerType
+
+Constructs a new container containing each value in `container` that fails a truth test `predicate`. `predicate ` must take one argument of the same type that is in `container` and return a boolean. This function is the opposite of `filter`.
+
+What kind of container is returned depends on which version of the function is used. For the first form, the same type of container passed into the first parameter is what is returned. The second form returns a container of the type passed in to the template argument, and whose value type is the same as `container`.
+
+If applicable, the order of the items in the new container matches the original.
+
+If the type of items in `container` is an object or pointer to an object, `callable` may be a pointer to a member function on the object's class provided it takes no arguments, e.g.:
+
+    QList<QWidget *> buttons = getSomeButtons();
+    QList<QWidget *> visibleButtons = filter(buttons, &QWidget::isVisible);
+
+Examples:
+
+    filter(std::string("abcdeFGHIJ"), islower);
+    // returns std::string("FGHIJ")
+    
+    QList<int> numbers = {1, 2, 3, 4, 5};
+    filter<QSet>(numbers, [] (int x) { return (x%2 == 0); });
+    // returns: QSet<int>({1, 3, 5})
 
 ## `compr`
 

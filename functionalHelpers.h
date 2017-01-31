@@ -204,6 +204,37 @@ __FH_filter_with_specific_return_type(listFilter, std::list)
 __FH_filter_with_specific_return_type(vectorFilter, std::vector)
 __FH_filter_with_specific_return_type(setFilter, std::set)
 
+// reject
+
+template <template <class...> class InContainer,
+          template <class...> class OutContainer = InContainer,
+          class T,
+          class F>
+auto reject(const InContainer<T> container, const F &predicate)
+ -> OutContainer<T>
+{
+    OutContainer<T> result;
+    
+    for(const T &val : container) {
+        if (!std::ref(predicate)(val)) {
+            _FunctionalHelpersUtils::addItem(result, val);
+        }
+    }
+    
+    return result;
+}
+
+template <template <class...> class OutContainer,
+          template <class...> class InContainer,
+          class T,
+          class F,
+          class = typename std::enable_if<!std::is_same<OutContainer<int>, InContainer<int> >::value>::type>
+auto reject(const InContainer<T> container, const F &predicate)
+ -> OutContainer<T>
+{
+    return reject<InContainer, OutContainer>(container, predicate);
+}
+
 // all of
 
 template <class T, class F>

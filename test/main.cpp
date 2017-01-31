@@ -286,6 +286,47 @@ void testFilter()
     TEST(filter(std::string("aBcDeFgH"), isupper), std::string("BDFH"));
 }
 
+void testReject()
+{
+    const list<int> listExpected = {1, 3, 5};
+    const vector<int> vectorExpected = {1, 3, 5};
+    const set<int> setExpected = {1, 3, 5};
+    const QList<int> QListExpected = {1, 3, 5};
+    const QVector<int> QVectorExpected = {1, 3, 5};
+    const QSet<int> QSetExpected = {1, 3, 5};
+    const QLinkedList<int> QLinkedListExpected = {1, 3, 5};
+    
+    TEST(reject(vectorNumbers, [] (int x) { return (x%2) == 0; }), vectorExpected);
+    TEST(reject(setNumbers, [] (int x) { return (x%2) == 0; }), setExpected);
+    TEST(reject(QListNumbers, [] (int x) { return (x%2) == 0; }), QListExpected);
+    TEST(reject(QVectorNumbers, [] (int x) { return (x%2) == 0; }), QVectorExpected);
+    TEST(reject(QSetNumbers, [] (int x) { return (x%2) == 0; }), QSetExpected);
+    TEST(reject(QLinkedListNumbers, [] (int x) { return (x%2) == 0; }), QLinkedListExpected);
+    
+    TEST(reject<list>(listNumbers, [] (int x) { return (x%2) == 0; }), listExpected);
+    TEST(reject<list>(listNumbers, &isEven), listExpected);
+    TEST(reject<list>(listNumbers, bind(isMultiple, placeholders::_1, 2)), listExpected);
+    TEST(reject<list>(listFoos, &Foo::isEven), list<Foo>({fooA, fooC, fooE}));
+    TEST(reject<list>(listFooPtrs, &Foo::isEven), list<Foo *>({&fooA, &fooC, &fooE}));
+    TEST(reject<list>(derivedListFoos, &Foo::isEven), list<Foo>({fooA, fooC, fooE}));
+    
+    TEST(reject<list>(listFoos, &Foo::baseIsEven), list<Foo>({fooA, fooC, fooE}));
+    TEST(reject<list>(listFooPtrs, &Foo::baseIsEven), list<Foo *>({&fooA, &fooC, &fooE}));
+    TEST(reject<QList>(QListFoos, &Foo::baseIsEven), QList<Foo>({fooA, fooC, fooE}));
+    TEST(reject<QList>(QListFooPtrs, &Foo::baseIsEven), QList<Foo *>({&fooA, &fooC, &fooE}));
+    TEST(reject<QList>(QListFoos, &Foo::baseIsEven), QList<Foo>({fooA, fooC, fooE}));
+    TEST(reject<QList>(derivedQListFoos, &Foo::baseIsEven), QList<Foo>({fooA, fooC, fooE}));
+    
+    TEST(reject<vector>(listNumbers, [] (int x) { return (x%2) == 0; }), vectorExpected);
+    TEST(reject<set>(listNumbers, [] (int x) { return (x%2) == 0; }), setExpected);
+    TEST(reject<QList>(listNumbers, [] (int x) { return (x%2) == 0; }), QListExpected);
+    TEST(reject<QVector>(listNumbers, [] (int x) { return (x%2) == 0; }), QVectorExpected);
+    TEST(reject<QSet>(listNumbers, [] (int x) { return (x%2) == 0; }), QSetExpected);
+    TEST(reject<QLinkedList>(listNumbers, [] (int x) { return (x%2) == 0; }), QLinkedListExpected);
+    
+    TEST(reject(std::string("aBcDeFgH"), isupper), std::string("aceg"));
+}
+
 void testAllOf()
 {
     TEST(allOf(listNumbers, [] (int x) { return (x%2) == 0; }), false);
@@ -774,6 +815,7 @@ int main()
 {
     testMap();
     testFilter();
+    testReject();
     testAllOf();
     testAnyOf();
     testExtremum();

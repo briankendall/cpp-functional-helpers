@@ -17,7 +17,7 @@
 
 // These need to be declared before functionalHelpers.h is included so that the macros
 // it declares will have access to them.
-namespace _FunctionalHelpersUtils {
+namespace FuncHelpUtils {
     template<class U>
     inline void reserveSize(QVector<U> &container, int size)
     {
@@ -35,11 +35,6 @@ namespace _FunctionalHelpersUtils {
 
 // map
 
-__FH_map_with_specific_return_type(QListMap, QList)
-__FH_map_with_specific_return_type(QVectorMap, QVector)
-__FH_map_with_specific_return_type(QSetMap, QSet)
-__FH_map_with_specific_return_type(QLinkedListMap, QLinkedList)
-__FH_map_with_fully_specified_return_type(QStringMap, QString)
 
 // compr
 
@@ -88,7 +83,7 @@ Container<T> reversed(const Container<T> &container)
     it.toBack();
     
     while(it.hasPrevious()) {
-        _FunctionalHelpersUtils::addItem(result, it.previous());
+        FuncHelpUtils::addItem(result, it.previous());
     }
     
     return result;

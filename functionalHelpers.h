@@ -29,7 +29,7 @@
 #include <set>
 #include <string>
 
-namespace _FunctionalHelpersUtils {
+namespace FuncHelpUtils {
     // Default behavior of reserveSize is to do nothing
     template<class T>
     inline void reserveSize(T &container, int size)
@@ -81,49 +81,57 @@ namespace _FunctionalHelpersUtils {
         template<class U> static auto test(...) -> decltype(std::false_type());
         static constexpr bool value = decltype(test<F>(0))::value;
     };
+    
+    template <class T>
+    using decay_t = typename std::decay<T>::type;
+    
+    template <class Container>
+    using iterator_deref = decltype(*std::declval<Container &>().begin());
+    
+    template <class Container, class F>
+    using func_container_result_undecayed = decltype(std::ref(std::declval<F &>())(iterator_deref<Container>(*std::declval<Container &>().begin())));
+    
+    template <class Container, class F>
+    using func_container_result = decay_t<func_container_result_undecayed<Container, F> >;
 }
 
 // map
 
-template <class T, class U, class F>
-U map(const T &list, const F &func)
+template <class OutType,
+          class InType,
+          class F>
+OutType map(const InType &container, const F &func)
 {
-    using ItType = decltype(list.cbegin());
-    U result;
-    _FunctionalHelpersUtils::reserveSize(result, list.size());
+    OutType result;
     
-    for(ItType it = list.cbegin(); it != list.cend(); ++it) {
-        _FunctionalHelpersUtils::addItem(result, std::ref(func)(decltype(*it)(*it))); \
+    for(auto const &val : container) {
+        FuncHelpUtils::addItem(result, std::ref(func)(decltype(val)(val)));
     }
     
     return result;
 }
 
-template <template <class...> class T, class U, class F, class ... Rest>
-auto map(const T<U, Rest...> &list, const F &func)
-    -> T<typename std::decay<decltype(std::ref(func)(decltype(*list.begin())(*list.begin())))>::type>
+template <template <class...> class InContainer,
+          template <class...> class OutContainer = InContainer,
+          class InType,
+          class F>
+auto map(const InContainer<InType> &container, const F &func)
+ -> OutContainer<FuncHelpUtils::func_container_result<InContainer<InType>, F> >
 {
-    using V = typename std::decay<decltype(std::ref(func)(decltype(*list.begin())(*list.begin())))>::type;
-    return ::map<T<U>, T<V>, F>(list, func);
+    using OutType = FuncHelpUtils::func_container_result<InContainer<InType>, F>;
+    return map<OutContainer<OutType>, InContainer<InType> >(container, func);
 }
 
-#define __FH_map_with_fully_specified_return_type(NAME, RET_TYPE) \
-template <class T, class F> \
-auto NAME(const T &list, const F &func) \
-    -> RET_TYPE \
-{ \
-    using U = RET_TYPE; \
-    return ::map<T, U, F>(list, func); \
+template <template <class...> class OutContainer,
+          template <class...> class InContainer,
+          class InType,
+          class F,
+          class = typename std::enable_if<!std::is_same<OutContainer<int>, InContainer<int> >::value>::type>
+auto map(const InContainer<InType> &container, const F &func)
+ -> OutContainer<typename std::decay<decltype(std::ref(func)(decltype(*container.begin())(*container.begin())))>::type>
+{
+    return map<InContainer, OutContainer>(container, func);
 }
-
-#define __FH_map_with_specific_return_type(NAME, RET_TYPE) \
-    __FH_map_with_fully_specified_return_type(NAME, \
-        RET_TYPE<typename std::decay<decltype(std::ref(func)(decltype(*list.begin())(*list.begin())))>::type>)
-
-__FH_map_with_specific_return_type(listMap, std::list)
-__FH_map_with_specific_return_type(vectorMap, std::vector)
-__FH_map_with_specific_return_type(setMap, std::set)
-__FH_map_with_fully_specified_return_type(stringMap, std::string)
 
 // compr
 
@@ -135,7 +143,7 @@ U compr(const T &list, const F1 &func, const F2 &predicate)
     
     for(ItType it = list.cbegin(); it != list.cend(); ++it) {
         if (std::ref(predicate)(decltype(*it)(*it))) {
-            _FunctionalHelpersUtils::addItem(result, std::ref(func)(decltype(*it)(*it)));
+            FuncHelpUtils::addItem(result, std::ref(func)(decltype(*it)(*it)));
         }
     }
     
@@ -181,7 +189,7 @@ auto filter(const InContainer<T> &container, const F &predicate)
     
     for(const T &val : container) {
         if (std::ref(predicate)(decltype(val)(val))) {
-            _FunctionalHelpersUtils::addItem(result, val);
+            FuncHelpUtils::addItem(result, val);
         }
     }
     
@@ -193,7 +201,7 @@ template <template <class...> class OutContainer,
           class T,
           class F,
           class = typename std::enable_if<!std::is_same<OutContainer<int>, InContainer<int> >::value>::type>
-auto filter(const InContainer<T> container, const F &predicate)
+auto filter(const InContainer<T> &container, const F &predicate)
  -> OutContainer<T>
 {
     return filter<InContainer, OutContainer>(container, predicate);
@@ -205,14 +213,14 @@ template <template <class...> class InContainer,
           template <class...> class OutContainer = InContainer,
           class T,
           class F>
-auto reject(const InContainer<T> container, const F &predicate)
+auto reject(const InContainer<T> &container, const F &predicate)
  -> OutContainer<T>
 {
     OutContainer<T> result;
     
     for(const T &val : container) {
         if (!std::ref(predicate)(val)) {
-            _FunctionalHelpersUtils::addItem(result, val);
+            FuncHelpUtils::addItem(result, val);
         }
     }
     
@@ -224,7 +232,7 @@ template <template <class...> class OutContainer,
           class T,
           class F,
           class = typename std::enable_if<!std::is_same<OutContainer<int>, InContainer<int> >::value>::type>
-auto reject(const InContainer<T> container, const F &predicate)
+auto reject(const InContainer<T> &container, const F &predicate)
  -> OutContainer<T>
 {
     return reject<InContainer, OutContainer>(container, predicate);
@@ -260,7 +268,7 @@ bool anyOf(T const &list, const F &f)
 
 // extremum
 
-namespace _FunctionalHelpersUtils {
+namespace FuncHelpUtils {
     template <class T, class F>
     auto extremumBase(const T &list, const F &comp)
         -> const typename std::decay<decltype(*list.begin())>::type *
@@ -284,7 +292,7 @@ auto extremum(const T &list, const F &comp)
     -> typename std::decay<decltype(*list.begin())>::type
 {
     using U = typename std::decay<decltype(*list.begin())>::type;
-    const U *extremumValue = _FunctionalHelpersUtils::extremumBase(list, comp);
+    const U *extremumValue = FuncHelpUtils::extremumBase(list, comp);
     
     if (extremumValue) {
         return *extremumValue;
@@ -297,7 +305,7 @@ template <class T, class F, class U>
 auto extremum(const T &list, const F &comp, const U &defaultVal)
     -> typename std::decay<decltype(*list.begin())>::type
 {
-    const U *extremumValue = _FunctionalHelpersUtils::extremumBase(list, comp);
+    const U *extremumValue = FuncHelpUtils::extremumBase(list, comp);
     
     if (extremumValue) {
         return *extremumValue;
@@ -318,14 +326,14 @@ auto min(const T &list)
 
 template <class T, class U>
 auto min(const T &list, const U &defaultVal)
-  -> typename std::enable_if<!_FunctionalHelpersUtils::is_callable<U, typename std::decay<decltype(*list.begin())>::type>::value, U>::type
+  -> typename std::enable_if<!FuncHelpUtils::is_callable<U, typename std::decay<decltype(*list.begin())>::type>::value, U>::type
 {
     return extremum(list, [] (const U &a, const U &b) {return a < b; }, defaultVal);
 }
 
 // min(container, func)
 
-namespace _FunctionalHelpersUtils {
+namespace FuncHelpUtils {
     template <class T, class F>
     auto minBase(const T &list, const F &func)
       -> const typename std::decay<decltype(*list.begin())>::type *
@@ -351,11 +359,11 @@ namespace _FunctionalHelpersUtils {
 
 template <class T, class F>
 auto min(const T &list, const F &func)
-  -> typename std::enable_if<_FunctionalHelpersUtils::is_callable<F, typename std::decay<decltype(*list.begin())>::type>::value,
+  -> typename std::enable_if<FuncHelpUtils::is_callable<F, typename std::decay<decltype(*list.begin())>::type>::value,
                              typename std::decay<decltype(*list.begin())>::type>::type
 {
     using U = typename std::decay<decltype(*list.begin())>::type;
-    const U *extremumValue = _FunctionalHelpersUtils::minBase(list, func);
+    const U *extremumValue = FuncHelpUtils::minBase(list, func);
 
     if (extremumValue) {
         return *extremumValue;
@@ -367,7 +375,7 @@ auto min(const T &list, const F &func)
 template <class T, class F, class U>
 U min(const T &list, const F &func, const U &defaultVal)
 {
-    const U *extremumValue = _FunctionalHelpersUtils::minBase(list, func);
+    const U *extremumValue = FuncHelpUtils::minBase(list, func);
 
     if (extremumValue) {
         return *extremumValue;
@@ -388,14 +396,14 @@ auto max(const T &list)
 
 template <class T, class U>
 auto max(const T &list, const U &defaultVal)
-  -> typename std::enable_if<!_FunctionalHelpersUtils::is_callable<U, typename std::decay<decltype(*list.begin())>::type>::value, U>::type
+  -> typename std::enable_if<!FuncHelpUtils::is_callable<U, typename std::decay<decltype(*list.begin())>::type>::value, U>::type
 {
     return extremum(list, [] (const U &a, const U &b) {return a > b; }, defaultVal);
 }
 
 // max(container, func)
 
-namespace _FunctionalHelpersUtils {
+namespace FuncHelpUtils {
     template <class T, class F>
     auto maxBase(const T &list, const F &func)
         -> const typename std::decay<decltype(*list.begin())>::type *
@@ -421,11 +429,11 @@ namespace _FunctionalHelpersUtils {
 
 template <class T, class F>
 auto max(const T &list, const F &func)
-  -> typename std::enable_if<_FunctionalHelpersUtils::is_callable<F, typename std::decay<decltype(*list.begin())>::type>::value,
+  -> typename std::enable_if<FuncHelpUtils::is_callable<F, typename std::decay<decltype(*list.begin())>::type>::value,
                              typename std::decay<decltype(*list.begin())>::type>::type
 {
     using U = typename std::decay<decltype(*list.begin())>::type;
-    const U *extremumValue = _FunctionalHelpersUtils::maxBase(list, func);
+    const U *extremumValue = FuncHelpUtils::maxBase(list, func);
 
     if (extremumValue) {
         return *extremumValue;
@@ -437,7 +445,7 @@ auto max(const T &list, const F &func)
 template <class T, class F, class U>
 U max(const T &list, const F &func, const U &defaultVal)
 {
-    const U *extremumValue = _FunctionalHelpersUtils::maxBase(list, func);
+    const U *extremumValue = FuncHelpUtils::maxBase(list, func);
 
     if (extremumValue) {
         return *extremumValue;
@@ -588,7 +596,7 @@ bool contains(const std::set<T, U> &container, const T &val)
 // omit
 
 template <class T, class U, class V>
-typename std::enable_if<!_FunctionalHelpersUtils::has_const_iterator<V>::value, U>::type
+typename std::enable_if<!FuncHelpUtils::has_const_iterator<V>::value, U>::type
 omit(const T &container, const V &omitted)
 {
     using ItType = decltype(container.cbegin());
@@ -596,7 +604,7 @@ omit(const T &container, const V &omitted)
     
     for(ItType it = container.cbegin(); it != container.cend(); ++it) {
         if (!((*it) == omitted)) {
-            _FunctionalHelpersUtils::addItem(result, *it);
+            FuncHelpUtils::addItem(result, *it);
         }
     }
     
@@ -604,7 +612,7 @@ omit(const T &container, const V &omitted)
 }
 
 template <class T, class V>
-typename std::enable_if<!_FunctionalHelpersUtils::has_const_iterator<V>::value, T>::type
+typename std::enable_if<!FuncHelpUtils::has_const_iterator<V>::value, T>::type
 omit(const T &container, const V &omitted)
 {
     return ::omit<T, T, V>(container, omitted);
@@ -612,7 +620,7 @@ omit(const T &container, const V &omitted)
 
 
 template <class T, class U, class V>
-typename std::enable_if<_FunctionalHelpersUtils::has_const_iterator<V>::value, U>::type
+typename std::enable_if<FuncHelpUtils::has_const_iterator<V>::value, U>::type
 omit(const T &container, const V &omitted)
 {
     using ItType = decltype(container.cbegin());
@@ -620,7 +628,7 @@ omit(const T &container, const V &omitted)
     
     for(ItType it = container.cbegin(); it != container.cend(); ++it) {
         if (!contains(omitted, *it)) {
-            _FunctionalHelpersUtils::addItem(result, *it);
+            FuncHelpUtils::addItem(result, *it);
         }
     }
     
@@ -628,7 +636,7 @@ omit(const T &container, const V &omitted)
 }
 
 template <class T, class V>
-typename std::enable_if<_FunctionalHelpersUtils::has_const_iterator<V>::value, T>::type
+typename std::enable_if<FuncHelpUtils::has_const_iterator<V>::value, T>::type
 omit(const T &container, const V &omitted)
 {
     return ::omit<T, T, V>(container, omitted);
@@ -656,7 +664,7 @@ T reversed(const T &container)
     T result;
     
     for(ItType it = container.crbegin(); it != container.crend(); ++it) {
-        _FunctionalHelpersUtils::addItem(result, *it);
+        FuncHelpUtils::addItem(result, *it);
     }
     
     return result;
@@ -723,7 +731,7 @@ inline RET_TYPE<int> NAME(int start, int end, int inc=1) \
     int sign = (inc < 0) ? -1 : 1; \
      \
     for(int i = start; (i*sign) < (end*sign); i += inc) { \
-        _FunctionalHelpersUtils::addItem(result, i); \
+        FuncHelpUtils::addItem(result, i); \
     } \
      \
     return result; \
@@ -750,7 +758,7 @@ auto NAME(int start, int end, int inc, const F1 &func) \
     int sign = (inc < 0) ? -1 : 1; \
      \
     for(int i = start; (i*sign) < (end*sign); i += inc) { \
-        _FunctionalHelpersUtils::addItem(result, std::ref(func)(i)); \
+        FuncHelpUtils::addItem(result, std::ref(func)(i)); \
     } \
      \
     return result; \
@@ -766,7 +774,7 @@ auto NAME(int start, int end, int inc, const F1 &func, const F2 &predicate) \
      \
     for(int i = start; (i*sign) < (end*sign); i += inc) { \
         if (std::ref(predicate)(i)) { \
-            _FunctionalHelpersUtils::addItem(result, std::ref(func)(i)); \
+            FuncHelpUtils::addItem(result, std::ref(func)(i)); \
         } \
     } \
      \
@@ -814,7 +822,7 @@ inline U flatten(const T &container)
     
     for(auto it = container.cbegin(); it != container.cend(); ++it) {
         for(auto jt = it->cbegin(); jt != it->cend(); ++jt) {
-            _FunctionalHelpersUtils::addItem(result, *jt);
+            FuncHelpUtils::addItem(result, *jt);
         }
     }
     

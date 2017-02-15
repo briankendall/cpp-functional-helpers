@@ -119,6 +119,7 @@ void testMap()
     const QLinkedList<int> QLinkedListExpected = {2,4,6,8,10};
     
     TEST(::map(listNumbers, [] (int x) { return x*2; }), listExpected);
+    
     TEST(::map(listNumbers, &timesTwo), listExpected);
     TEST(::map(listNumbers, bind(timesX, 2, placeholders::_1)), listExpected);
     TEST(::map(listFoos, [] (const Foo &foo) { return foo.fooTimesTwo(); }), listExpected);
@@ -133,17 +134,17 @@ void testMap()
     TEST(::map(derivedListFoos, &Foo::baseFooTimesTwo), listExpected);
     TEST(::map(derivedQListFoos, &Foo::baseFooTimesTwo), QListExpected);
     
-    TEST(listMap(listFoos, [] (const Foo &foo) { return foo.fooTimesTwo(); }), listExpected);
-    TEST(listMap(listFoos, &Foo::fooTimesTwo), listExpected);
-    TEST(listMap(listFooPtrs, &Foo::fooTimesTwo), listExpected);
-    TEST(QListMap(QListFoos, &Foo::fooTimesTwo), QListExpected);
-    TEST(QListMap(QListFooPtrs, &Foo::fooTimesTwo), QListExpected);
-    TEST(listMap(listFoos, &Foo::baseFooTimesTwo), listExpected);
-    TEST(listMap(listFooPtrs, &Foo::baseFooTimesTwo), listExpected);
-    TEST(QListMap(QListFoos, &Foo::baseFooTimesTwo), QListExpected);
-    TEST(QListMap(QListFooPtrs, &Foo::baseFooTimesTwo), QListExpected);
-    TEST(listMap(derivedListFoos, &Foo::baseFooTimesTwo), listExpected);
-    TEST(QListMap(derivedQListFoos, &Foo::baseFooTimesTwo), QListExpected);
+    TEST(::map<list>(listFoos, [] (const Foo &foo) { return foo.fooTimesTwo(); }), listExpected);
+    TEST(::map<list>(listFoos, &Foo::fooTimesTwo), listExpected);
+    TEST(::map<list>(listFooPtrs, &Foo::fooTimesTwo), listExpected);
+    TEST(::map<QList>(QListFoos, &Foo::fooTimesTwo), QListExpected);
+    TEST(::map<QList>(QListFooPtrs, &Foo::fooTimesTwo), QListExpected);
+    TEST(::map<list>(listFoos, &Foo::baseFooTimesTwo), listExpected);
+    TEST(::map<list>(listFooPtrs, &Foo::baseFooTimesTwo), listExpected);
+    TEST(::map<QList>(QListFoos, &Foo::baseFooTimesTwo), QListExpected);
+    TEST(::map<QList>(QListFooPtrs, &Foo::baseFooTimesTwo), QListExpected);
+    TEST(::map<list>(derivedListFoos, &Foo::baseFooTimesTwo), listExpected);
+    TEST(::map<QList>(derivedQListFoos, &Foo::baseFooTimesTwo), QListExpected);
     
     TEST(::map(vectorNumbers, [] (int x) { return x*2; }), vectorExpected);
     TEST(::map(setNumbers, [] (int x) { return x*2; }), setExpected);
@@ -151,20 +152,20 @@ void testMap()
     TEST(::map(QVectorNumbers, [] (int x) { return x*2; }), QVectorExpected);
     TEST(::map(QSetNumbers, [] (int x) { return x*2; }), QSetExpected);
     TEST(::map(QLinkedListNumbers, [] (int x) { return x*2; }), QLinkedListExpected);
-    TEST(vectorMap(listNumbers, [] (int x) { return x*2; }), vectorExpected);
-    TEST(setMap(listNumbers, [] (int x) { return x*2; }), setExpected);
-    TEST(QListMap(listNumbers, [] (int x) { return x*2; }), QListExpected);
-    TEST(QVectorMap(listNumbers, [] (int x) { return x*2; }), QVectorExpected);
-    TEST(QSetMap(listNumbers, [] (int x) { return x*2; }), QSetExpected);
-    TEST(QLinkedListMap(listNumbers, [] (int x) { return x*2; }), QLinkedListExpected);
+    TEST(::map<vector>(listNumbers, [] (int x) { return x*2; }), vectorExpected);
+    TEST(::map<set>(listNumbers, [] (int x) { return x*2; }), setExpected);
+    TEST(::map<QList>(listNumbers, [] (int x) { return x*2; }), QListExpected);
+    TEST(::map<QVector>(listNumbers, [] (int x) { return x*2; }), QVectorExpected);
+    TEST(::map<QSet>(listNumbers, [] (int x) { return x*2; }), QSetExpected);
+    TEST(::map<QLinkedList>(listNumbers, [] (int x) { return x*2; }), QLinkedListExpected);
     
     // toupper takes an integer and returns an integer, so in order to use it with ::map we have
     // to cast it to the right kind of function. Probably not the best way to go but it works.
     TEST(::map(string("abcde"), (char(*)(char))(toupper)), string("ABCDE"));
     TEST(::map(string("abcde"), [] (char c) { return char(toupper(c)); }), string("ABCDE"));
-    TEST(stringMap(string("abcde"), toupper), string("ABCDE"));
-    TEST(QStringMap(string("abcde"), [] (char c) { return QChar(c).toUpper();}), QString("ABCDE"));
-    TEST(QStringMap(QString("abcde"), [] (QChar c) { return c.toUpper();}), QString("ABCDE"));
+    TEST(::map<string>(string("abcde"), toupper), string("ABCDE"));
+    TEST(::map<QString>(string("abcde"), [] (char c) { return QChar(c).toUpper();}), QString("ABCDE"));
+    TEST(::map<QString>(QString("abcde"), [] (QChar c) { return c.toUpper();}), QString("ABCDE"));
 }
 
 void testCompr()

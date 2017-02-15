@@ -128,7 +128,7 @@ template <template <class...> class OutContainer,
           class F,
           class = typename std::enable_if<!std::is_same<OutContainer<int>, InContainer<int> >::value>::type>
 auto map(const InContainer<InType> &container, const F &func)
- -> OutContainer<typename std::decay<decltype(std::ref(func)(decltype(*container.begin())(*container.begin())))>::type>
+ -> OutContainer<FuncHelpUtils::func_container_result<InContainer<InType>, F> >
 {
     return map<InContainer, OutContainer>(container, func);
 }
@@ -340,7 +340,7 @@ namespace FuncHelpUtils {
     {
         using U = typename std::decay<decltype(*list.begin())>::type;
         using V = decltype(list.cbegin());
-        using W = typename std::decay<decltype(std::ref(func)(decltype(*list.begin())(*list.begin())))>::type;
+        using W = func_container_result<T, F>;
         const U *extremumValue = nullptr;
         W extremumComparator;
         
@@ -410,7 +410,7 @@ namespace FuncHelpUtils {
     {
         using U = typename std::decay<decltype(*list.begin())>::type;
         using V = decltype(list.cbegin());
-        using W = typename std::decay<decltype(std::ref(func)(decltype(*list.begin())(*list.begin())))>::type;
+        using W = func_container_result<T, F>;
         const U *extremumValue = nullptr;
         W extremumComparator;
         

@@ -680,8 +680,8 @@ Container reversed(const Container &container)
 {
     Container result;
     
-    for(auto const &val : container) {
-        FuncHelpUtils::addItem(result, val);
+    for(auto it = container.rbegin(); it != container.rend(); ++it) {
+        FuncHelpUtils::addItem(result, *it);
     }
     
     return result;

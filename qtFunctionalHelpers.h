@@ -1,5 +1,5 @@
-#ifndef __QT_FUNCTIONAL_HELPERS_H__
-#define __QT_FUNCTIONAL_HELPERS_H__
+#ifndef QT_FUNCTIONAL_HELPERS_H_GUARD
+#define QT_FUNCTIONAL_HELPERS_H_GUARD
 
 // For some reason it's necessary to include <vector> before some of Qt's
 // headers (like <QString>), otherwise we'll get the error "too few arguments
@@ -114,5 +114,4 @@ U last(const T<U> &container, const U &defaultValue)
     }
 }
 
-#endif // __QT_FUNCTIONAL_HELPERS_H__
-
+#endif // QT_FUNCTIONAL_HELPERS_H_GUARD

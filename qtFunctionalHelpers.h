@@ -114,13 +114,6 @@ U last(const T<U> &container, const U &defaultValue)
     }
 }
 
-// mapRange
-
-__FH_mapRange_with_return_type(QListMapRange, QList)
-__FH_mapRange_with_return_type(QVectorMapRange, QVector)
-__FH_mapRange_with_return_type(QSetMapRange, QSet)
-__FH_mapRange_with_return_type(QLinkedListMapRange, QLinkedList)
-
 // flatten
 
 __FH_flatten_with_return_type(QListFlatten, QList)

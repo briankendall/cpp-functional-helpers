@@ -105,6 +105,9 @@ namespace FuncHelpUtils {
     
     template <class Container, class F>
     using func_container_result = decay_t<func_container_result_undecayed<Container, F> >;
+    
+    template <class Val, class F>
+    using func_result = decay_t<decltype(std::ref(std::declval<F &>())(std::declval<Val &>()))>;
 }
 
 // map
@@ -770,70 +773,75 @@ auto range(int end)
 
 // mapRange
 
-#define __FH_mapRange_with_return_type(NAME, RET_TYPE) \
-template <class F1> \
-auto NAME(int start, int end, int inc, const F1 &func) \
--> RET_TYPE<typename std::decay<decltype(std::ref(func)(0))>::type> \
-{ \
-    using U = typename std::decay<decltype(std::ref(func)(0))>::type; \
-    RET_TYPE<U> result; \
-    int sign = (inc < 0) ? -1 : 1; \
-     \
-    for(int i = start; (i*sign) < (end*sign); i += inc) { \
-        FuncHelpUtils::addItem(result, std::ref(func)(i)); \
-    } \
-     \
-    return result; \
-} \
- \
-template <class F1, class F2> \
-auto NAME(int start, int end, int inc, const F1 &func, const F2 &predicate) \
--> RET_TYPE<typename std::decay<decltype(std::ref(func)(0))>::type> \
-{ \
-    using U = typename std::decay<decltype(std::ref(func)(0))>::type; \
-    RET_TYPE<U> result; \
-    int sign = (inc < 0) ? -1 : 1; \
-     \
-    for(int i = start; (i*sign) < (end*sign); i += inc) { \
-        if (std::ref(predicate)(i)) { \
-            FuncHelpUtils::addItem(result, std::ref(func)(i)); \
-        } \
-    } \
-     \
-    return result; \
-} \
- \
-template <class F1> \
-auto NAME(int start, int end, const F1 &func) \
--> RET_TYPE<typename std::decay<decltype(std::ref(func)(0))>::type> \
-{ \
-    return NAME(start, end, 1, func); \
-} \
- \
-template <class F1, class F2> \
-auto NAME(int start, int end, const F1 &func, const F2 &predicate) \
--> RET_TYPE<typename std::decay<decltype(std::ref(func)(0))>::type> \
-{ \
-    return NAME(start, end, 1, func, predicate); \
-} \
- \
-template <class F1> \
-auto NAME(int end, const F1 &func) \
--> RET_TYPE<typename std::decay<decltype(std::ref(func)(0))>::type> \
-{ \
-    return NAME(0, end, 1, func); \
-} \
- \
-template <class F1, class F2> \
-auto NAME(int end, const F1 &func, const F2 &predicate) \
--> RET_TYPE<typename std::decay<decltype(std::ref(func)(0))>::type> \
-{ \
-    return NAME(0, end, 1, func, predicate); \
+
+template <template <class...> class OutContainer,
+          class F>
+auto mapRange(int start, int end, int inc, F func)
+ -> OutContainer<FuncHelpUtils::func_result<int, F> >
+{
+    using U = FuncHelpUtils::func_result<int, F>;
+    OutContainer<U> result;
+    int sign = (inc < 0) ? -1 : 1;
+    
+    for(int i = start; (i*sign) < (end*sign); i += inc) {
+        FuncHelpUtils::addItem(result, std::ref(func)(i));
+    }
+    
+    return result;
 }
 
-__FH_mapRange_with_return_type(listMapRange, std::list)
-__FH_mapRange_with_return_type(vectorMapRange, std::vector)
-__FH_mapRange_with_return_type(setMapRange, std::set)
+template <template <class...> class OutContainer,
+          class F1,
+          class F2>
+auto mapRange(int start, int end, int inc, F1 func, F2 predicate)
+ -> OutContainer<FuncHelpUtils::func_result<int, F1> >
+{
+    using U = FuncHelpUtils::func_result<int, F1>;
+    OutContainer<U> result;
+    int sign = (inc < 0) ? -1 : 1;
+    
+    for(int i = start; (i*sign) < (end*sign); i += inc) {
+        if (std::ref(predicate)(i)) {
+            FuncHelpUtils::addItem(result, std::ref(func)(i));
+        }
+    }
+    
+    return result;
+}
+
+template <template <class...> class OutContainer,
+          class F>
+auto mapRange(int start, int end, F func)
+-> OutContainer<FuncHelpUtils::func_result<int, F> >
+{
+    return mapRange<OutContainer>(start, end, 1, func);
+}
+
+template <template <class...> class OutContainer,
+          class F1,
+          class F2>
+auto mapRange(int start, int end, F1 func, F2 predicate)
+ -> OutContainer<FuncHelpUtils::func_result<int, F1> >
+{
+    return mapRange<OutContainer>(start, end, 1, func, predicate);
+}
+
+template <template <class...> class OutContainer,
+          class F>
+auto mapRange(int end, F func)
+-> OutContainer<FuncHelpUtils::func_result<int, F> >
+{
+    return mapRange<OutContainer>(0, end, 1, func);
+}
+
+template <template <class...> class OutContainer,
+          class F1,
+          class F2>
+auto mapRange(int end, F1 func, F2 predicate)
+ -> OutContainer<FuncHelpUtils::func_result<int, F1> >
+{
+    return mapRange<OutContainer>(0, end, 1, func, predicate);
+}
 
 // flatten
 

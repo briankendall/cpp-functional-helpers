@@ -51,13 +51,6 @@ bool contains(const QSet<T> &container, const T &val)
     return container.contains(val);
 }
 
-// omit
-
-__FH_omit_with_specific_return_type(QListOmit, QList)
-__FH_omit_with_specific_return_type(QVectorOmit, QVector)
-__FH_omit_with_specific_return_type(QSetOmit, QSet)
-__FH_omit_with_specific_return_type(QLinkedListOmit, QLinkedList)
-
 // reversed
 
 // Special casing reversed() for Qt containers in order to achieve

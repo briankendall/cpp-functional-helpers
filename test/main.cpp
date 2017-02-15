@@ -583,20 +583,22 @@ void testOmit()
     TEST(omit(QSetNumbers, list<int>({1, 2, 3})), QSet<int>({4, 5}));
     TEST(omit(QSetNumbers, set<int>({1, 2, 3})), QSet<int>({4, 5}));
     
-    TEST(listOmit(vectorNumbers, 1), list<int>({2, 3, 4, 5}));
-    TEST(listOmit(vectorNumbers, list<int>({1, 2, 3})), list<int>({4, 5}));
-    TEST(vectorOmit(vectorNumbers, 1), vector<int>({2, 3, 4, 5}));
-    TEST(vectorOmit(vectorNumbers, list<int>({1, 2, 3})), vector<int>({4, 5}));
-    TEST(setOmit(vectorNumbers, 1), set<int>({2, 3, 4, 5}));
-    TEST(setOmit(vectorNumbers, list<int>({1, 2, 3})), set<int>({4, 5}));
-    TEST(QListOmit(vectorNumbers, 1), QList<int>({2, 3, 4, 5}));
-    TEST(QListOmit(vectorNumbers, list<int>({1, 2, 3})), QList<int>({4, 5}));
-    TEST(QVectorOmit(vectorNumbers, 1), QVector<int>({2, 3, 4, 5}));
-    TEST(QVectorOmit(vectorNumbers, list<int>({1, 2, 3})), QVector<int>({4, 5}));
-    TEST(QSetOmit(vectorNumbers, 1), QSet<int>({2, 3, 4, 5}));
-    TEST(QSetOmit(vectorNumbers, list<int>({1, 2, 3})), QSet<int>({4, 5}));
-    TEST(QLinkedListOmit(vectorNumbers, 1), QLinkedList<int>({2, 3, 4, 5}));
-    TEST(QLinkedListOmit(vectorNumbers, list<int>({1, 2, 3})), QLinkedList<int>({4, 5}));
+    TEST(omit<list>(vectorNumbers, 1), list<int>({2, 3, 4, 5}));
+    TEST(omit<list>(vectorNumbers, list<int>({1, 2, 3})), list<int>({4, 5}));
+    TEST(omit<vector>(vectorNumbers, 1), vector<int>({2, 3, 4, 5}));
+    TEST(omit<vector>(vectorNumbers, list<int>({1, 2, 3})), vector<int>({4, 5}));
+    TEST(omit<set>(vectorNumbers, 1), set<int>({2, 3, 4, 5}));
+    TEST(omit<set>(vectorNumbers, list<int>({1, 2, 3})), set<int>({4, 5}));
+    TEST(omit<QList>(vectorNumbers, 1), QList<int>({2, 3, 4, 5}));
+    TEST(omit<QList>(vectorNumbers, list<int>({1, 2, 3})), QList<int>({4, 5}));
+    TEST(omit<QVector>(vectorNumbers, 1), QVector<int>({2, 3, 4, 5}));
+    TEST(omit<QVector>(vectorNumbers, list<int>({1, 2, 3})), QVector<int>({4, 5}));
+    TEST(omit<QSet>(vectorNumbers, 1), QSet<int>({2, 3, 4, 5}));
+    TEST(omit<QSet>(vectorNumbers, list<int>({1, 2, 3})), QSet<int>({4, 5}));
+    TEST(omit<QLinkedList>(vectorNumbers, 1), QLinkedList<int>({2, 3, 4, 5}));
+    TEST(omit<QLinkedList>(vectorNumbers, list<int>({1, 2, 3})), QLinkedList<int>({4, 5}));
+    TEST(omit(string("abcde"), 'a'), string("bcde"));
+    TEST(omit(string("abcde"), string("ace")), string("bd"));
 }
 
 void testReversed()

@@ -646,54 +646,54 @@ void testLast()
 
 void testRange()
 {
-    TEST(listRange(1, 6, 1), listNumbers);
-    TEST(listRange(5, 0, -1), reversed(listNumbers));
-    TEST(listRange(-1, -6, -1), list<int>({-1, -2, -3, -4, -5}));
-    TEST(listRange(1, 6, 2), list<int>({1, 3, 5}));
-    TEST(listRange(1, 6), listNumbers);
-    TEST(listRange(5), list<int>({0, 1, 2, 3, 4}));
+    TEST(range<list>(1, 6, 1), listNumbers);
+    TEST(range<list>(5, 0, -1), reversed(listNumbers));
+    TEST(range<list>(-1, -6, -1), list<int>({-1, -2, -3, -4, -5}));
+    TEST(range<list>(1, 6, 2), list<int>({1, 3, 5}));
+    TEST(range<list>(1, 6), listNumbers);
+    TEST(range<list>(5), list<int>({0, 1, 2, 3, 4}));
     
-    TEST(vectorRange(1, 6, 1), vectorNumbers);
-    TEST(vectorRange(5, 0, -1), reversed(vectorNumbers));
-    TEST(vectorRange(-1, -6, -1), vector<int>({-1, -2, -3, -4, -5}));
-    TEST(vectorRange(1, 6, 2), vector<int>({1, 3, 5}));
-    TEST(vectorRange(1, 6), vectorNumbers);
-    TEST(vectorRange(5), vector<int>({0, 1, 2, 3, 4}));
+    TEST(range<vector>(1, 6, 1), vectorNumbers);
+    TEST(range<vector>(5, 0, -1), reversed(vectorNumbers));
+    TEST(range<vector>(-1, -6, -1), vector<int>({-1, -2, -3, -4, -5}));
+    TEST(range<vector>(1, 6, 2), vector<int>({1, 3, 5}));
+    TEST(range<vector>(1, 6), vectorNumbers);
+    TEST(range<vector>(5), vector<int>({0, 1, 2, 3, 4}));
     
-    TEST(setRange(1, 6, 1), setNumbers);
-    TEST(setRange(5, 0, -1), reversed(setNumbers));
-    TEST(setRange(-1, -6, -1), set<int>({-1, -2, -3, -4, -5}));
-    TEST(setRange(1, 6, 2), set<int>({1, 3, 5}));
-    TEST(setRange(1, 6), setNumbers);
-    TEST(setRange(5), set<int>({0, 1, 2, 3, 4}));
+    TEST(range<set>(1, 6, 1), setNumbers);
+    TEST(range<set>(5, 0, -1), reversed(setNumbers));
+    TEST(range<set>(-1, -6, -1), set<int>({-1, -2, -3, -4, -5}));
+    TEST(range<set>(1, 6, 2), set<int>({1, 3, 5}));
+    TEST(range<set>(1, 6), setNumbers);
+    TEST(range<set>(5), set<int>({0, 1, 2, 3, 4}));
     
-    TEST(QListRange(1, 6, 1), QListNumbers);
-    TEST(QListRange(5, 0, -1), reversed(QListNumbers));
-    TEST(QListRange(-1, -6, -1), QList<int>({-1, -2, -3, -4, -5}));
-    TEST(QListRange(1, 6, 2), QList<int>({1, 3, 5}));
-    TEST(QListRange(1, 6), QListNumbers);
-    TEST(QListRange(5), QList<int>({0, 1, 2, 3, 4}));
+    TEST(range<QList>(1, 6, 1), QListNumbers);
+    TEST(range<QList>(5, 0, -1), reversed(QListNumbers));
+    TEST(range<QList>(-1, -6, -1), QList<int>({-1, -2, -3, -4, -5}));
+    TEST(range<QList>(1, 6, 2), QList<int>({1, 3, 5}));
+    TEST(range<QList>(1, 6), QListNumbers);
+    TEST(range<QList>(5), QList<int>({0, 1, 2, 3, 4}));
     
-    TEST(QVectorRange(1, 6, 1), QVectorNumbers);
-    TEST(QVectorRange(5, 0, -1), reversed(QVectorNumbers));
-    TEST(QVectorRange(-1, -6, -1), QVector<int>({-1, -2, -3, -4, -5}));
-    TEST(QVectorRange(1, 6, 2), QVector<int>({1, 3, 5}));
-    TEST(QVectorRange(1, 6), QVectorNumbers);
-    TEST(QVectorRange(5), QVector<int>({0, 1, 2, 3, 4}));
+    TEST(range<QVector>(1, 6, 1), QVectorNumbers);
+    TEST(range<QVector>(5, 0, -1), reversed(QVectorNumbers));
+    TEST(range<QVector>(-1, -6, -1), QVector<int>({-1, -2, -3, -4, -5}));
+    TEST(range<QVector>(1, 6, 2), QVector<int>({1, 3, 5}));
+    TEST(range<QVector>(1, 6), QVectorNumbers);
+    TEST(range<QVector>(5), QVector<int>({0, 1, 2, 3, 4}));
     
-    TEST(QSetRange(1, 6, 1), QSetNumbers);
-    TEST(QSetRange(5, 0, -1), QSet<int>({5, 4, 3, 2, 1}));
-    TEST(QSetRange(-1, -6, -1), QSet<int>({-1, -2, -3, -4, -5}));
-    TEST(QSetRange(1, 6, 2), QSet<int>({1, 3, 5}));
-    TEST(QSetRange(1, 6), QSetNumbers);
-    TEST(QSetRange(5), QSet<int>({0, 1, 2, 3, 4}));
+    TEST(range<QSet>(1, 6, 1), QSetNumbers);
+    TEST(range<QSet>(5, 0, -1), QSet<int>({5, 4, 3, 2, 1}));
+    TEST(range<QSet>(-1, -6, -1), QSet<int>({-1, -2, -3, -4, -5}));
+    TEST(range<QSet>(1, 6, 2), QSet<int>({1, 3, 5}));
+    TEST(range<QSet>(1, 6), QSetNumbers);
+    TEST(range<QSet>(5), QSet<int>({0, 1, 2, 3, 4}));
     
-    TEST(QLinkedListRange(1, 6, 1), QLinkedListNumbers);
-    TEST(QLinkedListRange(5, 0, -1), reversed(QLinkedListNumbers));
-    TEST(QLinkedListRange(-1, -6, -1), QLinkedList<int>({-1, -2, -3, -4, -5}));
-    TEST(QLinkedListRange(1, 6, 2), QLinkedList<int>({1, 3, 5}));
-    TEST(QLinkedListRange(1, 6), QLinkedListNumbers);
-    TEST(QLinkedListRange(5), QLinkedList<int>({0, 1, 2, 3, 4}));
+    TEST(range<QLinkedList>(1, 6, 1), QLinkedListNumbers);
+    TEST(range<QLinkedList>(5, 0, -1), reversed(QLinkedListNumbers));
+    TEST(range<QLinkedList>(-1, -6, -1), QLinkedList<int>({-1, -2, -3, -4, -5}));
+    TEST(range<QLinkedList>(1, 6, 2), QLinkedList<int>({1, 3, 5}));
+    TEST(range<QLinkedList>(1, 6), QLinkedListNumbers);
+    TEST(range<QLinkedList>(5), QLinkedList<int>({0, 1, 2, 3, 4}));
 }
 
 void testMapRange()

@@ -747,27 +747,26 @@ auto last(const T &container, const U &defaultValue)
 
 // range
 
-#define __FH_range_with_return_type(NAME, RET_TYPE) \
-inline RET_TYPE<int> NAME(int start, int end, int inc=1) \
-{ \
-    RET_TYPE<int> result; \
-    int sign = (inc < 0) ? -1 : 1; \
-     \
-    for(int i = start; (i*sign) < (end*sign); i += inc) { \
-        FuncHelpUtils::addItem(result, i); \
-    } \
-     \
-    return result; \
-} \
- \
-inline RET_TYPE<int> NAME(int end) \
-{ \
-    return NAME(0, end); \
+template <template <class...> class OutContainer>
+auto range(int start, int end, int inc=1)
+ -> OutContainer<int>
+{
+    OutContainer<int> result;
+    int sign = (inc < 0) ? -1 : 1;
+    
+    for(int i = start; (i*sign) < (end*sign); i += inc) {
+        FuncHelpUtils::addItem(result, i);
+    }
+    
+    return result;
 }
 
-__FH_range_with_return_type(listRange, std::list)
-__FH_range_with_return_type(vectorRange, std::vector)
-__FH_range_with_return_type(setRange, std::set)
+template <template <class...> class OutContainer>
+auto range(int end)
+ -> OutContainer<int>
+{
+    return range<OutContainer>(0, end);
+}
 
 // mapRange
 

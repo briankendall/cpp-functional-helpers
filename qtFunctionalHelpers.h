@@ -49,13 +49,6 @@ __FH_compr_with_specific_return_type(QSetCompr, QSet)
 __FH_compr_with_specific_return_type(QLinkedListCompr, QLinkedList)
 __FH_compr_with_fully_specified_return_type(QStringCompr, QString)
 
-// filter
-
-__FH_filter_with_specific_return_type(QListFilter, QList)
-__FH_filter_with_specific_return_type(QVectorFilter, QVector)
-__FH_filter_with_specific_return_type(QSetFilter, QSet)
-__FH_filter_with_specific_return_type(QLinkedListFilter, QLinkedList)
-
 // sorted
 
 // Adding an overload for convenient sorting of QStringLists

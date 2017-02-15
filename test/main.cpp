@@ -255,19 +255,19 @@ void testFilter()
     const QSet<int> QSetExpected = {2,4};
     const QLinkedList<int> QLinkedListExpected = {2,4};
     
-    TEST(listFilter(listNumbers, [] (int x) { return (x%2) == 0; }), listExpected);
-    TEST(listFilter(listNumbers, &isEven), listExpected);
-    TEST(listFilter(listNumbers, bind(isMultiple, placeholders::_1, 2)), listExpected);
-    TEST(listFilter(listFoos, &Foo::isEven), list<Foo>({fooB, fooD}));
-    TEST(listFilter(listFooPtrs, &Foo::isEven), list<Foo *>({&fooB, &fooD}));
-    TEST(listFilter(derivedListFoos, &Foo::isEven), list<Foo>({fooB, fooD}));
+    TEST(filter<list>(listNumbers, [] (int x) { return (x%2) == 0; }), listExpected);
+    TEST(filter<list>(listNumbers, &isEven), listExpected);
+    TEST(filter<list>(listNumbers, bind(isMultiple, placeholders::_1, 2)), listExpected);
+    TEST(filter<list>(listFoos, &Foo::isEven), list<Foo>({fooB, fooD}));
+    TEST(filter<list>(listFooPtrs, &Foo::isEven), list<Foo *>({&fooB, &fooD}));
+    TEST(filter<list>(derivedListFoos, &Foo::isEven), list<Foo>({fooB, fooD}));
     
-    TEST(listFilter(listFoos, &Foo::baseIsEven), list<Foo>({fooB, fooD}));
-    TEST(listFilter(listFooPtrs, &Foo::baseIsEven), list<Foo *>({&fooB, &fooD}));
-    TEST(QListFilter(QListFoos, &Foo::baseIsEven), QList<Foo>({fooB, fooD}));
-    TEST(QListFilter(QListFooPtrs, &Foo::baseIsEven), QList<Foo *>({&fooB, &fooD}));
-    TEST(QListFilter(QListFoos, &Foo::baseIsEven), QList<Foo>({fooB, fooD}));
-    TEST(QListFilter(derivedQListFoos, &Foo::baseIsEven), QList<Foo>({fooB, fooD}));
+    TEST(filter<list>(listFoos, &Foo::baseIsEven), list<Foo>({fooB, fooD}));
+    TEST(filter<list>(listFooPtrs, &Foo::baseIsEven), list<Foo *>({&fooB, &fooD}));
+    TEST(filter<QList>(QListFoos, &Foo::baseIsEven), QList<Foo>({fooB, fooD}));
+    TEST(filter<QList>(QListFooPtrs, &Foo::baseIsEven), QList<Foo *>({&fooB, &fooD}));
+    TEST(filter<QList>(QListFoos, &Foo::baseIsEven), QList<Foo>({fooB, fooD}));
+    TEST(filter<QList>(derivedQListFoos, &Foo::baseIsEven), QList<Foo>({fooB, fooD}));
     
     TEST(filter(vectorNumbers, [] (int x) { return (x%2) == 0; }), vectorExpected);
     TEST(filter(setNumbers, [] (int x) { return (x%2) == 0; }), setExpected);
@@ -276,12 +276,12 @@ void testFilter()
     TEST(filter(QSetNumbers, [] (int x) { return (x%2) == 0; }), QSetExpected);
     TEST(filter(QLinkedListNumbers, [] (int x) { return (x%2) == 0; }), QLinkedListExpected);
     
-    TEST(vectorFilter(listNumbers, [] (int x) { return (x%2) == 0; }), vectorExpected);
-    TEST(setFilter(listNumbers, [] (int x) { return (x%2) == 0; }), setExpected);
-    TEST(QListFilter(listNumbers, [] (int x) { return (x%2) == 0; }), QListExpected);
-    TEST(QVectorFilter(listNumbers, [] (int x) { return (x%2) == 0; }), QVectorExpected);
-    TEST(QSetFilter(listNumbers, [] (int x) { return (x%2) == 0; }), QSetExpected);
-    TEST(QLinkedListFilter(listNumbers, [] (int x) { return (x%2) == 0; }), QLinkedListExpected);
+    TEST(filter<vector>(listNumbers, [] (int x) { return (x%2) == 0; }), vectorExpected);
+    TEST(filter<set>(listNumbers, [] (int x) { return (x%2) == 0; }), setExpected);
+    TEST(filter<QList>(listNumbers, [] (int x) { return (x%2) == 0; }), QListExpected);
+    TEST(filter<QVector>(listNumbers, [] (int x) { return (x%2) == 0; }), QVectorExpected);
+    TEST(filter<QSet>(listNumbers, [] (int x) { return (x%2) == 0; }), QSetExpected);
+    TEST(filter<QLinkedList>(listNumbers, [] (int x) { return (x%2) == 0; }), QLinkedListExpected);
     
     TEST(filter(std::string("aBcDeFgH"), isupper), std::string("BDFH"));
 }

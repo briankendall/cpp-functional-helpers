@@ -170,39 +170,34 @@ __FH_compr_with_fully_specified_return_type(stringCompr, std::string)
 
 // filter
 
-template <class T, class U, class F>
-U filter(const T &list, const F &predicate)
+template <template <class...> class InContainer,
+          template <class...> class OutContainer = InContainer,
+          class T,
+          class F>
+auto filter(const InContainer<T> &container, const F &predicate)
+ -> OutContainer<T>
 {
-    using ItType = decltype(list.cbegin());
-    U result;
+    OutContainer<T> result;
     
-    for(ItType it = list.cbegin(); it != list.cend(); ++it) {
-        if (std::ref(predicate)(decltype(*it)(*it))) {
-            _FunctionalHelpersUtils::addItem(result, *it);
+    for(const T &val : container) {
+        if (std::ref(predicate)(decltype(val)(val))) {
+            _FunctionalHelpersUtils::addItem(result, val);
         }
     }
     
     return result;
 }
 
-template <class T, class F>
-T filter(const T &list, const F &predicate)
+template <template <class...> class OutContainer,
+          template <class...> class InContainer,
+          class T,
+          class F,
+          class = typename std::enable_if<!std::is_same<OutContainer<int>, InContainer<int> >::value>::type>
+auto filter(const InContainer<T> container, const F &predicate)
+ -> OutContainer<T>
 {
-    return ::filter<T, T, F>(list, predicate);
+    return filter<InContainer, OutContainer>(container, predicate);
 }
-
-#define __FH_filter_with_specific_return_type(NAME, RET_TYPE) \
-template <class T, class F> \
-auto NAME(const T &list, const F &func) \
-    -> RET_TYPE<typename std::decay<decltype(*list.begin())>::type> \
-{ \
-    using U = RET_TYPE<typename std::decay<decltype(*list.begin())>::type>; \
-    return ::filter<T, U, F>(list, func); \
-}
-
-__FH_filter_with_specific_return_type(listFilter, std::list)
-__FH_filter_with_specific_return_type(vectorFilter, std::vector)
-__FH_filter_with_specific_return_type(setFilter, std::set)
 
 // reject
 

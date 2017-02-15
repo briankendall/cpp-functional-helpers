@@ -288,12 +288,11 @@ namespace FuncHelpUtils {
      -> const iterator_deref_decay<Container> *
     {
         using ValType = iterator_deref_decay<Container>;
-        using V = decltype(container.cbegin());
         const ValType *extremumValue = nullptr;
         
-        for(V it = container.cbegin(); it != container.cend(); ++it) {
-            if (!extremumValue || std::ref(comp)(decltype(*it)(*it), *extremumValue)) {
-                extremumValue = &(*it);
+        for(auto const &val : container) {
+            if (!extremumValue || std::ref(comp)(decltype(val)(val), *extremumValue)) {
+                extremumValue = &(val);
             }
         }
     
@@ -355,16 +354,15 @@ namespace FuncHelpUtils {
       -> const FuncHelpUtils::iterator_deref_decay<Container> *
     {
         using ValType = FuncHelpUtils::iterator_deref_decay<Container>;
-        using V = decltype(container.cbegin());
         using W = func_container_result<Container, F>;
         const ValType *extremumValue = nullptr;
         W extremumComparator;
         
-        for(V it = container.cbegin(); it != container.cend(); ++it) {
-            W currentComparator = std::ref(func)(decltype(*it)(*it));
+        for(auto const &val : container) {
+            W currentComparator = std::ref(func)(decltype(val)(val));
             
             if (!extremumValue || currentComparator < extremumComparator) {
-                extremumValue = &(*it);
+                extremumValue = &(val);
                 extremumComparator = currentComparator;
             }
         }
@@ -428,16 +426,15 @@ namespace FuncHelpUtils {
         -> const FuncHelpUtils::iterator_deref_decay<Container> *
     {
         using ValType = FuncHelpUtils::iterator_deref_decay<Container>;
-        using V = decltype(container.cbegin());
         using W = func_container_result<Container, F>;
         const ValType *extremumValue = nullptr;
         W extremumComparator;
         
-        for(V it = container.cbegin(); it != container.cend(); ++it) {
-            W currentComparator = std::ref(func)(decltype(*it)(*it));
+        for(auto const &val : container) {
+            W currentComparator = std::ref(func)(decltype(val)(val));
             
             if (!extremumValue || currentComparator > extremumComparator) {
-                extremumValue = &(*it);
+                extremumValue = &(val);
                 extremumComparator = currentComparator;
             }
         }
@@ -502,10 +499,8 @@ auto reduce(const Container &container, const F &func)
 template <class Container, class F, class ValType>
 ValType reduce(const Container &container, const F &func, ValType memo)
 {
-    using V = decltype(container.cbegin());
-    
-    for(V it = container.cbegin(); it != container.cend(); ++it) {
-        memo = std::ref(func)(ValType(memo), decltype(*it)(*it));
+    for(auto const &val : container) {
+        memo = std::ref(func)(ValType(memo), decltype(val)(val));
     }
 
     return memo;
@@ -598,12 +593,10 @@ auto sorted(const Container &container, const F &comp)
 // contains
 
 template <class Container, class ValType>
-bool contains(const Container &container, const ValType &val)
+bool contains(const Container &container, const ValType &targetVal)
 {
-    using ItType = decltype(container.cbegin());
-    
-    for(ItType it = container.cbegin(); it != container.cend(); ++it) {
-        if ((*it) == val) {
+    for(auto const &val : container) {
+        if (val == targetVal) {
             return true;
         }
     }
@@ -685,11 +678,10 @@ auto omit(const InContainer<ValType> &container, const Container &omitted)
 template <class Container>
 Container reversed(const Container &container)
 {
-    using ItType = decltype(container.crbegin());
     Container result;
     
-    for(ItType it = container.crbegin(); it != container.crend(); ++it) {
-        FuncHelpUtils::addItem(result, *it);
+    for(auto const &val : container) {
+        FuncHelpUtils::addItem(result, val);
     }
     
     return result;

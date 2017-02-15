@@ -33,17 +33,6 @@ namespace FuncHelpUtils {
 
 #include <functionalHelpers.h>
 
-// map
-
-
-// compr
-
-__FH_compr_with_specific_return_type(QListCompr, QList)
-__FH_compr_with_specific_return_type(QVectorCompr, QVector)
-__FH_compr_with_specific_return_type(QSetCompr, QSet)
-__FH_compr_with_specific_return_type(QLinkedListCompr, QLinkedList)
-__FH_compr_with_fully_specified_return_type(QStringCompr, QString)
-
 // sorted
 
 // Adding an overload for convenient sorting of QStringLists

@@ -197,33 +197,33 @@ void testCompr()
     TEST(compr(derivedListFoos, &Foo::fooTimesTwo, &Foo::isEven), listExpected);
     TEST(compr(derivedQListFoos, &Foo::fooTimesTwo, &Foo::isEven), QListExpected);
     
-    TEST(listCompr(listFoos, &Foo::fooTimesTwo, &Foo::isEven), listExpected);
-    TEST(listCompr(listFoos, &Foo::fooTimesTwo, [] (const Foo &a) { return (a.value%2) == 0; }), listExpected);
-    TEST(listCompr(listFoos, [] (const Foo &a) { return a.fooTimesTwo(); }, &Foo::isEven), listExpected);
-    TEST(listCompr(listFooPtrs, &Foo::fooTimesTwo, &Foo::isEven), listExpected);
-    TEST(listCompr(listFooPtrs, &Foo::fooTimesTwo, [] (const Foo *a) { return (a->value%2) == 0; }), listExpected);
-    TEST(listCompr(listFooPtrs, [] (const Foo *a) { return a->fooTimesTwo(); }, &Foo::isEven), listExpected);
-    TEST(QListCompr(QListFoos, &Foo::fooTimesTwo, &Foo::isEven), QListExpected);
-    TEST(QListCompr(QListFoos, &Foo::fooTimesTwo, [] (const Foo &a) { return (a.value%2) == 0; }), QListExpected);
-    TEST(QListCompr(QListFoos, [] (const Foo &a) { return a.fooTimesTwo(); }, &Foo::isEven), QListExpected);
-    TEST(QListCompr(QListFooPtrs, &Foo::fooTimesTwo, &Foo::isEven), QListExpected);
-    TEST(QListCompr(QListFooPtrs, &Foo::fooTimesTwo, [] (const Foo *a) { return (a->value%2) == 0; }), QListExpected);
-    TEST(QListCompr(QListFooPtrs, [] (const Foo *a) { return a->fooTimesTwo(); }, &Foo::isEven), QListExpected);
-    TEST(listCompr(derivedListFoos, &Foo::fooTimesTwo, &Foo::isEven), listExpected);
-    TEST(QListCompr(derivedQListFoos, &Foo::fooTimesTwo, &Foo::isEven), QListExpected);
+    TEST(compr<list>(listFoos, &Foo::fooTimesTwo, &Foo::isEven), listExpected);
+    TEST(compr<list>(listFoos, &Foo::fooTimesTwo, [] (const Foo &a) { return (a.value%2) == 0; }), listExpected);
+    TEST(compr<list>(listFoos, [] (const Foo &a) { return a.fooTimesTwo(); }, &Foo::isEven), listExpected);
+    TEST(compr<list>(listFooPtrs, &Foo::fooTimesTwo, &Foo::isEven), listExpected);
+    TEST(compr<list>(listFooPtrs, &Foo::fooTimesTwo, [] (const Foo *a) { return (a->value%2) == 0; }), listExpected);
+    TEST(compr<list>(listFooPtrs, [] (const Foo *a) { return a->fooTimesTwo(); }, &Foo::isEven), listExpected);
+    TEST(compr<QList>(QListFoos, &Foo::fooTimesTwo, &Foo::isEven), QListExpected);
+    TEST(compr<QList>(QListFoos, &Foo::fooTimesTwo, [] (const Foo &a) { return (a.value%2) == 0; }), QListExpected);
+    TEST(compr<QList>(QListFoos, [] (const Foo &a) { return a.fooTimesTwo(); }, &Foo::isEven), QListExpected);
+    TEST(compr<QList>(QListFooPtrs, &Foo::fooTimesTwo, &Foo::isEven), QListExpected);
+    TEST(compr<QList>(QListFooPtrs, &Foo::fooTimesTwo, [] (const Foo *a) { return (a->value%2) == 0; }), QListExpected);
+    TEST(compr<QList>(QListFooPtrs, [] (const Foo *a) { return a->fooTimesTwo(); }, &Foo::isEven), QListExpected);
+    TEST(compr<list>(derivedListFoos, &Foo::fooTimesTwo, &Foo::isEven), listExpected);
+    TEST(compr<QList>(derivedQListFoos, &Foo::fooTimesTwo, &Foo::isEven), QListExpected);
     
-    TEST(listCompr(listFoos, &Foo::baseFooTimesTwo, &Foo::baseIsEven), listExpected);
-    TEST(listCompr(listFoos, &Foo::baseFooTimesTwo, [] (const Foo &a) { return (a.value%2) == 0; }), listExpected);
-    TEST(listCompr(listFoos, [] (const Foo &a) { return a.baseFooTimesTwo(); }, &Foo::baseIsEven), listExpected);
-    TEST(listCompr(listFooPtrs, &Foo::baseFooTimesTwo, &Foo::baseIsEven), listExpected);
-    TEST(listCompr(listFooPtrs, &Foo::baseFooTimesTwo, [] (const Foo *a) { return (a->value%2) == 0; }), listExpected);
-    TEST(listCompr(listFooPtrs, [] (const Foo *a) { return a->baseFooTimesTwo(); }, &Foo::baseIsEven), listExpected);
-    TEST(QListCompr(QListFoos, &Foo::baseFooTimesTwo, &Foo::baseIsEven), QListExpected);
-    TEST(QListCompr(QListFoos, &Foo::baseFooTimesTwo, [] (const Foo &a) { return (a.value%2) == 0; }), QListExpected);
-    TEST(QListCompr(QListFoos, [] (const Foo &a) { return a.baseFooTimesTwo(); }, &Foo::baseIsEven), QListExpected);
-    TEST(QListCompr(QListFooPtrs, &Foo::baseFooTimesTwo, &Foo::baseIsEven), QListExpected);
-    TEST(QListCompr(QListFooPtrs, &Foo::baseFooTimesTwo, [] (const Foo *a) { return (a->value%2) == 0; }), QListExpected);
-    TEST(QListCompr(QListFooPtrs, [] (const Foo *a) { return a->baseFooTimesTwo(); }, &Foo::baseIsEven), QListExpected);
+    TEST(compr<list>(listFoos, &Foo::baseFooTimesTwo, &Foo::baseIsEven), listExpected);
+    TEST(compr<list>(listFoos, &Foo::baseFooTimesTwo, [] (const Foo &a) { return (a.value%2) == 0; }), listExpected);
+    TEST(compr<list>(listFoos, [] (const Foo &a) { return a.baseFooTimesTwo(); }, &Foo::baseIsEven), listExpected);
+    TEST(compr<list>(listFooPtrs, &Foo::baseFooTimesTwo, &Foo::baseIsEven), listExpected);
+    TEST(compr<list>(listFooPtrs, &Foo::baseFooTimesTwo, [] (const Foo *a) { return (a->value%2) == 0; }), listExpected);
+    TEST(compr<list>(listFooPtrs, [] (const Foo *a) { return a->baseFooTimesTwo(); }, &Foo::baseIsEven), listExpected);
+    TEST(compr<QList>(QListFoos, &Foo::baseFooTimesTwo, &Foo::baseIsEven), QListExpected);
+    TEST(compr<QList>(QListFoos, &Foo::baseFooTimesTwo, [] (const Foo &a) { return (a.value%2) == 0; }), QListExpected);
+    TEST(compr<QList>(QListFoos, [] (const Foo &a) { return a.baseFooTimesTwo(); }, &Foo::baseIsEven), QListExpected);
+    TEST(compr<QList>(QListFooPtrs, &Foo::baseFooTimesTwo, &Foo::baseIsEven), QListExpected);
+    TEST(compr<QList>(QListFooPtrs, &Foo::baseFooTimesTwo, [] (const Foo *a) { return (a->value%2) == 0; }), QListExpected);
+    TEST(compr<QList>(QListFooPtrs, [] (const Foo *a) { return a->baseFooTimesTwo(); }, &Foo::baseIsEven), QListExpected);
     
     TEST(compr(vectorNumbers, [] (int x) { return x*2; }, [] (int x) { return (x%2) == 0;}), vectorExpected);
     TEST(compr(setNumbers, [] (int x) { return x*2; }, [] (int x) { return (x%2) == 0;}), setExpected);
@@ -232,17 +232,17 @@ void testCompr()
     TEST(compr(QSetNumbers, [] (int x) { return x*2; }, [] (int x) { return (x%2) == 0;}), QSetExpected);
     TEST(compr(QLinkedListNumbers, [] (int x) { return x*2; }, [] (int x) { return (x%2) == 0;}), QLinkedListExpected);
     
-    TEST(vectorCompr(listNumbers, [] (int x) { return x*2; }, [] (int x) { return (x%2) == 0;}), vectorExpected);
-    TEST(setCompr(listNumbers, [] (int x) { return x*2; }, [] (int x) { return (x%2) == 0;}), setExpected);
-    TEST(QListCompr(listNumbers, [] (int x) { return x*2; }, [] (int x) { return (x%2) == 0;}), QListExpected);
-    TEST(QVectorCompr(listNumbers, [] (int x) { return x*2; }, [] (int x) { return (x%2) == 0;}), QVectorExpected);
-    TEST(QSetCompr(listNumbers, [] (int x) { return x*2; }, [] (int x) { return (x%2) == 0;}), QSetExpected);
-    TEST(QLinkedListCompr(listNumbers, [] (int x) { return x*2; }, [] (int x) { return (x%2) == 0;}),
+    TEST(compr<vector>(listNumbers, [] (int x) { return x*2; }, [] (int x) { return (x%2) == 0;}), vectorExpected);
+    TEST(compr<set>(listNumbers, [] (int x) { return x*2; }, [] (int x) { return (x%2) == 0;}), setExpected);
+    TEST(compr<QList>(listNumbers, [] (int x) { return x*2; }, [] (int x) { return (x%2) == 0;}), QListExpected);
+    TEST(compr<QVector>(listNumbers, [] (int x) { return x*2; }, [] (int x) { return (x%2) == 0;}), QVectorExpected);
+    TEST(compr<QSet>(listNumbers, [] (int x) { return x*2; }, [] (int x) { return (x%2) == 0;}), QSetExpected);
+    TEST(compr<QLinkedList>(listNumbers, [] (int x) { return x*2; }, [] (int x) { return (x%2) == 0;}),
          QLinkedListExpected);
     
     TEST(compr(std::string("aBcDeFgH"), (char(*)(char))(tolower), isupper), std::string("bdfh"));
-    TEST(stringCompr(std::string("aBcDeFgH"), tolower, isupper), std::string("bdfh"));
-    TEST(QStringCompr(QString("aBcDeFgH"), [] (QChar c) { return c.toLower(); },
+    TEST(compr<string>(std::string("aBcDeFgH"), tolower, isupper), std::string("bdfh"));
+    TEST(compr<QString>(QString("aBcDeFgH"), [] (QChar c) { return c.toLower(); },
          [] (QChar c) { return c.isUpper(); }), QString("bdfh"));
 }
 

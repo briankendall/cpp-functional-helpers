@@ -135,46 +135,46 @@ auto map(const InContainer<InType> &container, const F &func)
 
 // compr
 
-template <class T, class U, class F1, class F2>
-U compr(const T &list, const F1 &func, const F2 &predicate)
+template <class OutType,
+          class InType,
+          class F1,
+          class F2>
+OutType compr(const InType &container, const F1 &func, const F2 &predicate)
 {
-    using ItType = decltype(list.cbegin());
-    U result;
+    OutType result;
     
-    for(ItType it = list.cbegin(); it != list.cend(); ++it) {
-        if (std::ref(predicate)(decltype(*it)(*it))) {
-            FuncHelpUtils::addItem(result, std::ref(func)(decltype(*it)(*it)));
+    for(auto const &val : container) {
+        if (std::ref(predicate)(decltype(val)(val))) {
+            FuncHelpUtils::addItem(result, std::ref(func)(decltype(val)(val)));
         }
     }
     
     return result;
 }
 
-template <template <class...> class T, class U, class F1, class F2>
-auto compr(const T<U> &list, const F1 &func, const F2 &predicate)
--> T<typename std::decay<decltype(std::ref(func)(decltype(*list.begin())(*list.begin())))>::type>
+template <template <class...> class InContainer,
+          template <class...> class OutContainer = InContainer,
+          class InType,
+          class F1,
+          class F2>
+auto compr(const InContainer<InType> &container, const F1 &func, const F2 &predicate)
+ -> OutContainer<FuncHelpUtils::func_container_result<InContainer<InType>, F1> >
 {
-    using V = typename std::decay<decltype(std::ref(func)(decltype(*list.begin())(*list.begin())))>::type;
-    return ::compr<T<U>, T<V>, F1, F2>(list, func, predicate);
+    using OutType = FuncHelpUtils::func_container_result<InContainer<InType>, F1>;
+    return compr<OutContainer<OutType>, InContainer<InType> >(container, func, predicate);
 }
 
-#define __FH_compr_with_fully_specified_return_type(NAME, RET_TYPE) \
-template <class T, class F1, class F2> \
-auto NAME(const T &list, const F1 &func, const F2 &predicate) \
-    -> RET_TYPE \
-{ \
-    using U = RET_TYPE; \
-    return ::compr<T, U, F1, F2>(list, func, predicate); \
+template <template <class...> class OutContainer,
+          template <class...> class InContainer,
+          class InType,
+          class F1,
+          class F2,
+          class = typename std::enable_if<!std::is_same<OutContainer<int>, InContainer<int> >::value>::type>
+auto compr(const InContainer<InType> &container, const F1 &func, const F2 &predicate)
+ -> OutContainer<FuncHelpUtils::func_container_result<InContainer<InType>, F1> >
+{
+    return compr<InContainer, OutContainer>(container, func, predicate);
 }
-
-#define __FH_compr_with_specific_return_type(NAME, RET_TYPE) \
-    __FH_compr_with_fully_specified_return_type(NAME, \
-        RET_TYPE<typename std::decay<decltype(std::ref(func)(decltype(*list.begin())(*list.begin())))>::type>)
-
-__FH_compr_with_specific_return_type(listCompr, std::list)
-__FH_compr_with_specific_return_type(vectorCompr, std::vector)
-__FH_compr_with_specific_return_type(setCompr, std::set)
-__FH_compr_with_fully_specified_return_type(stringCompr, std::string)
 
 // filter
 

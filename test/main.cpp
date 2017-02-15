@@ -799,19 +799,19 @@ void testFlatten()
     TEST(flatten(QList<QVector<int> >({{1, 2, 3}, {4, 5, 6}, {7, 8, 9}})), QVector<int>({1,2,3,4,5,6,7,8,9}));
     TEST(flatten(QVector<QSet<int> >({{1, 2, 3}, {4, 5, 6}, {7, 8, 9}})), QSet<int>({1,2,3,4,5,6,7,8,9}));
     
-    TEST(listFlatten(std::list<std::list<int> >({{1, 2, 3}, {4, 5, 6}, {7, 8, 9}})), std::list<int>({1,2,3,4,5,6,7,8,9}));
-    TEST(vectorFlatten(std::list<std::list<int> >({{1, 2, 3}, {4, 5, 6}, {7, 8, 9}})), std::vector<int>({1,2,3,4,5,6,7,8,9}));
-    TEST(setFlatten(std::list<std::list<int> >({{1, 2, 3}, {4, 5, 6}, {7, 8, 9}})), std::set<int>({1,2,3,4,5,6,7,8,9}));
-    TEST(QListFlatten(QList<QList<int> >({{1, 2, 3}, {4, 5, 6}, {7, 8, 9}})), QList<int>({1,2,3,4,5,6,7,8,9}));
-    TEST(QVectorFlatten(QVector<QVector<int> >({{1, 2, 3}, {4, 5, 6}, {7, 8, 9}})), QVector<int>({1,2,3,4,5,6,7,8,9}));
-    TEST(QSetFlatten(QSet<QSet<int> >({{1, 2, 3}, {4, 5, 6}, {7, 8, 9}})), QSet<int>({1,2,3,4,5,6,7,8,9}));
-    TEST(QLinkedListFlatten(QList<QVector<int> >({{1, 2, 3}, {4, 5, 6}, {7, 8, 9}})), QLinkedList<int>({1,2,3,4,5,6,7,8,9}));
-    TEST(listFlatten(std::list<std::list<Foo> >({{fooA, fooB}, {fooC, fooD}, {fooE}})), std::list<Foo>({fooA, fooB, fooC, fooD, fooE}));
+    TEST(flatten<list>(std::list<std::list<int> >({{1, 2, 3}, {4, 5, 6}, {7, 8, 9}})), std::list<int>({1,2,3,4,5,6,7,8,9}));
+    TEST(flatten<vector>(std::list<std::list<int> >({{1, 2, 3}, {4, 5, 6}, {7, 8, 9}})), std::vector<int>({1,2,3,4,5,6,7,8,9}));
+    TEST(flatten<set>(std::list<std::list<int> >({{1, 2, 3}, {4, 5, 6}, {7, 8, 9}})), std::set<int>({1,2,3,4,5,6,7,8,9}));
+    TEST(flatten<QList>(QList<QList<int> >({{1, 2, 3}, {4, 5, 6}, {7, 8, 9}})), QList<int>({1,2,3,4,5,6,7,8,9}));
+    TEST(flatten<QVector>(QVector<QVector<int> >({{1, 2, 3}, {4, 5, 6}, {7, 8, 9}})), QVector<int>({1,2,3,4,5,6,7,8,9}));
+    TEST(flatten<QSet>(QSet<QSet<int> >({{1, 2, 3}, {4, 5, 6}, {7, 8, 9}})), QSet<int>({1,2,3,4,5,6,7,8,9}));
+    TEST(flatten<QLinkedList>(QList<QVector<int> >({{1, 2, 3}, {4, 5, 6}, {7, 8, 9}})), QLinkedList<int>({1,2,3,4,5,6,7,8,9}));
+    TEST(flatten<list>(std::list<std::list<Foo> >({{fooA, fooB}, {fooC, fooD}, {fooE}})), std::list<Foo>({fooA, fooB, fooC, fooD, fooE}));
     
-    TEST(listFlatten(std::vector<std::list<int> >({{1, 2, 3}, {4, 5, 6}, {7, 8, 9}})), std::list<int>({1,2,3,4,5,6,7,8,9}));
-    TEST(listFlatten(std::vector<std::vector<int> >({{1, 2, 3}, {4, 5, 6}, {7, 8, 9}})), std::list<int>({1,2,3,4,5,6,7,8,9}));
-    TEST(listFlatten(std::list<std::vector<int> >({{1, 2, 3}, {4, 5, 6}, {7, 8, 9}})), std::list<int>({1,2,3,4,5,6,7,8,9}));
-    TEST(setFlatten(std::list<std::set<int> >({{1, 2, 3}, {4, 5, 6}, {7, 8, 9}})), std::set<int>({1,2,3,4,5,6,7,8,9}));
+    TEST(flatten<list>(std::vector<std::list<int> >({{1, 2, 3}, {4, 5, 6}, {7, 8, 9}})), std::list<int>({1,2,3,4,5,6,7,8,9}));
+    TEST(flatten<list>(std::vector<std::vector<int> >({{1, 2, 3}, {4, 5, 6}, {7, 8, 9}})), std::list<int>({1,2,3,4,5,6,7,8,9}));
+    TEST(flatten<list>(std::list<std::vector<int> >({{1, 2, 3}, {4, 5, 6}, {7, 8, 9}})), std::list<int>({1,2,3,4,5,6,7,8,9}));
+    TEST(flatten<set>(std::list<std::set<int> >({{1, 2, 3}, {4, 5, 6}, {7, 8, 9}})), std::set<int>({1,2,3,4,5,6,7,8,9}));
 }
 
 int main()

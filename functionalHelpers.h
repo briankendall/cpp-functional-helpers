@@ -845,40 +845,33 @@ auto mapRange(int end, F1 func, F2 predicate)
 
 // flatten
 
-template <class T, class U>
-inline U flatten(const T &container)
+template <template <class...> class NestedContainer,
+          template <class...> class InContainer,
+          template <class...> class OutContainer = NestedContainer,
+          class ValType>
+auto flatten(const InContainer< NestedContainer<ValType> > &container)
+ -> OutContainer<ValType>
 {
-    U result;
+    OutContainer<ValType> result;
     
-    for(auto it = container.cbegin(); it != container.cend(); ++it) {
-        for(auto jt = it->cbegin(); jt != it->cend(); ++jt) {
-            FuncHelpUtils::addItem(result, *jt);
+    for(auto const &nested : container) {
+        for(auto const &val : nested) {
+            FuncHelpUtils::addItem(result, val);
         }
     }
     
     return result;
 }
 
-template <template <class...> class T1, template <class...> class T2, class U, class ... Rest1, class ... Rest2>
-auto flatten(const T1< T2<U, Rest2...>, Rest1...> &container)
- -> T2<typename std::decay<decltype(*(container.cbegin()->cbegin()))>::type>
+template <template <class...> class OutContainer,
+          template <class...> class InContainer,
+          template <class...> class NestedContainer,
+          class ValType,
+          class = FuncHelpUtils::enable_if_t<!std::is_same<OutContainer<int>, NestedContainer<int> >::value> >
+auto flatten(const InContainer<NestedContainer<ValType> > &container)
+ -> OutContainer<ValType>
 {
-    using V = typename std::decay<decltype(*(container.cbegin()->cbegin()))>::type;
-    return ::flatten<T1< T2<U> >, T2<V> >(container);
+    return flatten<NestedContainer, InContainer, OutContainer>(container);
 }
-
-
-#define __FH_flatten_with_return_type(NAME, RET_TYPE) \
-template <class T> \
-auto NAME(const T &container) \
- -> RET_TYPE<typename std::decay<decltype(*(container.cbegin()->cbegin()))>::type> \
-{ \
-    using U = RET_TYPE<typename std::decay<decltype(*(container.cbegin()->cbegin()))>::type>; \
-    return ::flatten<T, U>(container); \
-}
-
-__FH_flatten_with_return_type(listFlatten, std::list)
-__FH_flatten_with_return_type(vectorFlatten, std::vector)
-__FH_flatten_with_return_type(setFlatten, std::set)
 
 #endif // __FUNCTIONAL_HELPERS_H__

@@ -114,13 +114,5 @@ U last(const T<U> &container, const U &defaultValue)
     }
 }
 
-// flatten
-
-__FH_flatten_with_return_type(QListFlatten, QList)
-__FH_flatten_with_return_type(QVectorFlatten, QVector)
-__FH_flatten_with_return_type(QSetFlatten, QSet)
-__FH_flatten_with_return_type(QLinkedListFlatten, QLinkedList)
-
-
 #endif // __QT_FUNCTIONAL_HELPERS_H__
 

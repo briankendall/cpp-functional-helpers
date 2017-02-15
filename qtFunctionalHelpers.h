@@ -1,5 +1,5 @@
-#ifndef __QT_FUNCTIONAL_HELPERS_H__
-#define __QT_FUNCTIONAL_HELPERS_H__
+#ifndef QT_FUNCTIONAL_HELPERS_H_GUARD
+#define QT_FUNCTIONAL_HELPERS_H_GUARD
 
 // For some reason it's necessary to include <vector> before some of Qt's
 // headers (like <QString>), otherwise we'll get the error "too few arguments
@@ -17,7 +17,7 @@
 
 // These need to be declared before functionalHelpers.h is included so that the macros
 // it declares will have access to them.
-namespace _FunctionalHelpersUtils {
+namespace FuncHelpUtils {
     template<class U>
     inline void reserveSize(QVector<U> &container, int size)
     {
@@ -32,29 +32,6 @@ namespace _FunctionalHelpersUtils {
 }
 
 #include <functionalHelpers.h>
-
-// map
-
-__FH_map_with_specific_return_type(QListMap, QList)
-__FH_map_with_specific_return_type(QVectorMap, QVector)
-__FH_map_with_specific_return_type(QSetMap, QSet)
-__FH_map_with_specific_return_type(QLinkedListMap, QLinkedList)
-__FH_map_with_fully_specified_return_type(QStringMap, QString)
-
-// compr
-
-__FH_compr_with_specific_return_type(QListCompr, QList)
-__FH_compr_with_specific_return_type(QVectorCompr, QVector)
-__FH_compr_with_specific_return_type(QSetCompr, QSet)
-__FH_compr_with_specific_return_type(QLinkedListCompr, QLinkedList)
-__FH_compr_with_fully_specified_return_type(QStringCompr, QString)
-
-// filter
-
-__FH_filter_with_specific_return_type(QListFilter, QList)
-__FH_filter_with_specific_return_type(QVectorFilter, QVector)
-__FH_filter_with_specific_return_type(QSetFilter, QSet)
-__FH_filter_with_specific_return_type(QLinkedListFilter, QLinkedList)
 
 // sorted
 
@@ -74,13 +51,6 @@ bool contains(const QSet<T> &container, const T &val)
     return container.contains(val);
 }
 
-// omit
-
-__FH_omit_with_specific_return_type(QListOmit, QList)
-__FH_omit_with_specific_return_type(QVectorOmit, QVector)
-__FH_omit_with_specific_return_type(QSetOmit, QSet)
-__FH_omit_with_specific_return_type(QLinkedListOmit, QLinkedList)
-
 // reversed
 
 // Special casing reversed() for Qt containers in order to achieve
@@ -95,7 +65,7 @@ Container<T> reversed(const Container<T> &container)
     it.toBack();
     
     while(it.hasPrevious()) {
-        _FunctionalHelpersUtils::addItem(result, it.previous());
+        FuncHelpUtils::addItem(result, it.previous());
     }
     
     return result;
@@ -144,27 +114,4 @@ U last(const T<U> &container, const U &defaultValue)
     }
 }
 
-// range
-
-__FH_range_with_return_type(QListRange, QList)
-__FH_range_with_return_type(QVectorRange, QVector)
-__FH_range_with_return_type(QSetRange, QSet)
-__FH_range_with_return_type(QLinkedListRange, QLinkedList)
-
-// mapRange
-
-__FH_mapRange_with_return_type(QListMapRange, QList)
-__FH_mapRange_with_return_type(QVectorMapRange, QVector)
-__FH_mapRange_with_return_type(QSetMapRange, QSet)
-__FH_mapRange_with_return_type(QLinkedListMapRange, QLinkedList)
-
-// flatten
-
-__FH_flatten_with_return_type(QListFlatten, QList)
-__FH_flatten_with_return_type(QVectorFlatten, QVector)
-__FH_flatten_with_return_type(QSetFlatten, QSet)
-__FH_flatten_with_return_type(QLinkedListFlatten, QLinkedList)
-
-
-#endif // __QT_FUNCTIONAL_HELPERS_H__
-
+#endif // QT_FUNCTIONAL_HELPERS_H_GUARD

@@ -119,6 +119,7 @@ void testMap()
     const QLinkedList<int> QLinkedListExpected = {2,4,6,8,10};
     
     TEST(::map(listNumbers, [] (int x) { return x*2; }), listExpected);
+    
     TEST(::map(listNumbers, &timesTwo), listExpected);
     TEST(::map(listNumbers, bind(timesX, 2, placeholders::_1)), listExpected);
     TEST(::map(listFoos, [] (const Foo &foo) { return foo.fooTimesTwo(); }), listExpected);
@@ -133,17 +134,17 @@ void testMap()
     TEST(::map(derivedListFoos, &Foo::baseFooTimesTwo), listExpected);
     TEST(::map(derivedQListFoos, &Foo::baseFooTimesTwo), QListExpected);
     
-    TEST(listMap(listFoos, [] (const Foo &foo) { return foo.fooTimesTwo(); }), listExpected);
-    TEST(listMap(listFoos, &Foo::fooTimesTwo), listExpected);
-    TEST(listMap(listFooPtrs, &Foo::fooTimesTwo), listExpected);
-    TEST(QListMap(QListFoos, &Foo::fooTimesTwo), QListExpected);
-    TEST(QListMap(QListFooPtrs, &Foo::fooTimesTwo), QListExpected);
-    TEST(listMap(listFoos, &Foo::baseFooTimesTwo), listExpected);
-    TEST(listMap(listFooPtrs, &Foo::baseFooTimesTwo), listExpected);
-    TEST(QListMap(QListFoos, &Foo::baseFooTimesTwo), QListExpected);
-    TEST(QListMap(QListFooPtrs, &Foo::baseFooTimesTwo), QListExpected);
-    TEST(listMap(derivedListFoos, &Foo::baseFooTimesTwo), listExpected);
-    TEST(QListMap(derivedQListFoos, &Foo::baseFooTimesTwo), QListExpected);
+    TEST(::map<list>(listFoos, [] (const Foo &foo) { return foo.fooTimesTwo(); }), listExpected);
+    TEST(::map<list>(listFoos, &Foo::fooTimesTwo), listExpected);
+    TEST(::map<list>(listFooPtrs, &Foo::fooTimesTwo), listExpected);
+    TEST(::map<QList>(QListFoos, &Foo::fooTimesTwo), QListExpected);
+    TEST(::map<QList>(QListFooPtrs, &Foo::fooTimesTwo), QListExpected);
+    TEST(::map<list>(listFoos, &Foo::baseFooTimesTwo), listExpected);
+    TEST(::map<list>(listFooPtrs, &Foo::baseFooTimesTwo), listExpected);
+    TEST(::map<QList>(QListFoos, &Foo::baseFooTimesTwo), QListExpected);
+    TEST(::map<QList>(QListFooPtrs, &Foo::baseFooTimesTwo), QListExpected);
+    TEST(::map<list>(derivedListFoos, &Foo::baseFooTimesTwo), listExpected);
+    TEST(::map<QList>(derivedQListFoos, &Foo::baseFooTimesTwo), QListExpected);
     
     TEST(::map(vectorNumbers, [] (int x) { return x*2; }), vectorExpected);
     TEST(::map(setNumbers, [] (int x) { return x*2; }), setExpected);
@@ -151,20 +152,20 @@ void testMap()
     TEST(::map(QVectorNumbers, [] (int x) { return x*2; }), QVectorExpected);
     TEST(::map(QSetNumbers, [] (int x) { return x*2; }), QSetExpected);
     TEST(::map(QLinkedListNumbers, [] (int x) { return x*2; }), QLinkedListExpected);
-    TEST(vectorMap(listNumbers, [] (int x) { return x*2; }), vectorExpected);
-    TEST(setMap(listNumbers, [] (int x) { return x*2; }), setExpected);
-    TEST(QListMap(listNumbers, [] (int x) { return x*2; }), QListExpected);
-    TEST(QVectorMap(listNumbers, [] (int x) { return x*2; }), QVectorExpected);
-    TEST(QSetMap(listNumbers, [] (int x) { return x*2; }), QSetExpected);
-    TEST(QLinkedListMap(listNumbers, [] (int x) { return x*2; }), QLinkedListExpected);
+    TEST(::map<vector>(listNumbers, [] (int x) { return x*2; }), vectorExpected);
+    TEST(::map<set>(listNumbers, [] (int x) { return x*2; }), setExpected);
+    TEST(::map<QList>(listNumbers, [] (int x) { return x*2; }), QListExpected);
+    TEST(::map<QVector>(listNumbers, [] (int x) { return x*2; }), QVectorExpected);
+    TEST(::map<QSet>(listNumbers, [] (int x) { return x*2; }), QSetExpected);
+    TEST(::map<QLinkedList>(listNumbers, [] (int x) { return x*2; }), QLinkedListExpected);
     
     // toupper takes an integer and returns an integer, so in order to use it with ::map we have
     // to cast it to the right kind of function. Probably not the best way to go but it works.
     TEST(::map(string("abcde"), (char(*)(char))(toupper)), string("ABCDE"));
     TEST(::map(string("abcde"), [] (char c) { return char(toupper(c)); }), string("ABCDE"));
-    TEST(stringMap(string("abcde"), toupper), string("ABCDE"));
-    TEST(QStringMap(string("abcde"), [] (char c) { return QChar(c).toUpper();}), QString("ABCDE"));
-    TEST(QStringMap(QString("abcde"), [] (QChar c) { return c.toUpper();}), QString("ABCDE"));
+    TEST(::map<string>(string("abcde"), toupper), string("ABCDE"));
+    TEST(::map<QString>(string("abcde"), [] (char c) { return QChar(c).toUpper();}), QString("ABCDE"));
+    TEST(::map<QString>(QString("abcde"), [] (QChar c) { return c.toUpper();}), QString("ABCDE"));
 }
 
 void testCompr()
@@ -196,33 +197,33 @@ void testCompr()
     TEST(compr(derivedListFoos, &Foo::fooTimesTwo, &Foo::isEven), listExpected);
     TEST(compr(derivedQListFoos, &Foo::fooTimesTwo, &Foo::isEven), QListExpected);
     
-    TEST(listCompr(listFoos, &Foo::fooTimesTwo, &Foo::isEven), listExpected);
-    TEST(listCompr(listFoos, &Foo::fooTimesTwo, [] (const Foo &a) { return (a.value%2) == 0; }), listExpected);
-    TEST(listCompr(listFoos, [] (const Foo &a) { return a.fooTimesTwo(); }, &Foo::isEven), listExpected);
-    TEST(listCompr(listFooPtrs, &Foo::fooTimesTwo, &Foo::isEven), listExpected);
-    TEST(listCompr(listFooPtrs, &Foo::fooTimesTwo, [] (const Foo *a) { return (a->value%2) == 0; }), listExpected);
-    TEST(listCompr(listFooPtrs, [] (const Foo *a) { return a->fooTimesTwo(); }, &Foo::isEven), listExpected);
-    TEST(QListCompr(QListFoos, &Foo::fooTimesTwo, &Foo::isEven), QListExpected);
-    TEST(QListCompr(QListFoos, &Foo::fooTimesTwo, [] (const Foo &a) { return (a.value%2) == 0; }), QListExpected);
-    TEST(QListCompr(QListFoos, [] (const Foo &a) { return a.fooTimesTwo(); }, &Foo::isEven), QListExpected);
-    TEST(QListCompr(QListFooPtrs, &Foo::fooTimesTwo, &Foo::isEven), QListExpected);
-    TEST(QListCompr(QListFooPtrs, &Foo::fooTimesTwo, [] (const Foo *a) { return (a->value%2) == 0; }), QListExpected);
-    TEST(QListCompr(QListFooPtrs, [] (const Foo *a) { return a->fooTimesTwo(); }, &Foo::isEven), QListExpected);
-    TEST(listCompr(derivedListFoos, &Foo::fooTimesTwo, &Foo::isEven), listExpected);
-    TEST(QListCompr(derivedQListFoos, &Foo::fooTimesTwo, &Foo::isEven), QListExpected);
+    TEST(compr<list>(listFoos, &Foo::fooTimesTwo, &Foo::isEven), listExpected);
+    TEST(compr<list>(listFoos, &Foo::fooTimesTwo, [] (const Foo &a) { return (a.value%2) == 0; }), listExpected);
+    TEST(compr<list>(listFoos, [] (const Foo &a) { return a.fooTimesTwo(); }, &Foo::isEven), listExpected);
+    TEST(compr<list>(listFooPtrs, &Foo::fooTimesTwo, &Foo::isEven), listExpected);
+    TEST(compr<list>(listFooPtrs, &Foo::fooTimesTwo, [] (const Foo *a) { return (a->value%2) == 0; }), listExpected);
+    TEST(compr<list>(listFooPtrs, [] (const Foo *a) { return a->fooTimesTwo(); }, &Foo::isEven), listExpected);
+    TEST(compr<QList>(QListFoos, &Foo::fooTimesTwo, &Foo::isEven), QListExpected);
+    TEST(compr<QList>(QListFoos, &Foo::fooTimesTwo, [] (const Foo &a) { return (a.value%2) == 0; }), QListExpected);
+    TEST(compr<QList>(QListFoos, [] (const Foo &a) { return a.fooTimesTwo(); }, &Foo::isEven), QListExpected);
+    TEST(compr<QList>(QListFooPtrs, &Foo::fooTimesTwo, &Foo::isEven), QListExpected);
+    TEST(compr<QList>(QListFooPtrs, &Foo::fooTimesTwo, [] (const Foo *a) { return (a->value%2) == 0; }), QListExpected);
+    TEST(compr<QList>(QListFooPtrs, [] (const Foo *a) { return a->fooTimesTwo(); }, &Foo::isEven), QListExpected);
+    TEST(compr<list>(derivedListFoos, &Foo::fooTimesTwo, &Foo::isEven), listExpected);
+    TEST(compr<QList>(derivedQListFoos, &Foo::fooTimesTwo, &Foo::isEven), QListExpected);
     
-    TEST(listCompr(listFoos, &Foo::baseFooTimesTwo, &Foo::baseIsEven), listExpected);
-    TEST(listCompr(listFoos, &Foo::baseFooTimesTwo, [] (const Foo &a) { return (a.value%2) == 0; }), listExpected);
-    TEST(listCompr(listFoos, [] (const Foo &a) { return a.baseFooTimesTwo(); }, &Foo::baseIsEven), listExpected);
-    TEST(listCompr(listFooPtrs, &Foo::baseFooTimesTwo, &Foo::baseIsEven), listExpected);
-    TEST(listCompr(listFooPtrs, &Foo::baseFooTimesTwo, [] (const Foo *a) { return (a->value%2) == 0; }), listExpected);
-    TEST(listCompr(listFooPtrs, [] (const Foo *a) { return a->baseFooTimesTwo(); }, &Foo::baseIsEven), listExpected);
-    TEST(QListCompr(QListFoos, &Foo::baseFooTimesTwo, &Foo::baseIsEven), QListExpected);
-    TEST(QListCompr(QListFoos, &Foo::baseFooTimesTwo, [] (const Foo &a) { return (a.value%2) == 0; }), QListExpected);
-    TEST(QListCompr(QListFoos, [] (const Foo &a) { return a.baseFooTimesTwo(); }, &Foo::baseIsEven), QListExpected);
-    TEST(QListCompr(QListFooPtrs, &Foo::baseFooTimesTwo, &Foo::baseIsEven), QListExpected);
-    TEST(QListCompr(QListFooPtrs, &Foo::baseFooTimesTwo, [] (const Foo *a) { return (a->value%2) == 0; }), QListExpected);
-    TEST(QListCompr(QListFooPtrs, [] (const Foo *a) { return a->baseFooTimesTwo(); }, &Foo::baseIsEven), QListExpected);
+    TEST(compr<list>(listFoos, &Foo::baseFooTimesTwo, &Foo::baseIsEven), listExpected);
+    TEST(compr<list>(listFoos, &Foo::baseFooTimesTwo, [] (const Foo &a) { return (a.value%2) == 0; }), listExpected);
+    TEST(compr<list>(listFoos, [] (const Foo &a) { return a.baseFooTimesTwo(); }, &Foo::baseIsEven), listExpected);
+    TEST(compr<list>(listFooPtrs, &Foo::baseFooTimesTwo, &Foo::baseIsEven), listExpected);
+    TEST(compr<list>(listFooPtrs, &Foo::baseFooTimesTwo, [] (const Foo *a) { return (a->value%2) == 0; }), listExpected);
+    TEST(compr<list>(listFooPtrs, [] (const Foo *a) { return a->baseFooTimesTwo(); }, &Foo::baseIsEven), listExpected);
+    TEST(compr<QList>(QListFoos, &Foo::baseFooTimesTwo, &Foo::baseIsEven), QListExpected);
+    TEST(compr<QList>(QListFoos, &Foo::baseFooTimesTwo, [] (const Foo &a) { return (a.value%2) == 0; }), QListExpected);
+    TEST(compr<QList>(QListFoos, [] (const Foo &a) { return a.baseFooTimesTwo(); }, &Foo::baseIsEven), QListExpected);
+    TEST(compr<QList>(QListFooPtrs, &Foo::baseFooTimesTwo, &Foo::baseIsEven), QListExpected);
+    TEST(compr<QList>(QListFooPtrs, &Foo::baseFooTimesTwo, [] (const Foo *a) { return (a->value%2) == 0; }), QListExpected);
+    TEST(compr<QList>(QListFooPtrs, [] (const Foo *a) { return a->baseFooTimesTwo(); }, &Foo::baseIsEven), QListExpected);
     
     TEST(compr(vectorNumbers, [] (int x) { return x*2; }, [] (int x) { return (x%2) == 0;}), vectorExpected);
     TEST(compr(setNumbers, [] (int x) { return x*2; }, [] (int x) { return (x%2) == 0;}), setExpected);
@@ -231,17 +232,17 @@ void testCompr()
     TEST(compr(QSetNumbers, [] (int x) { return x*2; }, [] (int x) { return (x%2) == 0;}), QSetExpected);
     TEST(compr(QLinkedListNumbers, [] (int x) { return x*2; }, [] (int x) { return (x%2) == 0;}), QLinkedListExpected);
     
-    TEST(vectorCompr(listNumbers, [] (int x) { return x*2; }, [] (int x) { return (x%2) == 0;}), vectorExpected);
-    TEST(setCompr(listNumbers, [] (int x) { return x*2; }, [] (int x) { return (x%2) == 0;}), setExpected);
-    TEST(QListCompr(listNumbers, [] (int x) { return x*2; }, [] (int x) { return (x%2) == 0;}), QListExpected);
-    TEST(QVectorCompr(listNumbers, [] (int x) { return x*2; }, [] (int x) { return (x%2) == 0;}), QVectorExpected);
-    TEST(QSetCompr(listNumbers, [] (int x) { return x*2; }, [] (int x) { return (x%2) == 0;}), QSetExpected);
-    TEST(QLinkedListCompr(listNumbers, [] (int x) { return x*2; }, [] (int x) { return (x%2) == 0;}),
+    TEST(compr<vector>(listNumbers, [] (int x) { return x*2; }, [] (int x) { return (x%2) == 0;}), vectorExpected);
+    TEST(compr<set>(listNumbers, [] (int x) { return x*2; }, [] (int x) { return (x%2) == 0;}), setExpected);
+    TEST(compr<QList>(listNumbers, [] (int x) { return x*2; }, [] (int x) { return (x%2) == 0;}), QListExpected);
+    TEST(compr<QVector>(listNumbers, [] (int x) { return x*2; }, [] (int x) { return (x%2) == 0;}), QVectorExpected);
+    TEST(compr<QSet>(listNumbers, [] (int x) { return x*2; }, [] (int x) { return (x%2) == 0;}), QSetExpected);
+    TEST(compr<QLinkedList>(listNumbers, [] (int x) { return x*2; }, [] (int x) { return (x%2) == 0;}),
          QLinkedListExpected);
     
     TEST(compr(std::string("aBcDeFgH"), (char(*)(char))(tolower), isupper), std::string("bdfh"));
-    TEST(stringCompr(std::string("aBcDeFgH"), tolower, isupper), std::string("bdfh"));
-    TEST(QStringCompr(QString("aBcDeFgH"), [] (QChar c) { return c.toLower(); },
+    TEST(compr<string>(std::string("aBcDeFgH"), tolower, isupper), std::string("bdfh"));
+    TEST(compr<QString>(QString("aBcDeFgH"), [] (QChar c) { return c.toLower(); },
          [] (QChar c) { return c.isUpper(); }), QString("bdfh"));
 }
 
@@ -255,19 +256,19 @@ void testFilter()
     const QSet<int> QSetExpected = {2,4};
     const QLinkedList<int> QLinkedListExpected = {2,4};
     
-    TEST(listFilter(listNumbers, [] (int x) { return (x%2) == 0; }), listExpected);
-    TEST(listFilter(listNumbers, &isEven), listExpected);
-    TEST(listFilter(listNumbers, bind(isMultiple, placeholders::_1, 2)), listExpected);
-    TEST(listFilter(listFoos, &Foo::isEven), list<Foo>({fooB, fooD}));
-    TEST(listFilter(listFooPtrs, &Foo::isEven), list<Foo *>({&fooB, &fooD}));
-    TEST(listFilter(derivedListFoos, &Foo::isEven), list<Foo>({fooB, fooD}));
+    TEST(filter<list>(listNumbers, [] (int x) { return (x%2) == 0; }), listExpected);
+    TEST(filter<list>(listNumbers, &isEven), listExpected);
+    TEST(filter<list>(listNumbers, bind(isMultiple, placeholders::_1, 2)), listExpected);
+    TEST(filter<list>(listFoos, &Foo::isEven), list<Foo>({fooB, fooD}));
+    TEST(filter<list>(listFooPtrs, &Foo::isEven), list<Foo *>({&fooB, &fooD}));
+    TEST(filter<list>(derivedListFoos, &Foo::isEven), list<Foo>({fooB, fooD}));
     
-    TEST(listFilter(listFoos, &Foo::baseIsEven), list<Foo>({fooB, fooD}));
-    TEST(listFilter(listFooPtrs, &Foo::baseIsEven), list<Foo *>({&fooB, &fooD}));
-    TEST(QListFilter(QListFoos, &Foo::baseIsEven), QList<Foo>({fooB, fooD}));
-    TEST(QListFilter(QListFooPtrs, &Foo::baseIsEven), QList<Foo *>({&fooB, &fooD}));
-    TEST(QListFilter(QListFoos, &Foo::baseIsEven), QList<Foo>({fooB, fooD}));
-    TEST(QListFilter(derivedQListFoos, &Foo::baseIsEven), QList<Foo>({fooB, fooD}));
+    TEST(filter<list>(listFoos, &Foo::baseIsEven), list<Foo>({fooB, fooD}));
+    TEST(filter<list>(listFooPtrs, &Foo::baseIsEven), list<Foo *>({&fooB, &fooD}));
+    TEST(filter<QList>(QListFoos, &Foo::baseIsEven), QList<Foo>({fooB, fooD}));
+    TEST(filter<QList>(QListFooPtrs, &Foo::baseIsEven), QList<Foo *>({&fooB, &fooD}));
+    TEST(filter<QList>(QListFoos, &Foo::baseIsEven), QList<Foo>({fooB, fooD}));
+    TEST(filter<QList>(derivedQListFoos, &Foo::baseIsEven), QList<Foo>({fooB, fooD}));
     
     TEST(filter(vectorNumbers, [] (int x) { return (x%2) == 0; }), vectorExpected);
     TEST(filter(setNumbers, [] (int x) { return (x%2) == 0; }), setExpected);
@@ -276,12 +277,12 @@ void testFilter()
     TEST(filter(QSetNumbers, [] (int x) { return (x%2) == 0; }), QSetExpected);
     TEST(filter(QLinkedListNumbers, [] (int x) { return (x%2) == 0; }), QLinkedListExpected);
     
-    TEST(vectorFilter(listNumbers, [] (int x) { return (x%2) == 0; }), vectorExpected);
-    TEST(setFilter(listNumbers, [] (int x) { return (x%2) == 0; }), setExpected);
-    TEST(QListFilter(listNumbers, [] (int x) { return (x%2) == 0; }), QListExpected);
-    TEST(QVectorFilter(listNumbers, [] (int x) { return (x%2) == 0; }), QVectorExpected);
-    TEST(QSetFilter(listNumbers, [] (int x) { return (x%2) == 0; }), QSetExpected);
-    TEST(QLinkedListFilter(listNumbers, [] (int x) { return (x%2) == 0; }), QLinkedListExpected);
+    TEST(filter<vector>(listNumbers, [] (int x) { return (x%2) == 0; }), vectorExpected);
+    TEST(filter<set>(listNumbers, [] (int x) { return (x%2) == 0; }), setExpected);
+    TEST(filter<QList>(listNumbers, [] (int x) { return (x%2) == 0; }), QListExpected);
+    TEST(filter<QVector>(listNumbers, [] (int x) { return (x%2) == 0; }), QVectorExpected);
+    TEST(filter<QSet>(listNumbers, [] (int x) { return (x%2) == 0; }), QSetExpected);
+    TEST(filter<QLinkedList>(listNumbers, [] (int x) { return (x%2) == 0; }), QLinkedListExpected);
     
     TEST(filter(std::string("aBcDeFgH"), isupper), std::string("BDFH"));
 }
@@ -582,20 +583,22 @@ void testOmit()
     TEST(omit(QSetNumbers, list<int>({1, 2, 3})), QSet<int>({4, 5}));
     TEST(omit(QSetNumbers, set<int>({1, 2, 3})), QSet<int>({4, 5}));
     
-    TEST(listOmit(vectorNumbers, 1), list<int>({2, 3, 4, 5}));
-    TEST(listOmit(vectorNumbers, list<int>({1, 2, 3})), list<int>({4, 5}));
-    TEST(vectorOmit(vectorNumbers, 1), vector<int>({2, 3, 4, 5}));
-    TEST(vectorOmit(vectorNumbers, list<int>({1, 2, 3})), vector<int>({4, 5}));
-    TEST(setOmit(vectorNumbers, 1), set<int>({2, 3, 4, 5}));
-    TEST(setOmit(vectorNumbers, list<int>({1, 2, 3})), set<int>({4, 5}));
-    TEST(QListOmit(vectorNumbers, 1), QList<int>({2, 3, 4, 5}));
-    TEST(QListOmit(vectorNumbers, list<int>({1, 2, 3})), QList<int>({4, 5}));
-    TEST(QVectorOmit(vectorNumbers, 1), QVector<int>({2, 3, 4, 5}));
-    TEST(QVectorOmit(vectorNumbers, list<int>({1, 2, 3})), QVector<int>({4, 5}));
-    TEST(QSetOmit(vectorNumbers, 1), QSet<int>({2, 3, 4, 5}));
-    TEST(QSetOmit(vectorNumbers, list<int>({1, 2, 3})), QSet<int>({4, 5}));
-    TEST(QLinkedListOmit(vectorNumbers, 1), QLinkedList<int>({2, 3, 4, 5}));
-    TEST(QLinkedListOmit(vectorNumbers, list<int>({1, 2, 3})), QLinkedList<int>({4, 5}));
+    TEST(omit<list>(vectorNumbers, 1), list<int>({2, 3, 4, 5}));
+    TEST(omit<list>(vectorNumbers, list<int>({1, 2, 3})), list<int>({4, 5}));
+    TEST(omit<vector>(vectorNumbers, 1), vector<int>({2, 3, 4, 5}));
+    TEST(omit<vector>(vectorNumbers, list<int>({1, 2, 3})), vector<int>({4, 5}));
+    TEST(omit<set>(vectorNumbers, 1), set<int>({2, 3, 4, 5}));
+    TEST(omit<set>(vectorNumbers, list<int>({1, 2, 3})), set<int>({4, 5}));
+    TEST(omit<QList>(vectorNumbers, 1), QList<int>({2, 3, 4, 5}));
+    TEST(omit<QList>(vectorNumbers, list<int>({1, 2, 3})), QList<int>({4, 5}));
+    TEST(omit<QVector>(vectorNumbers, 1), QVector<int>({2, 3, 4, 5}));
+    TEST(omit<QVector>(vectorNumbers, list<int>({1, 2, 3})), QVector<int>({4, 5}));
+    TEST(omit<QSet>(vectorNumbers, 1), QSet<int>({2, 3, 4, 5}));
+    TEST(omit<QSet>(vectorNumbers, list<int>({1, 2, 3})), QSet<int>({4, 5}));
+    TEST(omit<QLinkedList>(vectorNumbers, 1), QLinkedList<int>({2, 3, 4, 5}));
+    TEST(omit<QLinkedList>(vectorNumbers, list<int>({1, 2, 3})), QLinkedList<int>({4, 5}));
+    TEST(omit(string("abcde"), 'a'), string("bcde"));
+    TEST(omit(string("abcde"), string("ace")), string("bd"));
 }
 
 void testReversed()
@@ -643,145 +646,145 @@ void testLast()
 
 void testRange()
 {
-    TEST(listRange(1, 6, 1), listNumbers);
-    TEST(listRange(5, 0, -1), reversed(listNumbers));
-    TEST(listRange(-1, -6, -1), list<int>({-1, -2, -3, -4, -5}));
-    TEST(listRange(1, 6, 2), list<int>({1, 3, 5}));
-    TEST(listRange(1, 6), listNumbers);
-    TEST(listRange(5), list<int>({0, 1, 2, 3, 4}));
+    TEST(range<list>(1, 6, 1), listNumbers);
+    TEST(range<list>(5, 0, -1), reversed(listNumbers));
+    TEST(range<list>(-1, -6, -1), list<int>({-1, -2, -3, -4, -5}));
+    TEST(range<list>(1, 6, 2), list<int>({1, 3, 5}));
+    TEST(range<list>(1, 6), listNumbers);
+    TEST(range<list>(5), list<int>({0, 1, 2, 3, 4}));
     
-    TEST(vectorRange(1, 6, 1), vectorNumbers);
-    TEST(vectorRange(5, 0, -1), reversed(vectorNumbers));
-    TEST(vectorRange(-1, -6, -1), vector<int>({-1, -2, -3, -4, -5}));
-    TEST(vectorRange(1, 6, 2), vector<int>({1, 3, 5}));
-    TEST(vectorRange(1, 6), vectorNumbers);
-    TEST(vectorRange(5), vector<int>({0, 1, 2, 3, 4}));
+    TEST(range<vector>(1, 6, 1), vectorNumbers);
+    TEST(range<vector>(5, 0, -1), reversed(vectorNumbers));
+    TEST(range<vector>(-1, -6, -1), vector<int>({-1, -2, -3, -4, -5}));
+    TEST(range<vector>(1, 6, 2), vector<int>({1, 3, 5}));
+    TEST(range<vector>(1, 6), vectorNumbers);
+    TEST(range<vector>(5), vector<int>({0, 1, 2, 3, 4}));
     
-    TEST(setRange(1, 6, 1), setNumbers);
-    TEST(setRange(5, 0, -1), reversed(setNumbers));
-    TEST(setRange(-1, -6, -1), set<int>({-1, -2, -3, -4, -5}));
-    TEST(setRange(1, 6, 2), set<int>({1, 3, 5}));
-    TEST(setRange(1, 6), setNumbers);
-    TEST(setRange(5), set<int>({0, 1, 2, 3, 4}));
+    TEST(range<set>(1, 6, 1), setNumbers);
+    TEST(range<set>(5, 0, -1), reversed(setNumbers));
+    TEST(range<set>(-1, -6, -1), set<int>({-1, -2, -3, -4, -5}));
+    TEST(range<set>(1, 6, 2), set<int>({1, 3, 5}));
+    TEST(range<set>(1, 6), setNumbers);
+    TEST(range<set>(5), set<int>({0, 1, 2, 3, 4}));
     
-    TEST(QListRange(1, 6, 1), QListNumbers);
-    TEST(QListRange(5, 0, -1), reversed(QListNumbers));
-    TEST(QListRange(-1, -6, -1), QList<int>({-1, -2, -3, -4, -5}));
-    TEST(QListRange(1, 6, 2), QList<int>({1, 3, 5}));
-    TEST(QListRange(1, 6), QListNumbers);
-    TEST(QListRange(5), QList<int>({0, 1, 2, 3, 4}));
+    TEST(range<QList>(1, 6, 1), QListNumbers);
+    TEST(range<QList>(5, 0, -1), reversed(QListNumbers));
+    TEST(range<QList>(-1, -6, -1), QList<int>({-1, -2, -3, -4, -5}));
+    TEST(range<QList>(1, 6, 2), QList<int>({1, 3, 5}));
+    TEST(range<QList>(1, 6), QListNumbers);
+    TEST(range<QList>(5), QList<int>({0, 1, 2, 3, 4}));
     
-    TEST(QVectorRange(1, 6, 1), QVectorNumbers);
-    TEST(QVectorRange(5, 0, -1), reversed(QVectorNumbers));
-    TEST(QVectorRange(-1, -6, -1), QVector<int>({-1, -2, -3, -4, -5}));
-    TEST(QVectorRange(1, 6, 2), QVector<int>({1, 3, 5}));
-    TEST(QVectorRange(1, 6), QVectorNumbers);
-    TEST(QVectorRange(5), QVector<int>({0, 1, 2, 3, 4}));
+    TEST(range<QVector>(1, 6, 1), QVectorNumbers);
+    TEST(range<QVector>(5, 0, -1), reversed(QVectorNumbers));
+    TEST(range<QVector>(-1, -6, -1), QVector<int>({-1, -2, -3, -4, -5}));
+    TEST(range<QVector>(1, 6, 2), QVector<int>({1, 3, 5}));
+    TEST(range<QVector>(1, 6), QVectorNumbers);
+    TEST(range<QVector>(5), QVector<int>({0, 1, 2, 3, 4}));
     
-    TEST(QSetRange(1, 6, 1), QSetNumbers);
-    TEST(QSetRange(5, 0, -1), QSet<int>({5, 4, 3, 2, 1}));
-    TEST(QSetRange(-1, -6, -1), QSet<int>({-1, -2, -3, -4, -5}));
-    TEST(QSetRange(1, 6, 2), QSet<int>({1, 3, 5}));
-    TEST(QSetRange(1, 6), QSetNumbers);
-    TEST(QSetRange(5), QSet<int>({0, 1, 2, 3, 4}));
+    TEST(range<QSet>(1, 6, 1), QSetNumbers);
+    TEST(range<QSet>(5, 0, -1), QSet<int>({5, 4, 3, 2, 1}));
+    TEST(range<QSet>(-1, -6, -1), QSet<int>({-1, -2, -3, -4, -5}));
+    TEST(range<QSet>(1, 6, 2), QSet<int>({1, 3, 5}));
+    TEST(range<QSet>(1, 6), QSetNumbers);
+    TEST(range<QSet>(5), QSet<int>({0, 1, 2, 3, 4}));
     
-    TEST(QLinkedListRange(1, 6, 1), QLinkedListNumbers);
-    TEST(QLinkedListRange(5, 0, -1), reversed(QLinkedListNumbers));
-    TEST(QLinkedListRange(-1, -6, -1), QLinkedList<int>({-1, -2, -3, -4, -5}));
-    TEST(QLinkedListRange(1, 6, 2), QLinkedList<int>({1, 3, 5}));
-    TEST(QLinkedListRange(1, 6), QLinkedListNumbers);
-    TEST(QLinkedListRange(5), QLinkedList<int>({0, 1, 2, 3, 4}));
+    TEST(range<QLinkedList>(1, 6, 1), QLinkedListNumbers);
+    TEST(range<QLinkedList>(5, 0, -1), reversed(QLinkedListNumbers));
+    TEST(range<QLinkedList>(-1, -6, -1), QLinkedList<int>({-1, -2, -3, -4, -5}));
+    TEST(range<QLinkedList>(1, 6, 2), QLinkedList<int>({1, 3, 5}));
+    TEST(range<QLinkedList>(1, 6), QLinkedListNumbers);
+    TEST(range<QLinkedList>(5), QLinkedList<int>({0, 1, 2, 3, 4}));
 }
 
 void testMapRange()
 {
-    TEST(listMapRange(1, 6, 1, [] (int x) { return x; }), listNumbers);
-    TEST(listMapRange(1, 6, 1, [] (int x) { return Foo(x); }), listFoos);
-    TEST(listMapRange(5, 0, -1, [] (int x) { return x; }), reversed(listNumbers));
-    TEST(listMapRange(5, 0, -1, [] (int x) { return Foo(x); }), reversed(listFoos));
-    TEST(listMapRange(1, 6, [] (int x) { return x; }), listNumbers);
-    TEST(listMapRange(1, 6, [] (int x) { return Foo(x); }), listFoos);
-    TEST(listMapRange(5, [] (int x) { return x+1; }), listNumbers);
-    TEST(listMapRange(5, [] (int x) { return Foo(x+1); }), listFoos);
-    TEST(listMapRange(1, 6, 1, [] (int x) { return x; }, [] (int x) { return (x%2) == 0; }), list<int>({2, 4}));
-    TEST(listMapRange(1, 6, 1, [] (int x) { return Foo(x); }, [] (int x) { return (x%2) == 0; }), list<Foo>({fooB, fooD}));
-    TEST(listMapRange(1, 6, [] (int x) { return x; }, [] (int x) { return (x%2) == 0; }), list<int>({2, 4}));
-    TEST(listMapRange(1, 6, [] (int x) { return Foo(x); }, [] (int x) { return (x%2) == 0; }), list<Foo>({fooB, fooD}));
-    TEST(listMapRange(5, [] (int x) { return x+1; }, [] (int x) { return (x%2) == 0; }), list<int>({1, 3, 5}));
-    TEST(listMapRange(5, [] (int x) { return Foo(x+1); }, [] (int x) { return (x%2) == 0; }), list<Foo>({fooA, fooC, fooE}));
+    TEST(mapRange<list>(1, 6, 1, [] (int x) { return x; }), listNumbers);
+    TEST(mapRange<list>(1, 6, 1, [] (int x) { return Foo(x); }), listFoos);
+    TEST(mapRange<list>(5, 0, -1, [] (int x) { return x; }), reversed(listNumbers));
+    TEST(mapRange<list>(5, 0, -1, [] (int x) { return Foo(x); }), reversed(listFoos));
+    TEST(mapRange<list>(1, 6, [] (int x) { return x; }), listNumbers);
+    TEST(mapRange<list>(1, 6, [] (int x) { return Foo(x); }), listFoos);
+    TEST(mapRange<list>(5, [] (int x) { return x+1; }), listNumbers);
+    TEST(mapRange<list>(5, [] (int x) { return Foo(x+1); }), listFoos);
+    TEST(mapRange<list>(1, 6, 1, [] (int x) { return x; }, [] (int x) { return (x%2) == 0; }), list<int>({2, 4}));
+    TEST(mapRange<list>(1, 6, 1, [] (int x) { return Foo(x); }, [] (int x) { return (x%2) == 0; }), list<Foo>({fooB, fooD}));
+    TEST(mapRange<list>(1, 6, [] (int x) { return x; }, [] (int x) { return (x%2) == 0; }), list<int>({2, 4}));
+    TEST(mapRange<list>(1, 6, [] (int x) { return Foo(x); }, [] (int x) { return (x%2) == 0; }), list<Foo>({fooB, fooD}));
+    TEST(mapRange<list>(5, [] (int x) { return x+1; }, [] (int x) { return (x%2) == 0; }), list<int>({1, 3, 5}));
+    TEST(mapRange<list>(5, [] (int x) { return Foo(x+1); }, [] (int x) { return (x%2) == 0; }), list<Foo>({fooA, fooC, fooE}));
     
-    TEST(vectorMapRange(1, 6, 1, [] (int x) { return x; }), vectorNumbers);
-    TEST(vectorMapRange(1, 6, 1, [] (int x) { return Foo(x); }), vectorFoos);
-    TEST(vectorMapRange(5, 0, -1, [] (int x) { return x; }), reversed(vectorNumbers));
-    TEST(vectorMapRange(5, 0, -1, [] (int x) { return Foo(x); }), reversed(vectorFoos));
-    TEST(vectorMapRange(1, 6, [] (int x) { return x; }), vectorNumbers);
-    TEST(vectorMapRange(1, 6, [] (int x) { return Foo(x); }), vectorFoos);
-    TEST(vectorMapRange(5, [] (int x) { return x+1; }), vectorNumbers);
-    TEST(vectorMapRange(5, [] (int x) { return Foo(x+1); }), vectorFoos);
-    TEST(vectorMapRange(1, 6, 1, [] (int x) { return x; }, [] (int x) { return (x%2) == 0; }), vector<int>({2, 4}));
-    TEST(vectorMapRange(1, 6, 1, [] (int x) { return Foo(x); }, [] (int x) { return (x%2) == 0; }), vector<Foo>({fooB, fooD}));
-    TEST(vectorMapRange(1, 6, [] (int x) { return x; }, [] (int x) { return (x%2) == 0; }), vector<int>({2, 4}));
-    TEST(vectorMapRange(1, 6, [] (int x) { return Foo(x); }, [] (int x) { return (x%2) == 0; }), vector<Foo>({fooB, fooD}));
-    TEST(vectorMapRange(5, [] (int x) { return x+1; }, [] (int x) { return (x%2) == 0; }), vector<int>({1, 3, 5}));
-    TEST(vectorMapRange(5, [] (int x) { return Foo(x+1); }, [] (int x) { return (x%2) == 0; }), vector<Foo>({fooA, fooC, fooE}));
+    TEST(mapRange<vector>(1, 6, 1, [] (int x) { return x; }), vectorNumbers);
+    TEST(mapRange<vector>(1, 6, 1, [] (int x) { return Foo(x); }), vectorFoos);
+    TEST(mapRange<vector>(5, 0, -1, [] (int x) { return x; }), reversed(vectorNumbers));
+    TEST(mapRange<vector>(5, 0, -1, [] (int x) { return Foo(x); }), reversed(vectorFoos));
+    TEST(mapRange<vector>(1, 6, [] (int x) { return x; }), vectorNumbers);
+    TEST(mapRange<vector>(1, 6, [] (int x) { return Foo(x); }), vectorFoos);
+    TEST(mapRange<vector>(5, [] (int x) { return x+1; }), vectorNumbers);
+    TEST(mapRange<vector>(5, [] (int x) { return Foo(x+1); }), vectorFoos);
+    TEST(mapRange<vector>(1, 6, 1, [] (int x) { return x; }, [] (int x) { return (x%2) == 0; }), vector<int>({2, 4}));
+    TEST(mapRange<vector>(1, 6, 1, [] (int x) { return Foo(x); }, [] (int x) { return (x%2) == 0; }), vector<Foo>({fooB, fooD}));
+    TEST(mapRange<vector>(1, 6, [] (int x) { return x; }, [] (int x) { return (x%2) == 0; }), vector<int>({2, 4}));
+    TEST(mapRange<vector>(1, 6, [] (int x) { return Foo(x); }, [] (int x) { return (x%2) == 0; }), vector<Foo>({fooB, fooD}));
+    TEST(mapRange<vector>(5, [] (int x) { return x+1; }, [] (int x) { return (x%2) == 0; }), vector<int>({1, 3, 5}));
+    TEST(mapRange<vector>(5, [] (int x) { return Foo(x+1); }, [] (int x) { return (x%2) == 0; }), vector<Foo>({fooA, fooC, fooE}));
     
-    TEST(setMapRange(1, 6, 1, [] (int x) { return x; }), setNumbers);
-    TEST(setMapRange(1, 6, 1, [] (int x) { return Foo(x); }), setFoos);
-    TEST(setMapRange(1, 6, [] (int x) { return x; }), setNumbers);
-    TEST(setMapRange(1, 6, [] (int x) { return Foo(x); }), setFoos);
-    TEST(setMapRange(5, [] (int x) { return x+1; }), setNumbers);
-    TEST(setMapRange(5, [] (int x) { return Foo(x+1); }), setFoos);
-    TEST(setMapRange(1, 6, 1, [] (int x) { return x; }, [] (int x) { return (x%2) == 0; }), set<int>({2, 4}));
-    TEST(setMapRange(1, 6, 1, [] (int x) { return Foo(x); }, [] (int x) { return (x%2) == 0; }), set<Foo>({fooB, fooD}));
-    TEST(setMapRange(1, 6, [] (int x) { return x; }, [] (int x) { return (x%2) == 0; }), set<int>({2, 4}));
-    TEST(setMapRange(1, 6, [] (int x) { return Foo(x); }, [] (int x) { return (x%2) == 0; }), set<Foo>({fooB, fooD}));
-    TEST(setMapRange(5, [] (int x) { return x+1; }, [] (int x) { return (x%2) == 0; }), set<int>({1, 3, 5}));
-    TEST(setMapRange(5, [] (int x) { return Foo(x+1); }, [] (int x) { return (x%2) == 0; }), set<Foo>({fooA, fooC, fooE}));
+    TEST(mapRange<set>(1, 6, 1, [] (int x) { return x; }), setNumbers);
+    TEST(mapRange<set>(1, 6, 1, [] (int x) { return Foo(x); }), setFoos);
+    TEST(mapRange<set>(1, 6, [] (int x) { return x; }), setNumbers);
+    TEST(mapRange<set>(1, 6, [] (int x) { return Foo(x); }), setFoos);
+    TEST(mapRange<set>(5, [] (int x) { return x+1; }), setNumbers);
+    TEST(mapRange<set>(5, [] (int x) { return Foo(x+1); }), setFoos);
+    TEST(mapRange<set>(1, 6, 1, [] (int x) { return x; }, [] (int x) { return (x%2) == 0; }), set<int>({2, 4}));
+    TEST(mapRange<set>(1, 6, 1, [] (int x) { return Foo(x); }, [] (int x) { return (x%2) == 0; }), set<Foo>({fooB, fooD}));
+    TEST(mapRange<set>(1, 6, [] (int x) { return x; }, [] (int x) { return (x%2) == 0; }), set<int>({2, 4}));
+    TEST(mapRange<set>(1, 6, [] (int x) { return Foo(x); }, [] (int x) { return (x%2) == 0; }), set<Foo>({fooB, fooD}));
+    TEST(mapRange<set>(5, [] (int x) { return x+1; }, [] (int x) { return (x%2) == 0; }), set<int>({1, 3, 5}));
+    TEST(mapRange<set>(5, [] (int x) { return Foo(x+1); }, [] (int x) { return (x%2) == 0; }), set<Foo>({fooA, fooC, fooE}));
     
-    TEST(QListMapRange(1, 6, 1, [] (int x) { return x; }), QListNumbers);
-    TEST(QListMapRange(1, 6, 1, [] (int x) { return Foo(x); }), QListFoos);
-    TEST(QListMapRange(5, 0, -1, [] (int x) { return x; }), reversed(QListNumbers));
-    TEST(QListMapRange(5, 0, -1, [] (int x) { return Foo(x); }), reversed(QListFoos));
-    TEST(QListMapRange(1, 6, [] (int x) { return x; }), QListNumbers);
-    TEST(QListMapRange(1, 6, [] (int x) { return Foo(x); }), QListFoos);
-    TEST(QListMapRange(5, [] (int x) { return x+1; }), QListNumbers);
-    TEST(QListMapRange(5, [] (int x) { return Foo(x+1); }), QListFoos);
-    TEST(QListMapRange(1, 6, 1, [] (int x) { return x; }, [] (int x) { return (x%2) == 0; }), QList<int>({2, 4}));
-    TEST(QListMapRange(1, 6, 1, [] (int x) { return Foo(x); }, [] (int x) { return (x%2) == 0; }), QList<Foo>({fooB, fooD}));
-    TEST(QListMapRange(1, 6, [] (int x) { return x; }, [] (int x) { return (x%2) == 0; }), QList<int>({2, 4}));
-    TEST(QListMapRange(1, 6, [] (int x) { return Foo(x); }, [] (int x) { return (x%2) == 0; }), QList<Foo>({fooB, fooD}));
-    TEST(QListMapRange(5, [] (int x) { return x+1; }, [] (int x) { return (x%2) == 0; }), QList<int>({1, 3, 5}));
-    TEST(QListMapRange(5, [] (int x) { return Foo(x+1); }, [] (int x) { return (x%2) == 0; }), QList<Foo>({fooA, fooC, fooE}));
+    TEST(mapRange<QList>(1, 6, 1, [] (int x) { return x; }), QListNumbers);
+    TEST(mapRange<QList>(1, 6, 1, [] (int x) { return Foo(x); }), QListFoos);
+    TEST(mapRange<QList>(5, 0, -1, [] (int x) { return x; }), reversed(QListNumbers));
+    TEST(mapRange<QList>(5, 0, -1, [] (int x) { return Foo(x); }), reversed(QListFoos));
+    TEST(mapRange<QList>(1, 6, [] (int x) { return x; }), QListNumbers);
+    TEST(mapRange<QList>(1, 6, [] (int x) { return Foo(x); }), QListFoos);
+    TEST(mapRange<QList>(5, [] (int x) { return x+1; }), QListNumbers);
+    TEST(mapRange<QList>(5, [] (int x) { return Foo(x+1); }), QListFoos);
+    TEST(mapRange<QList>(1, 6, 1, [] (int x) { return x; }, [] (int x) { return (x%2) == 0; }), QList<int>({2, 4}));
+    TEST(mapRange<QList>(1, 6, 1, [] (int x) { return Foo(x); }, [] (int x) { return (x%2) == 0; }), QList<Foo>({fooB, fooD}));
+    TEST(mapRange<QList>(1, 6, [] (int x) { return x; }, [] (int x) { return (x%2) == 0; }), QList<int>({2, 4}));
+    TEST(mapRange<QList>(1, 6, [] (int x) { return Foo(x); }, [] (int x) { return (x%2) == 0; }), QList<Foo>({fooB, fooD}));
+    TEST(mapRange<QList>(5, [] (int x) { return x+1; }, [] (int x) { return (x%2) == 0; }), QList<int>({1, 3, 5}));
+    TEST(mapRange<QList>(5, [] (int x) { return Foo(x+1); }, [] (int x) { return (x%2) == 0; }), QList<Foo>({fooA, fooC, fooE}));
     
-    TEST(QVectorMapRange(1, 6, 1, [] (int x) { return x; }), QVectorNumbers);
-    TEST(QVectorMapRange(1, 6, 1, [] (int x) { return Foo(x); }), QVectorFoos);
-    TEST(QVectorMapRange(5, 0, -1, [] (int x) { return x; }), reversed(QVectorNumbers));
-    TEST(QVectorMapRange(5, 0, -1, [] (int x) { return Foo(x); }), reversed(QVectorFoos));
-    TEST(QVectorMapRange(1, 6, [] (int x) { return x; }), QVectorNumbers);
-    TEST(QVectorMapRange(1, 6, [] (int x) { return Foo(x); }), QVectorFoos);
-    TEST(QVectorMapRange(5, [] (int x) { return x+1; }), QVectorNumbers);
-    TEST(QVectorMapRange(5, [] (int x) { return Foo(x+1); }), QVectorFoos);
-    TEST(QVectorMapRange(1, 6, 1, [] (int x) { return x; }, [] (int x) { return (x%2) == 0; }), QVector<int>({2, 4}));
-    TEST(QVectorMapRange(1, 6, 1, [] (int x) { return Foo(x); }, [] (int x) { return (x%2) == 0; }), QVector<Foo>({fooB, fooD}));
-    TEST(QVectorMapRange(1, 6, [] (int x) { return x; }, [] (int x) { return (x%2) == 0; }), QVector<int>({2, 4}));
-    TEST(QVectorMapRange(1, 6, [] (int x) { return Foo(x); }, [] (int x) { return (x%2) == 0; }), QVector<Foo>({fooB, fooD}));
-    TEST(QVectorMapRange(5, [] (int x) { return x+1; }, [] (int x) { return (x%2) == 0; }), QVector<int>({1, 3, 5}));
-    TEST(QVectorMapRange(5, [] (int x) { return Foo(x+1); }, [] (int x) { return (x%2) == 0; }), QVector<Foo>({fooA, fooC, fooE}));
+    TEST(mapRange<QVector>(1, 6, 1, [] (int x) { return x; }), QVectorNumbers);
+    TEST(mapRange<QVector>(1, 6, 1, [] (int x) { return Foo(x); }), QVectorFoos);
+    TEST(mapRange<QVector>(5, 0, -1, [] (int x) { return x; }), reversed(QVectorNumbers));
+    TEST(mapRange<QVector>(5, 0, -1, [] (int x) { return Foo(x); }), reversed(QVectorFoos));
+    TEST(mapRange<QVector>(1, 6, [] (int x) { return x; }), QVectorNumbers);
+    TEST(mapRange<QVector>(1, 6, [] (int x) { return Foo(x); }), QVectorFoos);
+    TEST(mapRange<QVector>(5, [] (int x) { return x+1; }), QVectorNumbers);
+    TEST(mapRange<QVector>(5, [] (int x) { return Foo(x+1); }), QVectorFoos);
+    TEST(mapRange<QVector>(1, 6, 1, [] (int x) { return x; }, [] (int x) { return (x%2) == 0; }), QVector<int>({2, 4}));
+    TEST(mapRange<QVector>(1, 6, 1, [] (int x) { return Foo(x); }, [] (int x) { return (x%2) == 0; }), QVector<Foo>({fooB, fooD}));
+    TEST(mapRange<QVector>(1, 6, [] (int x) { return x; }, [] (int x) { return (x%2) == 0; }), QVector<int>({2, 4}));
+    TEST(mapRange<QVector>(1, 6, [] (int x) { return Foo(x); }, [] (int x) { return (x%2) == 0; }), QVector<Foo>({fooB, fooD}));
+    TEST(mapRange<QVector>(5, [] (int x) { return x+1; }, [] (int x) { return (x%2) == 0; }), QVector<int>({1, 3, 5}));
+    TEST(mapRange<QVector>(5, [] (int x) { return Foo(x+1); }, [] (int x) { return (x%2) == 0; }), QVector<Foo>({fooA, fooC, fooE}));
     
-    TEST(QSetMapRange(1, 6, 1, [] (int x) { return x; }), QSetNumbers);
-    TEST(QSetMapRange(1, 6, [] (int x) { return x; }), QSetNumbers);
-    TEST(QSetMapRange(5, [] (int x) { return x+1; }), QSetNumbers);
-    TEST(QSetMapRange(1, 6, 1, [] (int x) { return x; }, [] (int x) { return (x%2) == 0; }), QSet<int>({2, 4}));
-    TEST(QSetMapRange(1, 6, [] (int x) { return x; }, [] (int x) { return (x%2) == 0; }), QSet<int>({2, 4}));
-    TEST(QSetMapRange(5, [] (int x) { return x+1; }, [] (int x) { return (x%2) == 0; }), QSet<int>({1, 3, 5}));
+    TEST(mapRange<QSet>(1, 6, 1, [] (int x) { return x; }), QSetNumbers);
+    TEST(mapRange<QSet>(1, 6, [] (int x) { return x; }), QSetNumbers);
+    TEST(mapRange<QSet>(5, [] (int x) { return x+1; }), QSetNumbers);
+    TEST(mapRange<QSet>(1, 6, 1, [] (int x) { return x; }, [] (int x) { return (x%2) == 0; }), QSet<int>({2, 4}));
+    TEST(mapRange<QSet>(1, 6, [] (int x) { return x; }, [] (int x) { return (x%2) == 0; }), QSet<int>({2, 4}));
+    TEST(mapRange<QSet>(5, [] (int x) { return x+1; }, [] (int x) { return (x%2) == 0; }), QSet<int>({1, 3, 5}));
     
-    TEST(QLinkedListMapRange(1, 6, 1, [] (int x) { return x; }), QLinkedListNumbers);
-    TEST(QLinkedListMapRange(5, 0, -1, [] (int x) { return x; }), reversed(QLinkedListNumbers));
-    TEST(QLinkedListMapRange(1, 6, [] (int x) { return x; }), QLinkedListNumbers);
-    TEST(QLinkedListMapRange(5, [] (int x) { return x+1; }), QLinkedListNumbers);
-    TEST(QLinkedListMapRange(1, 6, 1, [] (int x) { return x; }, [] (int x) { return (x%2) == 0; }), QLinkedList<int>({2, 4}));
-    TEST(QLinkedListMapRange(1, 6, [] (int x) { return x; }, [] (int x) { return (x%2) == 0; }), QLinkedList<int>({2, 4}));
-    TEST(QLinkedListMapRange(5, [] (int x) { return x+1; }, [] (int x) { return (x%2) == 0; }), QLinkedList<int>({1, 3, 5}));
+    TEST(mapRange<QLinkedList>(1, 6, 1, [] (int x) { return x; }), QLinkedListNumbers);
+    TEST(mapRange<QLinkedList>(5, 0, -1, [] (int x) { return x; }), reversed(QLinkedListNumbers));
+    TEST(mapRange<QLinkedList>(1, 6, [] (int x) { return x; }), QLinkedListNumbers);
+    TEST(mapRange<QLinkedList>(5, [] (int x) { return x+1; }), QLinkedListNumbers);
+    TEST(mapRange<QLinkedList>(1, 6, 1, [] (int x) { return x; }, [] (int x) { return (x%2) == 0; }), QLinkedList<int>({2, 4}));
+    TEST(mapRange<QLinkedList>(1, 6, [] (int x) { return x; }, [] (int x) { return (x%2) == 0; }), QLinkedList<int>({2, 4}));
+    TEST(mapRange<QLinkedList>(5, [] (int x) { return x+1; }, [] (int x) { return (x%2) == 0; }), QLinkedList<int>({1, 3, 5}));
 }
 
 void testFlatten()
@@ -796,19 +799,19 @@ void testFlatten()
     TEST(flatten(QList<QVector<int> >({{1, 2, 3}, {4, 5, 6}, {7, 8, 9}})), QVector<int>({1,2,3,4,5,6,7,8,9}));
     TEST(flatten(QVector<QSet<int> >({{1, 2, 3}, {4, 5, 6}, {7, 8, 9}})), QSet<int>({1,2,3,4,5,6,7,8,9}));
     
-    TEST(listFlatten(std::list<std::list<int> >({{1, 2, 3}, {4, 5, 6}, {7, 8, 9}})), std::list<int>({1,2,3,4,5,6,7,8,9}));
-    TEST(vectorFlatten(std::list<std::list<int> >({{1, 2, 3}, {4, 5, 6}, {7, 8, 9}})), std::vector<int>({1,2,3,4,5,6,7,8,9}));
-    TEST(setFlatten(std::list<std::list<int> >({{1, 2, 3}, {4, 5, 6}, {7, 8, 9}})), std::set<int>({1,2,3,4,5,6,7,8,9}));
-    TEST(QListFlatten(QList<QList<int> >({{1, 2, 3}, {4, 5, 6}, {7, 8, 9}})), QList<int>({1,2,3,4,5,6,7,8,9}));
-    TEST(QVectorFlatten(QVector<QVector<int> >({{1, 2, 3}, {4, 5, 6}, {7, 8, 9}})), QVector<int>({1,2,3,4,5,6,7,8,9}));
-    TEST(QSetFlatten(QSet<QSet<int> >({{1, 2, 3}, {4, 5, 6}, {7, 8, 9}})), QSet<int>({1,2,3,4,5,6,7,8,9}));
-    TEST(QLinkedListFlatten(QList<QVector<int> >({{1, 2, 3}, {4, 5, 6}, {7, 8, 9}})), QLinkedList<int>({1,2,3,4,5,6,7,8,9}));
-    TEST(listFlatten(std::list<std::list<Foo> >({{fooA, fooB}, {fooC, fooD}, {fooE}})), std::list<Foo>({fooA, fooB, fooC, fooD, fooE}));
+    TEST(flatten<list>(std::list<std::list<int> >({{1, 2, 3}, {4, 5, 6}, {7, 8, 9}})), std::list<int>({1,2,3,4,5,6,7,8,9}));
+    TEST(flatten<vector>(std::list<std::list<int> >({{1, 2, 3}, {4, 5, 6}, {7, 8, 9}})), std::vector<int>({1,2,3,4,5,6,7,8,9}));
+    TEST(flatten<set>(std::list<std::list<int> >({{1, 2, 3}, {4, 5, 6}, {7, 8, 9}})), std::set<int>({1,2,3,4,5,6,7,8,9}));
+    TEST(flatten<QList>(QList<QList<int> >({{1, 2, 3}, {4, 5, 6}, {7, 8, 9}})), QList<int>({1,2,3,4,5,6,7,8,9}));
+    TEST(flatten<QVector>(QVector<QVector<int> >({{1, 2, 3}, {4, 5, 6}, {7, 8, 9}})), QVector<int>({1,2,3,4,5,6,7,8,9}));
+    TEST(flatten<QSet>(QSet<QSet<int> >({{1, 2, 3}, {4, 5, 6}, {7, 8, 9}})), QSet<int>({1,2,3,4,5,6,7,8,9}));
+    TEST(flatten<QLinkedList>(QList<QVector<int> >({{1, 2, 3}, {4, 5, 6}, {7, 8, 9}})), QLinkedList<int>({1,2,3,4,5,6,7,8,9}));
+    TEST(flatten<list>(std::list<std::list<Foo> >({{fooA, fooB}, {fooC, fooD}, {fooE}})), std::list<Foo>({fooA, fooB, fooC, fooD, fooE}));
     
-    TEST(listFlatten(std::vector<std::list<int> >({{1, 2, 3}, {4, 5, 6}, {7, 8, 9}})), std::list<int>({1,2,3,4,5,6,7,8,9}));
-    TEST(listFlatten(std::vector<std::vector<int> >({{1, 2, 3}, {4, 5, 6}, {7, 8, 9}})), std::list<int>({1,2,3,4,5,6,7,8,9}));
-    TEST(listFlatten(std::list<std::vector<int> >({{1, 2, 3}, {4, 5, 6}, {7, 8, 9}})), std::list<int>({1,2,3,4,5,6,7,8,9}));
-    TEST(setFlatten(std::list<std::set<int> >({{1, 2, 3}, {4, 5, 6}, {7, 8, 9}})), std::set<int>({1,2,3,4,5,6,7,8,9}));
+    TEST(flatten<list>(std::vector<std::list<int> >({{1, 2, 3}, {4, 5, 6}, {7, 8, 9}})), std::list<int>({1,2,3,4,5,6,7,8,9}));
+    TEST(flatten<list>(std::vector<std::vector<int> >({{1, 2, 3}, {4, 5, 6}, {7, 8, 9}})), std::list<int>({1,2,3,4,5,6,7,8,9}));
+    TEST(flatten<list>(std::list<std::vector<int> >({{1, 2, 3}, {4, 5, 6}, {7, 8, 9}})), std::list<int>({1,2,3,4,5,6,7,8,9}));
+    TEST(flatten<set>(std::list<std::set<int> >({{1, 2, 3}, {4, 5, 6}, {7, 8, 9}})), std::set<int>({1,2,3,4,5,6,7,8,9}));
 }
 
 int main()

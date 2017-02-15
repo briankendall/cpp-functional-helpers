@@ -4,7 +4,7 @@ A couple of headers that provide convenient functional-style helper functions th
 
 - Easy to use: don't require any template arguments or iterators
 - Easy to chain: returns new containers rather than modifying existing ones in place
-- Flexible: works with any STL or Qt container (or can be modified to do so easily) and can use any callable, including lambdas and pointer to member functions
+- Flexible: works with any STL container, Qt container, or any other container type that works with a ranged for, and it can use any callable, including lambdas and pointer to member functions
 
 ## Contents
 
@@ -40,19 +40,11 @@ Just include functionalHelpers.h if you want to use it with STL containers. Incl
 Usage:
 
     map(container, callable) -> container of same type
-    listMap(container, callable) -> std::list
-    vectorMap(container, callable) -> std::vector
-    setMap(container, callable) -> std::set
-    stringMap(container, callable) -> std::string
-    QListMap(container, callable) -> QList
-    QVectorMap(container, callable) -> QVector
-    QSetMap(container, callable) -> QSet
-    QLinkedListMap(container, callable) -> QLinkedList
-    QStringMap(container, callable) -> QString
+    map<ContainerType>(container, callable) -> ContainerType
 
 Constructs a new container by mapping each value in `container` through a transformation function `callable`. `callable` must take one argument of the same type that is in `container` and return a value. The value type of the new container will be the same as the return type of `callable`.
 
-What kind of container is returned depends on which version of the function is used. For the first form `map`, the same type of container passed into the first parameter is what is returned. The remaining forms return a container based off of their name, so the container passed in doesn't have to be of the same type.
+What kind of container is returned depends on which version of the function is used. For the first form, the same type of container passed into the first parameter is what is returned. The second form returns a container of the type passed in to the template argument.
 
 If applicable, the order of the items in the new container matches the original.
 
@@ -67,7 +59,7 @@ Examples:
     // returns std::string("BLAH!")
     
     QList<int> numbers = {1, 2, 3, 4, 5};
-    QSetMap(numbers, [] (int x) { return x*2; });
+    map<QSet>(numbers, [] (int x) { return x*2; });
     // returns: QSet<int>({2, 4, 6, 8, 10})
 
 ## `filter`
@@ -75,17 +67,11 @@ Examples:
 Usage:
 
     filter(container, callable) -> container of same type
-    listFilter(container, predicate) -> std::list
-    vectorFilter(container, predicate) -> std::vector
-    setFilter(container, predicate) -> std::set
-    QListFilter(container, predicate) -> QList
-    QVectorFilter(container, predicate) -> QVector
-    QSetFilter(container, predicate) -> QSet
-    QLinkedListFilter(container, predicate) -> QLinkedList
+    filter<ContainerType>(container, callable) -> ContainerType
 
 Constructs a new container containing each value in `container` that passes a truth test `predicate`. `predicate ` must take one argument of the same type that is in `container` and return a boolean. This function is the opposite of `reject`.
 
-What kind of container is returned depends on which version of the function is used. For the first form `filter`, the same type of container passed into the first parameter is what is returned. The remaining forms return a container based off of their name, so the container passed in doesn't have to be of the same type.
+What kind of container is returned depends on which version of the function is used. For the first form, the same type of container passed into the first parameter is what is returned. The second form returns a container of the type passed in to the template argument.
 
 If applicable, the order of the items in the new container matches the original.
 
@@ -100,7 +86,7 @@ Examples:
     // returns std::string("abcde")
     
     QList<int> numbers = {1, 2, 3, 4, 5};
-    QSetFilter(numbers, [] (int x) { return (x%2 == 0); });
+    filter<QSet>(numbers, [] (int x) { return (x%2 == 0); });
     // returns: QSet<int>({2, 4})
 
 ## `reject`
@@ -134,15 +120,8 @@ Examples:
 
 Usage:
 
-    listCompr(container, callable, predicate) -> std::list
-    vectorCompr(container, callable, predicate) -> std::vector
-    setCompr(container, callable, predicate) -> std::set
-    stringCompr(container, callable, predicate) -> std::string
-    QListCompr(container, callable, predicate) -> QList
-    QVectorCompr(container, callable, predicate) -> QVector
-    QSetCompr(container, callable, predicate) -> QSet
-    QLinkedListCompr(container, callable, predicate) -> QLinkedList
-    QStringCompr(container, callable, predicate) -> QString
+    compr(container, callable, predicate) -> container of same type
+    compr<ContainerType>(container, callable, predicate) -> ContainerType
 
 Inspired by Python's list comprehensions (hence 'compr'), this is a convenience function that is equivalent to:
 
@@ -432,26 +411,14 @@ Usage:
 
     omit(container1, value) -> container of same type as container1
     omit(container1, container2) -> container of same type as container1
-    listOmit(container1, value) -> std::list
-    listOmit(container1, container2) -> std::list
-    vectorOmit(container1, value) -> std::vector
-    vectorOmit(container1, container2) -> std::vector
-    setOmit(container1, value) -> std::set
-    setOmit(container1, container2) -> std::set
-    QListOmit(container1, value) -> QList
-    QListOmit(container1, container2) -> QList
-    QVectorOmit(container1, value) -> QVector
-    QVectorOmit(container1, container2) -> QVector
-    QSetOmit(container1, value) -> QSet
-    QSetOmit(container1, container2) -> QSet
-    QLinkedListOmit(container1, value) -> QLinkedList
-    QLinkedListOmit(container1, container2) -> QLinkedList
+    omit<ContainerType>(container1, value) -> ContainerType
+    omit<ContainerType>(container1, container2) -> ContainerType
     
 If the second parameter is not a container type (i.e. does not define a `const_iterator`), constructs a new container that contains each value in `container1` that is not equal to the second parameter `value`.
 
 If the second parameter is a container type, constructs a new container that contains each value in `container1` that is not equal to any value in `container2`.
 
-What kind of container is returned depends on which version of the function is used. For the first two forms `omit`, the same type of container passed into the first parameter is what is returned. The remaining forms return a container based off of their name, so `container1` doesn't have to be of the same type.
+What kind of container is returned depends on which version of the function is used. For the first two forms, the same type of container passed into the first parameter is what is returned. The last two forms returns a container of the type passed in to the template argument.
 
 If applicable, the order of the items in the new container matches the original.
 
@@ -537,27 +504,9 @@ Example:
 
 Usage:
 
-    listRange(start, end, increment) -> std::list<int>
-    listRange(start, end) -> std::list<int>
-    listRange(end) -> std::list<int>
-    vectorRange(start, end, increment) -> std::vector<int>
-    vectorRange(start, end) -> std::vector<int>
-    vectorRange(end) -> std::vector<int>
-    setRange(start, end, increment) -> std::set<int>
-    setRange(start, end) -> std::set<int>
-    setRange(end) -> std::set<int>
-    QListRange(start, end, increment) -> QList<int>
-    QListRange(start, end) -> QList<int>
-    QListRange(end) -> QList<int>
-    QVectorRange(start, end, increment) -> QVector<int>
-    QVectorRange(start, end) -> QVector<int>
-    QVectorRange(end) -> QVector<int>
-    QSetRange(start, end, increment) -> QSet<int>
-    QSetRange(start, end) -> QSet<int>
-    QSetRange(end) -> QSet<int>
-    QLinkedListRange(start, end, increment) -> QLinkedList<int>
-    QLinkedListRange(start, end) -> QLinkedList<int>
-    QLinkedListRange(end) -> QLinkedList<int>
+    range<ContainerType>(start, end, increment) -> ContainerType<int>
+    range<ContainerType>(start, end) -> ContainerType <int>
+    range<ContainerType>(end) -> ContainerType<int>
     
 Inspired by the `range` function in python, returns a container containing an arithmetic progression similar to what one would see in a basic `for` loop. Specifically, the result of `range` can be defined using the following psuedo-code for when `inc` is positive:
 
@@ -568,60 +517,24 @@ When `inc` is negative, the conditional changes to `i > end`.
 
 If `inc` is omitted, it defaults to 1. If `start` is omitted, it defaults to 0.
 
-What kind of container is returned depends on which version of the function is used.
+What kind of container is returned depends on what is passed into the template argument.
 
 Example:
 
-    listRange(10) // returns std::list<int>({0, 1, 2, 3, 4, 5, 6, 7, 8, 9})
-    vectorRange(1, 6) // returns std::vector<int>({1, 2, 3, 4, 5})
-    QListRange(5, 0, -1) // returns QList<int>({5, 4, 3, 2, 1})
+    range<std::list>(10) // returns std::list<int>({0, 1, 2, 3, 4, 5, 6, 7, 8, 9})
+    range<std::vector>(1, 6) // returns std::vector<int>({1, 2, 3, 4, 5})
+    range<QList>(5, 0, -1) // returns QList<int>({5, 4, 3, 2, 1})
 
 ## `mapRange`
 
 Usage:
 
-     listMapRange(start, end, increment, callable) -> std::list
-     listMapRange(start, end, callable) -> std::list
-     listMapRange(end, callable) -> std::list
-     listMapRange(start, end, increment, callable, predicate) -> std::list
-     listMapRange(start, end, callable, predicate) -> std::list
-     listMapRange(end, callable, predicate) -> std::list
-     vectorMapRange(start, end, increment, callable) -> std::vector
-     vectorMapRange(start, end, callable) -> std::vector
-     vectorMapRange(end, callable) -> std::vector
-     vectorMapRange(start, end, increment, callable, predicate) -> std::vector
-     vectorMapRange(start, end, callable, predicate) -> std::vector
-     vectorMapRange(end, callable, predicate) -> std::vector
-     setMapRange(start, end, increment, callable) -> std::set
-     setMapRange(start, end, callable) -> std::set
-     setMapRange(end, callable) -> std::set
-     setMapRange(start, end, increment, callable, predicate) -> std::set
-     setMapRange(start, end, callable, predicate) -> std::set
-     setMapRange(end, callable, predicate) -> std::set
-     QListMapRange(start, end, increment, callable) -> QList
-     QListMapRange(start, end, callable) -> QList
-     QListMapRange(end, callable) -> QList
-     QListMapRange(start, end, increment, callable, predicate) -> QList
-     QListMapRange(start, end, callable, predicate) -> QList
-     QListMapRange(end, callable, predicate) -> QList
-     QVectorMapRange(start, end, increment, callable) -> QVector
-     QVectorMapRange(start, end, callable) -> QVector
-     QVectorMapRange(end, callable) -> QVector
-     QVectorMapRange(start, end, increment, callable, predicate) -> QVector
-     QVectorMapRange(start, end, callable, predicate) -> QVector
-     QVectorMapRange(end, callable, predicate) -> QVector
-     QSetMapRange(start, end, increment, callable) -> QSet
-     QSetMapRange(start, end, callable) -> QSet
-     QSetMapRange(end, callable) -> QSet
-     QSetMapRange(start, end, increment, callable, predicate) -> QSet
-     QSetMapRange(start, end, callable, predicate) -> QSet
-     QSetMapRange(end, callable, predicate) -> QSet
-     QLinkedListMapRange(start, end, increment, callable) -> QLinkedList
-     QLinkedListMapRange(start, end, callable) -> QLinkedList
-     QLinkedListMapRange(end, callable) -> QLinkedList
-     QLinkedListMapRange(start, end, increment, callable, predicate) -> QLinkedList
-     QLinkedListMapRange(start, end, callable, predicate) -> QLinkedList
-     QLinkedListMapRange(end, callable, predicate) -> QLinkedList
+     mapRange<ContainerType>(start, end, increment, callable) -> ContainerType
+     mapRange<ContainerType>(start, end, callable) -> ContainerType
+     mapRange<ContainerType>(end, callable) -> ContainerType
+     mapRange<ContainerType>(start, end, increment, callable, predicate) -> ContainerType
+     mapRange<ContainerType>(start, end, callable, predicate) -> ContainerType
+     mapRange<ContainerType>(end, callable, predicate) -> ContainerType
 
 A convenience function that is the equivalent of:
 
@@ -635,15 +548,15 @@ but is more efficient as only one container is constructed.
 
 As with `range`, when increment is omitted, it defaults to 1, and when start is omitted, it defaults to 0.
 
-What kind of container is returned depends on which version of the function is used.
+What kind of container is returned depends on what is passed into the template argument.
 
 Examples:
 
-    listMapRange(5, [] (int x) { return x*x; });
+    mapRange<std::list>(5, [] (int x) { return x*x; });
     // returns std::list({0, 1, 4, 9, 16})
-    vectorMapRange(-1, -6, -1, [] (int x) { return x*x; });
+    mapRange<std::vector>(-1, -6, -1, [] (int x) { return x*x; });
     // returns std::vector({1, 4, 9, 16, 25})
-    QListMapRange(1, 15, [] (int x) { return x*x; }, [] (int x) { return (x%3) != 0; });
+    mapRange<QList>(1, 15, [] (int x) { return x*x; }, [] (int x) { return (x%3) != 0; });
     // returns QList((1, 4, 16, 25, 49, 64, 100, 121, 169, 196))
 
 ## `flatten`
@@ -651,17 +564,11 @@ Examples:
 Usage:
 
     flatten(container of containers) -> container of same type as inner container
-    listFlatten(container of containers) -> std::list
-    vectorFlatten(container of containers) -> std::vector
-    setFlatten(container of containers) -> std::set
-    QListFlatten(container of containers) -> QList
-    QVectorFlatten(container of containers) -> QVector
-    QSetFlatten(container of containers) -> QSet
-    QLinkedListFlatten(container of containers) -> QLinkedList
+    flatten<ContainerType>(container of containers) -> ContainerType
 
 Constructs a new container by adding all of the inner items of a container of containers.
 
-What kind of container is returned depends on which version of the function is used. For the first form `flatten`, the return value is the same type as the inner container, i.e. if a value of type `ListType1<ListType2<ValueType> >` is passed in, then the result is `ListType2<ValueType>`. The remaining forms return a container based off of their name, so the container passed in doesn't have to be of the same type.
+What kind of container is returned depends on which version of the function is used. For the first form `flatten`, the return value is the same type as the inner container, i.e. if a value of type `ListType1<ListType2<ValueType> >` is passed in, then the result is `ListType2<ValueType>`. The second form return a container based off of the template argument, so the container passed in doesn't have to be of the same type.
 
 If applicable, the order of the items in the new container matches the original, e.g. `flatten(std::list<std::list<int> >({{1, 2, 3}, {4, 5, 6}, {7, 8, 9}}))` returns `std::list<int>({1, 2, 3, 4, 5, 6, 7, 8, 9})`.
 
@@ -670,7 +577,7 @@ Examples:
     flatten(QList< QVector<int> >({{1, 2}, {3, 4, 5}}))
     // returns QVector<int>({1, 2, 3, 4, 5})
     
-    setFlatten(std::list< std::vector<int> >({{1, 2}, {3, 4}, {5, 6}}))
+    flatten<std::set>(std::list< std::vector<int> >({{1, 2}, {3, 4}, {5, 6}}))
     // returns std::set<int>({1, 2, 3, 4, 5, 6})
     
     flatten(std::vector< std::vector<int> >())
@@ -679,7 +586,5 @@ Examples:
 ## Future work and contributing
 
 Part of the point of this project was to familiarize myself with some of the more esoteric aspects of C++11. (And boy howdy does it get esoteric.) If there's a more efficient or elegant way to implement any of these functions, I'd love to see it! Also, while I tried to keep performance in mind when writing these, I'm not 100% sure I got it right, particularly when it comes to C++11's automatic move semantics and such. So if there's an error there I'd be happy to see it corrected.
-
-Not every STL and Qt container is currently supported -- just the ones I use a lot -- particularly for the functions that return a specific type based on their name (like listMap, vectorMap, etc). However it should in most cases be easy to support another container if it uses STL-style iterators and implements a `begin`, `end`, `cbegin`, and `cend` methods like Qt's containers do. That said, these functions could be rewritten to be more agnostic about which method is used for iterating over the containers.
 
 And obviously, I'll be adding more functions to this bit by bit.

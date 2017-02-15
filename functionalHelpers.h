@@ -85,8 +85,20 @@ namespace FuncHelpUtils {
     template <class T>
     using decay_t = typename std::decay<T>::type;
     
+    template< bool B, class T = void >
+    using enable_if_t = typename std::enable_if<B,T>::type;
+    
     template <class Container>
     using iterator_deref = decltype(*std::declval<Container &>().begin());
+    
+    template <class Container>
+    using iterator_deref_decay = decay_t<iterator_deref<Container> >;
+    
+    template <class Container>
+    using reverse_iterator_deref = decltype(*std::declval<Container &>().rbegin());
+    
+    template <class Container>
+    using reverse_iterator_deref_decay = decay_t<reverse_iterator_deref<Container> >;
     
     template <class Container, class F>
     using func_container_result_undecayed = decltype(std::ref(std::declval<F &>())(iterator_deref<Container>(*std::declval<Container &>().begin())));
@@ -126,7 +138,7 @@ template <template <class...> class OutContainer,
           template <class...> class InContainer,
           class InType,
           class F,
-          class = typename std::enable_if<!std::is_same<OutContainer<int>, InContainer<int> >::value>::type>
+          class = FuncHelpUtils::enable_if_t<!std::is_same<OutContainer<int>, InContainer<int> >::value> >
 auto map(const InContainer<InType> &container, const F &func)
  -> OutContainer<FuncHelpUtils::func_container_result<InContainer<InType>, F> >
 {
@@ -169,7 +181,7 @@ template <template <class...> class OutContainer,
           class InType,
           class F1,
           class F2,
-          class = typename std::enable_if<!std::is_same<OutContainer<int>, InContainer<int> >::value>::type>
+          class = FuncHelpUtils::enable_if_t<!std::is_same<OutContainer<int>, InContainer<int> >::value> >
 auto compr(const InContainer<InType> &container, const F1 &func, const F2 &predicate)
  -> OutContainer<FuncHelpUtils::func_container_result<InContainer<InType>, F1> >
 {
@@ -200,7 +212,7 @@ template <template <class...> class OutContainer,
           template <class...> class InContainer,
           class T,
           class F,
-          class = typename std::enable_if<!std::is_same<OutContainer<int>, InContainer<int> >::value>::type>
+          class = FuncHelpUtils::enable_if_t<!std::is_same<OutContainer<int>, InContainer<int> >::value> >
 auto filter(const InContainer<T> &container, const F &predicate)
  -> OutContainer<T>
 {
@@ -231,7 +243,7 @@ template <template <class...> class OutContainer,
           template <class...> class InContainer,
           class T,
           class F,
-          class = typename std::enable_if<!std::is_same<OutContainer<int>, InContainer<int> >::value>::type>
+          class = FuncHelpUtils::enable_if_t<!std::is_same<OutContainer<int>, InContainer<int> >::value> >
 auto reject(const InContainer<T> &container, const F &predicate)
  -> OutContainer<T>
 {
@@ -289,7 +301,7 @@ namespace FuncHelpUtils {
 
 template <class T, class F>
 auto extremum(const T &list, const F &comp)
-    -> typename std::decay<decltype(*list.begin())>::type
+    -> FuncHelpUtils::iterator_deref_decay<T>
 {
     using U = typename std::decay<decltype(*list.begin())>::type;
     const U *extremumValue = FuncHelpUtils::extremumBase(list, comp);
@@ -303,7 +315,7 @@ auto extremum(const T &list, const F &comp)
 
 template <class T, class F, class U>
 auto extremum(const T &list, const F &comp, const U &defaultVal)
-    -> typename std::decay<decltype(*list.begin())>::type
+    -> FuncHelpUtils::iterator_deref_decay<T>
 {
     const U *extremumValue = FuncHelpUtils::extremumBase(list, comp);
     
@@ -318,15 +330,17 @@ auto extremum(const T &list, const F &comp, const U &defaultVal)
 
 template <class T>
 auto min(const T &list)
-    -> typename std::decay<decltype(*list.begin())>::type
+    -> FuncHelpUtils::iterator_deref_decay<T>
 {
     using U = typename std::decay<decltype(*list.begin())>::type;
     return extremum(list, [] (const U &a, const U &b) {return a < b; });
 }
 
-template <class T, class U>
+template <class T,
+          class U,
+          class = FuncHelpUtils::enable_if_t<!FuncHelpUtils::is_callable<U, FuncHelpUtils::iterator_deref<T> >::value> >
 auto min(const T &list, const U &defaultVal)
-  -> typename std::enable_if<!FuncHelpUtils::is_callable<U, typename std::decay<decltype(*list.begin())>::type>::value, U>::type
+  -> U
 {
     return extremum(list, [] (const U &a, const U &b) {return a < b; }, defaultVal);
 }
@@ -336,9 +350,9 @@ auto min(const T &list, const U &defaultVal)
 namespace FuncHelpUtils {
     template <class T, class F>
     auto minBase(const T &list, const F &func)
-      -> const typename std::decay<decltype(*list.begin())>::type *
+      -> const FuncHelpUtils::iterator_deref_decay<T> *
     {
-        using U = typename std::decay<decltype(*list.begin())>::type;
+        using U = FuncHelpUtils::iterator_deref_decay<T>;
         using V = decltype(list.cbegin());
         using W = func_container_result<T, F>;
         const U *extremumValue = nullptr;
@@ -357,12 +371,13 @@ namespace FuncHelpUtils {
     }
 }
 
-template <class T, class F>
+template <class T,
+          class F,
+          class = FuncHelpUtils::enable_if_t<FuncHelpUtils::is_callable<F, FuncHelpUtils::iterator_deref<T> >::value> >
 auto min(const T &list, const F &func)
-  -> typename std::enable_if<FuncHelpUtils::is_callable<F, typename std::decay<decltype(*list.begin())>::type>::value,
-                             typename std::decay<decltype(*list.begin())>::type>::type
+ -> FuncHelpUtils::iterator_deref_decay<T>
 {
-    using U = typename std::decay<decltype(*list.begin())>::type;
+    using U = FuncHelpUtils::iterator_deref_decay<T>;
     const U *extremumValue = FuncHelpUtils::minBase(list, func);
 
     if (extremumValue) {
@@ -388,15 +403,17 @@ U min(const T &list, const F &func, const U &defaultVal)
 
 template <class T>
 auto max(const T &list)
-    -> typename std::decay<decltype(*list.begin())>::type
+ -> FuncHelpUtils::iterator_deref_decay<T>
 {
-    using U = typename std::decay<decltype(*list.begin())>::type;
+    using U = FuncHelpUtils::iterator_deref_decay<T>;
     return extremum(list, [] (const U &a, const U &b) {return a > b; });
 }
 
-template <class T, class U>
+template <class T,
+          class U,
+          class = FuncHelpUtils::enable_if_t<!FuncHelpUtils::is_callable<U, FuncHelpUtils::iterator_deref<T> >::value> >
 auto max(const T &list, const U &defaultVal)
-  -> typename std::enable_if<!FuncHelpUtils::is_callable<U, typename std::decay<decltype(*list.begin())>::type>::value, U>::type
+  -> U
 {
     return extremum(list, [] (const U &a, const U &b) {return a > b; }, defaultVal);
 }
@@ -406,9 +423,9 @@ auto max(const T &list, const U &defaultVal)
 namespace FuncHelpUtils {
     template <class T, class F>
     auto maxBase(const T &list, const F &func)
-        -> const typename std::decay<decltype(*list.begin())>::type *
+        -> const FuncHelpUtils::iterator_deref_decay<T> *
     {
-        using U = typename std::decay<decltype(*list.begin())>::type;
+        using U = FuncHelpUtils::iterator_deref_decay<T>;
         using V = decltype(list.cbegin());
         using W = func_container_result<T, F>;
         const U *extremumValue = nullptr;
@@ -427,12 +444,13 @@ namespace FuncHelpUtils {
     }
 }
 
-template <class T, class F>
+template <class T,
+          class F,
+          class = FuncHelpUtils::enable_if_t<FuncHelpUtils::is_callable<F, FuncHelpUtils::iterator_deref<T> >::value> >
 auto max(const T &list, const F &func)
-  -> typename std::enable_if<FuncHelpUtils::is_callable<F, typename std::decay<decltype(*list.begin())>::type>::value,
-                             typename std::decay<decltype(*list.begin())>::type>::type
+  -> FuncHelpUtils::iterator_deref_decay<T>
 {
-    using U = typename std::decay<decltype(*list.begin())>::type;
+    using U = FuncHelpUtils::iterator_deref_decay<T>;
     const U *extremumValue = FuncHelpUtils::maxBase(list, func);
 
     if (extremumValue) {
@@ -458,9 +476,9 @@ U max(const T &list, const F &func, const U &defaultVal)
 
 template <class T, class F>
 auto reduce(const T &list, const F &func)
-    -> typename std::decay<decltype(*list.begin())>::type
+    -> FuncHelpUtils::iterator_deref_decay<T>
 {
-    using U = typename std::decay<decltype(*list.begin())>::type;
+    using U = FuncHelpUtils::iterator_deref_decay<T>;
     using V = decltype(list.cbegin());
     V it = list.cbegin();
     
@@ -495,16 +513,16 @@ U reduce(const T &list, const F &func, U memo)
 
 template <class T, class U>
 auto sum(const T &list, U memo)
-    -> typename std::decay<decltype(*list.begin())>::type
+    -> FuncHelpUtils::iterator_deref_decay<T>
 {
     return reduce(list, [] (const U &a, const U &b) { return a+b; }, memo);
 }
 
 template <class T>
 auto sum(const T &list)
-    -> typename std::decay<decltype(*list.begin())>::type
+    -> FuncHelpUtils::iterator_deref_decay<T>
 {
-    using U = typename std::decay<decltype(*list.begin())>::type;
+    using U = FuncHelpUtils::iterator_deref_decay<T>;
     return reduce(list, [] (const U &a, const U &b) { return a+b; });
 }
 
@@ -674,7 +692,7 @@ T reversed(const T &container)
 
 template <class T>
 auto first(const T &container)
- -> typename std::decay<decltype(*container.cbegin())>::type
+ -> FuncHelpUtils::iterator_deref_decay<T>
 {
     using U = typename std::decay<decltype(*container.begin())>::type;
     
@@ -687,7 +705,7 @@ auto first(const T &container)
 
 template <class T, class U>
 auto first(const T &container, const U &defaultValue)
- -> typename std::decay<decltype(*container.cbegin())>::type
+ -> FuncHelpUtils::iterator_deref_decay<T>
 {
     if (container.size() == 0) {
         return defaultValue;
@@ -700,7 +718,7 @@ auto first(const T &container, const U &defaultValue)
 
 template <class T>
 auto last(const T &container)
- -> typename std::decay<decltype(*container.crbegin())>::type
+ -> FuncHelpUtils::reverse_iterator_deref_decay<T>
 {
     using U = typename std::decay<decltype(*container.begin())>::type;
     
@@ -713,7 +731,7 @@ auto last(const T &container)
 
 template <class T, class U>
 auto last(const T &container, const U &defaultValue)
- -> typename std::decay<decltype(*container.crbegin())>::type
+ -> FuncHelpUtils::reverse_iterator_deref_decay<T>
 {
     if (container.size() == 0) {
         return defaultValue;

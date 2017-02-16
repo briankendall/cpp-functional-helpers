@@ -109,11 +109,11 @@ If the type of items in `container` is an object or pointer to an object, `calla
 
 Examples:
 
-    filter(std::string("abcdeFGHIJ"), islower);
+    reject(std::string("abcdeFGHIJ"), islower);
     // returns std::string("FGHIJ")
     
     QList<int> numbers = {1, 2, 3, 4, 5};
-    filter<QSet>(numbers, [] (int x) { return (x%2 == 0); });
+    reject<QSet>(numbers, [] (int x) { return (x%2 == 0); });
     // returns: QSet<int>({1, 3, 5})
 
 ## `compr`

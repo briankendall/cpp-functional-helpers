@@ -2,6 +2,10 @@
 #include <qDebug>
 #include <QItemSelection>
 
+#ifdef Q_OS_MAC
+#include <CFTypeFunctionalHelpers.h>
+#endif
+
 // A quick set of tests for functionHelpers.h and qtFunctionalHelpers.h
 // Mainly used to check for compile errors. Also checks for correct results at runtime, but
 // admittedly not as thoroughly as it could.
@@ -814,6 +818,25 @@ void testFlatten()
     TEST(flatten<set>(std::list<std::set<int> >({{1, 2, 3}, {4, 5, 6}, {7, 8, 9}})), std::set<int>({1,2,3,4,5,6,7,8,9}));
 }
 
+#ifdef Q_OS_MAC
+
+void testCFArray()
+{
+    CFMutableArrayRef array = CFArrayCreateMutable(NULL, 0, &kCFTypeArrayCallBacks);
+    
+    for(int i = 1; i <= 5; ++i) {
+        CFArrayAppendValue(array, CFNumberCreate(NULL, kCFNumberIntType, &i));
+    }
+    
+    TEST(anyOf(array, [] (const CFTypeRef &val) { return CFGetTypeID(val) == CFNumberGetTypeID(); }), true);
+    TEST(allOf(array, [] (const CFTypeRef &val) { return CFGetTypeID(val) == CFNumberGetTypeID(); }), true);
+    TEST(allOf(array, [] (const CFTypeRef &val) { return CFGetTypeID(val) == CFStringGetTypeID(); }), false);
+    
+    CFRelease(array);
+}
+
+#endif
+
 int main()
 {
     testMap();
@@ -836,6 +859,9 @@ int main()
     testRange();
     testMapRange();
     testFlatten();
+#ifdef Q_OS_MAC
+    testCFArray();
+#endif
     
     qDebug() << "Finished!" << passedTests << "/" << totalTests << "passed";
     return 0;

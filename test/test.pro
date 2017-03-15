@@ -11,5 +11,10 @@ TEMPLATE = app
 
 SOURCES += main.cpp
 HEADERS += ../functionalHelpers.h \
-           ../qtFunctionalHelpers.h
+           ../qtFunctionalHelpers.h \
+           ../CFTypeFunctionalHelpers.h
 INCLUDEPATH += ..
+
+macx {
+    LIBS += -framework CoreServices
+}

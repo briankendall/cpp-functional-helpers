@@ -3,6 +3,13 @@
 
 #include <iterator>
 #include <CoreServices/CoreServices.h>
+#include <algorithm>
+
+#ifdef QT_CORE_LIB
+#include <qtFunctionalHelpers.h>
+#else
+#include <functionalHelpers.h>
+#endif
 
 class CFArray_iterator : public std::iterator<std::random_access_iterator_tag,
                                               CFTypeRef,
@@ -42,5 +49,6 @@ inline CFArray_iterator end(CFArrayRef array)
     result.index = CFArrayGetCount(array);
     return result;
 }
+
 
 #endif // CFTYPEFUNCTIONALHELPERS_H

@@ -204,6 +204,22 @@ auto compr(const InContainer<InType> &container, const F1 &func, const F2 &predi
 
 // filter
 
+template <class InContainer,
+          class OutContainer,
+          class F>
+OutContainer filter(const InContainer &container, const F &predicate)
+{
+    OutContainer result;
+    
+    for(auto val : container) {
+        if (std::ref(predicate)(decltype(val)(val))) {
+            FuncHelpUtils::addItem(result, val);
+        }
+    }
+    
+    return result;
+}
+
 template <template <class...> class InContainer,
           template <class...> class OutContainer = InContainer,
           class ValType,
@@ -211,15 +227,7 @@ template <template <class...> class InContainer,
 auto filter(const InContainer<ValType> &container, const F &predicate)
  -> OutContainer<ValType>
 {
-    OutContainer<ValType> result;
-    
-    for(const ValType &val : container) {
-        if (std::ref(predicate)(decltype(val)(val))) {
-            FuncHelpUtils::addItem(result, val);
-        }
-    }
-    
-    return result;
+    return filter<InContainer<ValType>, OutContainer<ValType>, F>(container, predicate);
 }
 
 template <template <class...> class OutContainer,
@@ -235,6 +243,22 @@ auto filter(const InContainer<ValType> &container, const F &predicate)
 
 // reject
 
+template <class InContainer,
+          class OutContainer,
+          class F>
+OutContainer reject(const InContainer &container, const F &predicate)
+{
+    OutContainer result;
+    
+    for(auto val : container) {
+        if (!std::ref(predicate)(val)) {
+            FuncHelpUtils::addItem(result, val);
+        }
+    }
+    
+    return result;
+}
+
 template <template <class...> class InContainer,
           template <class...> class OutContainer = InContainer,
           class ValType,
@@ -242,15 +266,7 @@ template <template <class...> class InContainer,
 auto reject(const InContainer<ValType> &container, const F &predicate)
  -> OutContainer<ValType>
 {
-    OutContainer<ValType> result;
-    
-    for(const ValType &val : container) {
-        if (!std::ref(predicate)(val)) {
-            FuncHelpUtils::addItem(result, val);
-        }
-    }
-    
-    return result;
+    return reject<InContainer<ValType>, OutContainer<ValType>, F>(container, predicate);
 }
 
 template <template <class...> class OutContainer,

@@ -109,7 +109,7 @@ const DerivedQList derivedQListFoos = {Foo(1), Foo(2), Foo(3), Foo(4), Foo(5)};
 const DerivedPtrList derivedListFooPtrs = {&fooA, &fooB, &fooC, &fooD, &fooE};
 const DerivedQPtrList derivedQListFooPtrs = {&fooA, &fooB, &fooC, &fooD, &fooE};
 
-const QStringList stringList = {"aa", "bb", "cc", "dd", "ee"};
+const QStringList stringList = {"aaaaa", "bbbb", "ccc", "dd", "e"};
 
 int passedTests = 0;
 int totalTests = 0;
@@ -170,6 +170,8 @@ void testMap()
     TEST(::map<string>(string("abcde"), toupper), string("ABCDE"));
     TEST(::map<QString>(string("abcde"), [] (char c) { return QChar(c).toUpper();}), QString("ABCDE"));
     TEST(::map<QString>(QString("abcde"), [] (QChar c) { return c.toUpper();}), QString("ABCDE"));
+    TEST(::map(stringList, [] (const QString &a) { return a.toUpper(); }),
+         QStringList({"AAAAA", "BBBB", "CCC", "DD", "E"}));
 }
 
 void testCompr()
@@ -287,6 +289,8 @@ void testFilter()
     TEST(filter<QLinkedList>(listNumbers, [] (int x) { return (x%2) == 0; }), QLinkedListExpected);
     
     TEST(filter(std::string("aBcDeFgH"), isupper), std::string("BDFH"));
+    TEST(filter(stringList, &QString::isEmpty), QStringList());
+    TEST(filter(stringList, [] (const QString &a) { return !a.isEmpty(); }), stringList);
 }
 
 void testReject()
@@ -328,6 +332,8 @@ void testReject()
     TEST(reject<QLinkedList>(listNumbers, [] (int x) { return (x%2) == 0; }), QLinkedListExpected);
     
     TEST(reject(std::string("aBcDeFgH"), isupper), std::string("aceg"));
+    TEST(reject(stringList, &QString::isEmpty), stringList);
+    TEST(reject(stringList, [] (const QString &a) { return !a.isEmpty(); }), QStringList());
 }
 
 void testAllOf()
@@ -354,6 +360,8 @@ void testAllOf()
     TEST(allOf(QVectorNumbers, [] (int x) { return (x%2) == 0; }), false);
     TEST(allOf(QSetNumbers, [] (int x) { return (x%2) == 0; }), false);
     TEST(allOf(QLinkedListNumbers, [] (int x) { return (x%2) == 0; }), false);
+    TEST(allOf(stringList, &QString::isEmpty), false);
+    TEST(allOf(stringList, [] (const QString &a) { return !a.isEmpty(); }), true);
 }
 
 void testAnyOf()
@@ -380,6 +388,8 @@ void testAnyOf()
     TEST(anyOf(QVectorNumbers, [] (int x) { return (x%2) == 0; }), true);
     TEST(anyOf(QSetNumbers, [] (int x) { return (x%2) == 0; }), true);
     TEST(anyOf(QLinkedListNumbers, [] (int x) { return (x%2) == 0; }), true);
+    TEST(anyOf(stringList, &QString::isEmpty), false);
+    TEST(anyOf(stringList, [] (const QString &a) { return !a.isEmpty(); }), true);
 }
 
 void testExtremum()
@@ -408,6 +418,8 @@ void testExtremum()
     
     TEST(extremum(list<int>(), [] (int x, int y) { return x < y; }), 0);
     TEST(extremum(list<int>(), [] (int x, int y) { return x < y; }, 123), 123);
+    
+    TEST(extremum(stringList, [] (const QString &a, const QString &b) { return a < b; }), QString("aaaaa"));
 }
 
 void testMin()
@@ -440,6 +452,9 @@ void testMin()
     // Example of gotcha where the second argument to min is callable with the value type of the passed in container:
     TEST(min(list<CallableClass>(), CallableClass(123)), CallableClass(0));
     TEST(min(list<CallableClass>({CallableClass(1), CallableClass(2)}), CallableClass(123)), CallableClass(2));
+    
+    TEST(min(stringList), QString("aaaaa"));
+    TEST(min(stringList, &QString::length), QString("e"));
 }
 
 void testMax()
@@ -560,6 +575,7 @@ void testContains()
     TEST(contains(QListNumbers, 1), true);
     TEST(contains(QVectorNumbers, 1), true);
     TEST(contains(QSetNumbers, 4), true);
+    TEST(contains(stringList, "bbbb"), true);
 }
 
 void testOmit()

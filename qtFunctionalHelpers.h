@@ -29,9 +29,36 @@ namespace FuncHelpUtils {
     {
         container.insert(item);
     }
+    
+    inline void addItem(QStringList &container, const QString &item)
+    {
+        container.append(item);
+    }
 }
 
 #include <functionalHelpers.h>
+
+// map
+template <class F,
+          class = FuncHelpUtils::enable_if_t<std::is_same<FuncHelpUtils::func_container_result<QStringList, F>, QString>::value> >
+QStringList map(const QStringList &container, const F &func)
+{
+    return map<QStringList, QStringList, F>(container, func);
+}
+
+// filter
+template <class F>
+QStringList filter(const QStringList &container, const F &pred)
+{
+    return filter<QStringList, QStringList>(container, pred);
+}
+
+// reject
+template <class F>
+QStringList reject(const QStringList &container, const F &pred)
+{
+    return reject<QStringList, QStringList>(container, pred);
+}
 
 // sorted
 

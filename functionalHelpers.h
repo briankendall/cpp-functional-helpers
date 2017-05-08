@@ -75,6 +75,16 @@ namespace FuncHelpUtils {
         enum { value = sizeof(test<T>(0)) == sizeof(char) };
     };
     
+    // Helper to determine whether there's a const_reverse_iterator for T.
+    template<typename T>
+    struct has_const_reverse_iterator {
+    private:
+        template<typename C> static char test(typename C::const_reverse_iterator*);
+        template<typename C> static int  test(...);
+    public:
+        enum { value = sizeof(test<T>(0)) == sizeof(char) };
+    };
+    
     template<class F, class...Args>
     struct is_callable
     {
@@ -611,7 +621,6 @@ bool contains(const std::set<Container, Alloc> &container, const Container &val)
 }
 
 // omit
-
 
 template <template <class...> class InContainer,
           template <class...> class OutContainer = InContainer,

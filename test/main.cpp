@@ -1,5 +1,5 @@
 #include <qtFunctionalHelpers.h>
-#include <qDebug>
+#include <QDebug>
 #include <QItemSelection>
 
 #ifdef Q_OS_MAC
@@ -109,6 +109,8 @@ const DerivedQList derivedQListFoos = {Foo(1), Foo(2), Foo(3), Foo(4), Foo(5)};
 const DerivedPtrList derivedListFooPtrs = {&fooA, &fooB, &fooC, &fooD, &fooE};
 const DerivedQPtrList derivedQListFooPtrs = {&fooA, &fooB, &fooC, &fooD, &fooE};
 
+const QStringList stringList = {"aa", "bb", "cc", "dd", "ee"};
+
 int passedTests = 0;
 int totalTests = 0;
 
@@ -135,8 +137,6 @@ void testMap()
     TEST(::map(listFooPtrs, &Foo::baseFooTimesTwo), listExpected);
     TEST(::map(QListFoos, &Foo::baseFooTimesTwo), QListExpected);
     TEST(::map(QListFooPtrs, &Foo::baseFooTimesTwo), QListExpected);
-    TEST(::map(derivedListFoos, &Foo::baseFooTimesTwo), listExpected);
-    TEST(::map(derivedQListFoos, &Foo::baseFooTimesTwo), QListExpected);
     
     TEST(::map<list>(listFoos, [] (const Foo &foo) { return foo.fooTimesTwo(); }), listExpected);
     TEST(::map<list>(listFoos, &Foo::fooTimesTwo), listExpected);
@@ -198,8 +198,6 @@ void testCompr()
     TEST(compr(QListFooPtrs, &Foo::fooTimesTwo, &Foo::isEven), QListExpected);
     TEST(compr(QListFooPtrs, &Foo::fooTimesTwo, [] (const Foo *a) { return (a->value%2) == 0; }), QListExpected);
     TEST(compr(QListFooPtrs, [] (const Foo *a) { return a->fooTimesTwo(); }, &Foo::isEven), QListExpected);
-    TEST(compr(derivedListFoos, &Foo::fooTimesTwo, &Foo::isEven), listExpected);
-    TEST(compr(derivedQListFoos, &Foo::fooTimesTwo, &Foo::isEven), QListExpected);
     
     TEST(compr<list>(listFoos, &Foo::fooTimesTwo, &Foo::isEven), listExpected);
     TEST(compr<list>(listFoos, &Foo::fooTimesTwo, [] (const Foo &a) { return (a.value%2) == 0; }), listExpected);
@@ -646,6 +644,7 @@ void testLast()
     TEST(last(QLinkedListNumbers), 5);
     TEST(last(QStringList({"one", "two", "three"})), QString("three"));
     TEST(last(QItemSelection()), QItemSelectionRange());
+    TEST(last(QStringList(), QString("default")), QString("default"));
 }
 
 void testRange()

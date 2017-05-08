@@ -94,9 +94,11 @@ QVector<T> reversed(const QVector<T> &container)
 // Special casing last() for Qt containers in order to achieve compatibility
 // with Qt versions before 5.6 as they do not implement crbegin() or crend()
 
-template <template <class> class T, class U>
-U last(const T<U> &container)
+template <class T>
+auto last(const T &container)
+ -> FuncHelpUtils::decay_t<decltype(container.last())> 
 {
+    using U = FuncHelpUtils::decay_t<decltype(container.last())>;
     if (container.size() == 0) {
         return U();
     } else {
@@ -104,8 +106,10 @@ U last(const T<U> &container)
     }
 }
 
-template <template <class> class T, class U>
-U last(const T<U> &container, const U &defaultValue)
+template <class T,
+          class U,
+          class = FuncHelpUtils::enable_if_t<!FuncHelpUtils::has_const_reverse_iterator<T>::value> >
+U last(const T &container, const U &defaultValue)
 {
     if (container.size() == 0) {
         return defaultValue;

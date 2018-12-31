@@ -431,7 +431,7 @@ Example:
     
     std::set<int> exclude = {1, 2, 3};
     omit(std::list<int>({1, 2, 3, 4, 5}), exclude);
-    // return std::list<int>({4, 5})
+    // returns std::list<int>({4, 5})
 
 ## `reversed`
 
@@ -445,7 +445,7 @@ Note: you can pass unordered containers (like `set`) into this function and it w
 
 Example:
 
-    contains(QList<int>({1, 2, 3, 4, 5});
+    reversed(QList<int>({1, 2, 3, 4, 5});
     // Returns QList<int>({5, 4, 3, 2, 1})
 
 ## `first`

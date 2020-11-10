@@ -46,6 +46,21 @@ QStringList map(const QStringList &container, const F &func)
     return map<QStringList, QStringList, F>(container, func);
 }
 
+// Handles QString reference qualified member functions, e.g. toUpper, toLower, trimmed, etc.
+inline QStringList map(const QStringList &container, QString (QString::*func)() const &)
+{
+    return map<QStringList, QStringList, QString (QString::*)() const &>(container, func);
+}
+
+// compr
+
+// Handles QString reference qualified member functions, e.g. toUpper, toLower, trimmed, etc.
+template <class F>
+inline QStringList compr(const QStringList &container, QString (QString::*func)() const &, F predicate)
+{
+    return compr<QStringList, QStringList, QString (QString::*)() const &, F>(container, func, predicate);
+}
+
 // filter
 template <class F>
 QStringList filter(const QStringList &container, const F &pred)

@@ -172,6 +172,7 @@ void testMap()
     TEST(::map<QString>(QString("abcde"), [] (QChar c) { return c.toUpper();}), QString("ABCDE"));
     TEST(::map(stringList, [] (const QString &a) { return a.toUpper(); }),
          QStringList({"AAAAA", "BBBB", "CCC", "DD", "E"}));
+    TEST(::map(stringList, &QString::toUpper), QStringList({"AAAAA", "BBBB", "CCC", "DD", "E"}));
 }
 
 void testCompr()
@@ -248,6 +249,7 @@ void testCompr()
     TEST(compr<string>(std::string("aBcDeFgH"), tolower, isupper), std::string("bdfh"));
     TEST(compr<QString>(QString("aBcDeFgH"), [] (QChar c) { return c.toLower(); },
          [] (QChar c) { return c.isUpper(); }), QString("bdfh"));
+    TEST(compr(stringList, &QString::toUpper, &QString::isEmpty), QStringList());
 }
 
 void testFilter()
